@@ -13,8 +13,14 @@ class LDAPConnection( object ):
     ldap_base_dn = 'dc=eds,dc=arizona,dc=edu'
     ldc = ldap_connection.LDAPConnection(eds_hostname, ldap_base_dn, USERNAME, PASSWORD)
 
+    ldap_search_dn = 'ou=people,' + ldap_base_dn
+    ldap_attribs = [ 'uaid' ]
+
     ldap_query = '(& (employeePrimaryDept=0404) )'
     ldc.ldc.search(ldap_search_dn, ldap_query, attributes = ldap_attribs )
+
+    # You can retrieve the uaid via:
+    members = {e.uaid.value for e in ldc.ldc.entries}
     '''
 
     def __init__( self, ldap_host, ldap_base_dn, ldap_user, ldap_passwd):
