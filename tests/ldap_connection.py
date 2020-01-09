@@ -53,6 +53,25 @@ class LDAPConnection( object ):
 
         logger.debug( 'returning' )
 
+def ual_ldap_query(org_code):
+
+    '''
+
+    Construct RFC 4512-compatible LDAP query to search for those with UA
+    Library privileges within an organization specified by the org_code
+    input
+
+    :param org_code: A string of the org code (e.g., '0212')
+
+    :return ldap_query: str
+    '''
+    ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code)+\
+                 '(ismemberof=arizona.edu:dept:LBRY:pgrps:ual-faculty-base) '+\
+                 '(ismemberof=arizona.edu:dept:LBRY:pgrps:ual-staff) '+\
+                 '(ismemberof=arizona.edu:dept:LBRY:pgrps:ual-students) '+\
+                 '(ismemberof=arizona.edu:dept:LBRY:pgrps:ual-dcc) ))'
+
+    return ldap_query
 
 def ldap_search(ldapconnection, ldap_query):
 
@@ -77,3 +96,4 @@ def ldap_search(ldapconnection, ldap_query):
     members = {e.uaid.value for e in ldapconnection.ldc.entries}
 
     return members
+
