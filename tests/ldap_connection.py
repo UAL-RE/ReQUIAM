@@ -6,6 +6,13 @@ logger = logging.getLogger( __name__ )
 class LDAPConnection( object ):
     '''
 
+    This class initializes a connection to a specified LDAP server.  It
+    allows for repeated LDAP queries. Originally patron group developed
+    the connection to use with individual queries.  The queries have
+    been broken off since our use with the data repository could
+    involve up to 1000 queries given the number of different
+    organizations that we have.
+
     Quick how to:
 
     from DataRepository_patrons.tests import ldap_connection
