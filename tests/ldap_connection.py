@@ -52,3 +52,28 @@ class LDAPConnection( object ):
         self.ldc = ldap3.Connection( self.ldap_bind_host, self.ldap_bind_dn, self.ldap_passwd, auto_bind = True )
 
         logger.debug( 'returning' )
+
+
+def ldap_search(ldapconnection, ldap_query):
+
+    '''
+
+    Function that queries a define LDAP connection and retrieve members
+
+    :param ldapconnection: An ldap3 Connection from LDAPConnection(),
+        ldapconnection = LDAPConnection(**)
+
+    :param ldap_query: str
+        String containing the query
+
+    :return member: set containing list of members
+    '''
+
+    ldap_search_dn = ldapconnection.ldap_search_dn
+    ldap_attribs = ldapconnection.ldap_attribs
+    ldapconnection.ldc.search(ldap_search_dn, ldap_query, attributes=ldap_attribs)
+
+    # Use of set for unique entries
+    members = {e.uaid.value for e in ldapconnection.ldc.entries}
+
+    return members
