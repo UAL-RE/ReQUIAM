@@ -84,10 +84,10 @@ def ual_ldap_query(org_code):
     :return ldap_query: str
     '''
     ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code)+\
-                 '(ismemberof=arizona.edu:dept:LBRY:pgrps:ual-faculty-base) '+\
-                 '(ismemberof=arizona.edu:dept:LBRY:pgrps:ual-staff) '+\
-                 '(ismemberof=arizona.edu:dept:LBRY:pgrps:ual-students) '+\
-                 '(ismemberof=arizona.edu:dept:LBRY:pgrps:ual-dcc) ))'
+                 '({}) '.format(ual_grouper_base('ual-faculty')+\
+                 '({}) '.format(ual_grouper_base('ual-staff')+\
+                 '({}) '.format(ual_grouper_base('ual-students')+\
+                 '({}) '.format(ual_grouper_base('ual-dcc')
 
     return ldap_query
 
