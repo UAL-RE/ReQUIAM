@@ -5,7 +5,6 @@ logger = logging.getLogger( __name__ )
 
 class LDAPConnection( object ):
     '''
-
     This class initializes a connection to a specified LDAP server.  It
     allows for repeated LDAP queries. Originally patron group developed
     the connection to use with individual queries.  The queries have
@@ -54,7 +53,6 @@ class LDAPConnection( object ):
         logger.debug( 'returning' )
 
 def ual_grouper_base(basename):
-
     '''
     Returns a string to use in LDAP queries that provide the Grouper
     ismemberof stem organization that UA Libraries use for patron
@@ -71,10 +69,9 @@ def ual_grouper_base(basename):
 
     return 'ismemberof=arizona.edu:dept:LBRY:pgrps:{}'.format(basename)
 
+
 def ual_ldap_query(org_code):
-
     '''
-
     Construct RFC 4512-compatible LDAP query to search for those with UA
     Library privileges within an organization specified by the org_code
     input
@@ -83,6 +80,7 @@ def ual_ldap_query(org_code):
 
     :return ldap_query: str
     '''
+
     ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code)+\
                  '({}) '.format(ual_grouper_base('ual-faculty')+\
                  '({}) '.format(ual_grouper_base('ual-staff')+\
@@ -92,9 +90,7 @@ def ual_ldap_query(org_code):
     return ldap_query
 
 def ldap_search(ldapconnection, ldap_query):
-
     '''
-
     Function that queries a define LDAP connection and retrieve members
 
     :param ldapconnection: An ldap3 Connection from LDAPConnection(),
