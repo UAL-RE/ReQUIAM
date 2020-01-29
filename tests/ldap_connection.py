@@ -82,12 +82,13 @@ def ual_ldap_query(org_code):
     '''
 
     ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code)+\
-                 '({}) '.format(ual_grouper_base('ual-faculty')+\
-                 '({}) '.format(ual_grouper_base('ual-staff')+\
-                 '({}) '.format(ual_grouper_base('ual-students')+\
-                 '({}) ) )'.format(ual_grouper_base('ual-dcc')
+                 '({}) '.format(ual_grouper_base('ual-faculty'))+\
+                 '({}) '.format(ual_grouper_base('ual-staff'))+\
+                 '({}) '.format(ual_grouper_base('ual-students'))+\
+                 '({}) ) )'.format(ual_grouper_base('ual-dcc'))
 
     return ldap_query
+
 
 def ldap_search(ldapconnection, ldap_query):
     '''
