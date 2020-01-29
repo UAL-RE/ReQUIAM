@@ -114,20 +114,25 @@ def ldap_search(ldapconnection, ldap_query):
     :param ldapconnection: An ldap3 Connection from LDAPConnection(),
         ldapconnection = LDAPConnection(**)
 
-    :param ldap_query: str
-        String containing the query
+    :param ldap_query: str or list of strings
+        String (list of strings) containing the query (ies)
 
     :return member: set containing list of members
     '''
 
     ldap_search_dn = ldapconnection.ldap_search_dn
     ldap_attribs = ldapconnection.ldap_attribs
-    ldapconnection.ldc.search(ldap_search_dn, ldap_query, attributes=ldap_attribs)
 
     # Use of set for unique entries
-    members = {e.uaid.value for e in ldapconnection.ldc.entries}
+    all_members = set()
 
-    return members
+    for query in ldap_query:
+        ldapconnection.ldc.search(ldap_search_dn, query, attributes=ldap_attribs)
+
+        members = {e.uaid.value for e in ldapconnection.ldc.entries}
+        all_members = set.union(all_members, members)
+
+    return all_members
 
 def merge_ldap_search():
     '''
