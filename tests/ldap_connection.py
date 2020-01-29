@@ -90,6 +90,23 @@ def ual_ldap_query(org_code):
     return ldap_query
 
 
+def ual_ldap_queries(org_codes):
+    '''
+    Construct *multiple* RFC 4512-compatible LDAP queries to search for
+    those with UA Library privileges within multiple organizations
+    specified by the org_codes input
+
+    :param org_codes: A list of strings containining org codes
+                      (e.g., ['0212','0213','0214'])
+
+    :return ldap_queries: list of str
+    '''
+
+    ldap_queries = [ual_ldap_query(org_code) for org_code in org_codes]
+
+    return ldap_queries
+
+
 def ldap_search(ldapconnection, ldap_query):
     '''
     Function that queries a define LDAP connection and retrieve members
