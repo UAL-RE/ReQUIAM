@@ -133,18 +133,3 @@ def ldap_search(ldapconnection, ldap_query):
         all_members = set.union(all_members, members)
 
     return all_members
-
-def merge_ldap_search():
-    '''
-    Function that merges the results of different LDAP queries.
-
-    Rationale:
-    A "portal" (particularly a high-level research theme, e.g., Sci & Math)
-    may have multiple organizations in it. Thus, a comparison between
-    EDS and Grouper will not provide a proper list of additions and
-    deletions.
-
-    To conduct a proper comparison, multiple org-based queries are
-    first needed. This function merges the results from those
-    queries
-    '''
