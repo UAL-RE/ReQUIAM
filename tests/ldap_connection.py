@@ -78,16 +78,34 @@ def ual_ldap_query(org_code):
 
     :param org_code: A string of the org code (e.g., '0212')
 
-    :return ldap_query: str
+    :return ldap_query: list containing the str
     '''
 
     ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code)+\
-                 '({}) '.format(ual_grouper_base('ual-faculty')+\
-                 '({}) '.format(ual_grouper_base('ual-staff')+\
-                 '({}) '.format(ual_grouper_base('ual-students')+\
-                 '({}) ) )'.format(ual_grouper_base('ual-dcc')
+                 '({}) '.format(ual_grouper_base('ual-faculty'))+\
+                 '({}) '.format(ual_grouper_base('ual-staff'))+\
+                 '({}) '.format(ual_grouper_base('ual-students'))+\
+                 '({}) ) )'.format(ual_grouper_base('ual-dcc'))
 
-    return ldap_query
+    return [ldap_query]
+
+
+def ual_ldap_queries(org_codes):
+    '''
+    Construct *multiple* RFC 4512-compatible LDAP queries to search for
+    those with UA Library privileges within multiple organizations
+    specified by the org_codes input
+
+    :param org_codes: A list of strings containining org codes
+                      (e.g., ['0212','0213','0214'])
+
+    :return ldap_queries: list of str
+    '''
+
+    ldap_queries = [ual_ldap_query(org_code)[0] for org_code in org_codes]
+
+    return ldap_queries
+
 
 def ldap_search(ldapconnection, ldap_query):
     '''
@@ -96,18 +114,22 @@ def ldap_search(ldapconnection, ldap_query):
     :param ldapconnection: An ldap3 Connection from LDAPConnection(),
         ldapconnection = LDAPConnection(**)
 
-    :param ldap_query: str
-        String containing the query
+    :param ldap_query: str or list of strings
+        String (list of strings) containing the query (ies)
 
     :return member: set containing list of members
     '''
 
     ldap_search_dn = ldapconnection.ldap_search_dn
     ldap_attribs = ldapconnection.ldap_attribs
-    ldapconnection.ldc.search(ldap_search_dn, ldap_query, attributes=ldap_attribs)
 
     # Use of set for unique entries
-    members = {e.uaid.value for e in ldapconnection.ldc.entries}
+    all_members = set()
 
-    return members
+    for query in ldap_query:
+        ldapconnection.ldc.search(ldap_search_dn, query, attributes=ldap_attribs)
 
+        members = {e.uaid.value for e in ldapconnection.ldc.entries}
+        all_members = set.union(all_members, members)
+
+    return all_members
