@@ -78,7 +78,7 @@ def ual_ldap_query(org_code):
 
     :param org_code: A string of the org code (e.g., '0212')
 
-    :return ldap_query: str
+    :return ldap_query: list containing the str
     '''
 
     ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code)+\
@@ -87,7 +87,7 @@ def ual_ldap_query(org_code):
                  '({}) '.format(ual_grouper_base('ual-students'))+\
                  '({}) ) )'.format(ual_grouper_base('ual-dcc'))
 
-    return ldap_query
+    return [ldap_query]
 
 
 def ual_ldap_queries(org_codes):
@@ -102,7 +102,7 @@ def ual_ldap_queries(org_codes):
     :return ldap_queries: list of str
     '''
 
-    ldap_queries = [ual_ldap_query(org_code) for org_code in org_codes]
+    ldap_queries = [ual_ldap_query(org_code)[0] for org_code in org_codes]
 
     return ldap_queries
 
