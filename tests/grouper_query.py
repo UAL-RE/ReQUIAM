@@ -26,8 +26,9 @@ class GrouperQuery(object):
         self.grouper_password = grouper_password
         self.grouper_group = grouper_group
 
-        self.grouper_group_members_url = 'https://%s/%s/%s/members' % \
-                                         (grouper_host, grouper_base_path, grouper_group)
+        self.grouper_group_members_url = 'https://{}/{}/{}/members'.format(grouper_host,
+                                                                           grouper_base_path,
+                                                                           grouper_group)
 
         rsp = requests.get(self.grouper_group_members_url, auth=(grouper_user, grouper_password))
 
