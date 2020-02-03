@@ -41,3 +41,18 @@ class GrouperQuery(object):
     @property
     def members(self):
         return set(self._members)
+
+
+def figshare_stem(stem):
+    """
+    Purpose:
+      Construct Grouper figshare stems
+
+    :param stem: string corresponding to the sub-stem
+       Options are: 'quota', 'portal'
+
+    :return stem_query: str
+    """
+
+    stem_query = 'arizona.edu:dept:LBRY:figshare:{}'.format(stem)
+    return stem_query
