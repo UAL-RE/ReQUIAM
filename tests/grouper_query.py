@@ -56,3 +56,33 @@ def figshare_stem(stem):
 
     stem_query = 'arizona.edu:dept:LBRY:figshare:{}'.format(stem)
     return stem_query
+
+
+def figshare_group(group, root_stem):
+    """
+    Purpose:
+      Construct Grouper figshare groups
+
+    :param group: str or int of group name
+    :param root_stem: str of associated stem folder for [group]
+    :return grouper_group: str containing full Grouper path
+
+    Usage:
+      For active group, call as: figshare_group('active', '')
+        > 'arizona.edu:dept:LBRY:figshare:active'
+
+      For a quota group, call as: figshare_group('2147483648', 'quota')
+        > 'arizona.edu:dept:LBRY:figshare:quota:2147483648'
+
+      For a portal group, call as: figshare_group('sci_math', 'portal')
+        > 'arizona.edu:dept:LBRY:figshare:portal:sci_math'
+    """
+
+    stem_query = figshare_stem(root_stem)
+
+    if root_stem == '':
+        grouper_group = stem_query + group
+    else:
+        grouper_group = '{}:{}'.format(stem_query, group)
+
+    return grouper_group
