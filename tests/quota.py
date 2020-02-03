@@ -15,6 +15,11 @@ def ual_ldap_quota_query(ual_class):
     :return ldap_query: list containing a single query string
     """
 
+    if ual_class != ['faculty', 'grad', 'undergrad']:
+        print("[ual_class] must either be 'faculty', 'grad', or 'undergrad'")
+        print("Exiting!")
+        return
+
     if ual_class == 'faculty':
         ldap_query = '( | ({}) '.format(ual_grouper_base('ual-faculty')) + \
                      '({}) '.format(ual_grouper_base('ual-staff')) + \
