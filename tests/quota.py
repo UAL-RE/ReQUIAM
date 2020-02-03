@@ -5,7 +5,15 @@ def ual_ldap_quota_query(ual_class):
     """
     Purpose:
       Construct RFC 4512-compatible LDAP query to search for those within
-      a UAL-based classification patron group to set default quota
+      a UAL-based classification patron group
+
+      This function provides LDAP information for IAM accounts associated
+      with default quota tiers (faculty, grad, undergrad)
+
+      It is intended to be used with the LDAPConnection() object through
+      ldap_connection.ldap_search:
+        quota_query = ual_ldap_quota_query('faculty')
+        members     = ldap_connection.ldap_search(ldc, quota_query)
 
     :param ual_class: A string to indicate types. Options are:
       'faculty'   (for faculty and staff)
