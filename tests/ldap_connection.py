@@ -74,9 +74,10 @@ def ual_grouper_base(basename):
 
 def ual_ldap_query(org_code):
     """
-    Construct RFC 4512-compatible LDAP query to search for those with UA
-    Library privileges within an organization specified by the org_code
-    input
+    Purpose:
+      Construct RFC 4512-compatible LDAP query to search for those with UA
+      Library privileges within an organization specified by the org_code
+      input
 
     :param org_code: A string of the org code (e.g., '0212')
 
@@ -94,9 +95,10 @@ def ual_ldap_query(org_code):
 
 def ual_ldap_queries(org_codes):
     """
-    Construct *multiple* RFC 4512-compatible LDAP queries to search for
-    those with UA Library privileges within multiple organizations
-    specified by the org_codes input
+    Purpose:
+      Construct *multiple* RFC 4512-compatible LDAP queries to search for
+      those with UA Library privileges within multiple organizations
+      specified by the org_codes input
 
     :param org_codes: A list of strings containining org codes
                       (e.g., ['0212','0213','0214'])
@@ -111,7 +113,8 @@ def ual_ldap_queries(org_codes):
 
 def ldap_search(ldapconnection, ldap_query):
     """
-    Function that queries a define LDAP connection and retrieve members
+    Purpose:
+      Function that queries a define LDAP connection and retrieve members
 
     :param ldapconnection: An ldap3 Connection from LDAPConnection(),
         ldapconnection = LDAPConnection(**)
