@@ -83,6 +83,7 @@ def figshare_group(group, root_stem):
 
       For a quota group, call as: figshare_group('2147483648', 'quota')
         > 'arizona.edu:dept:LBRY:figshare:quota:2147483648'
+      Note: group can be specified as an integer for quota cases
 
       For a portal group, call as: figshare_group('sci_math', 'portal')
         > 'arizona.edu:dept:LBRY:figshare:portal:sci_math'
