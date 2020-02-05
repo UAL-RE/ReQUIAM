@@ -16,15 +16,15 @@ def ual_ldap_quota_query(ual_class):
         members     = ldap_connection.ldap_search(ldc, quota_query)
 
     :param ual_class: A string to indicate types. Options are:
-      'faculty'   (for faculty and staff)
-      'grad'      (for grad students)
-      'undergrad' (for undergraduate)
+      'faculty' (for faculty, staff, and dcc)
+      'grad'    (for graduate students)
+      'ugrad'   (for undergraduate students)
 
     :return ldap_query: list containing a single query string
     """
 
-    if ual_class != ['faculty', 'grad', 'undergrad']:
-        print("[ual_class] must either be 'faculty', 'grad', or 'undergrad'")
+    if ual_class != ['faculty', 'grad', 'ugrad']:
+        print("[ual_class] must either be 'faculty', 'grad', or 'ugrad'")
         print("Exiting!")
         return
 
@@ -36,7 +36,7 @@ def ual_ldap_quota_query(ual_class):
     if ual_class == 'grad':
         ldap_query = '({})'.format(ual_grouper_base('ual-grads'))
 
-    if ual_class == 'undergrad':
+    if ual_class == 'ugrad':
         ldap_query = '({})'.format(ual_grouper_base('ual-ugrads'))
 
     return [ldap_query]
