@@ -1,10 +1,11 @@
 import ldap3
 import logging
 
-logger = logging.getLogger( __name__ )
+logger = logging.getLogger(__name__)
 
-class LDAPConnection( object ):
-    '''
+
+class LDAPConnection(object):
+    """
     Purpose:
       This class initializes a connection to a specified LDAP server.
       It allows for repeated LDAP queries. Originally patron group
@@ -24,10 +25,10 @@ class LDAPConnection( object ):
 
         portal_query = ldap_connection.ual_ldap_queries(['0404', '0413', '0411'])
         members = ldap_connection.ldap_search(ldc, portal_query)
-    '''
+    """
 
-    def __init__( self, ldap_host, ldap_base_dn, ldap_user, ldap_passwd):
-        logger.debug( 'entered' )
+    def __init__(self, ldap_host, ldap_base_dn, ldap_user, ldap_passwd):
+        logger.debug('entered')
         
         #
         # set properties
@@ -40,14 +41,15 @@ class LDAPConnection( object ):
         self.ldap_bind_host = 'ldaps://' + ldap_host
         self.ldap_bind_dn = 'uid=' + ldap_user + ',ou=app users,' + ldap_base_dn
         self.ldap_search_dn = 'ou=people,' + ldap_base_dn
-        self.ldap_attribs = [ 'uaid' ]
+        self.ldap_attribs = ['uaid']
         
         #
         # execute ldap query and populate members property
 
-        self.ldc = ldap3.Connection( self.ldap_bind_host, self.ldap_bind_dn, self.ldap_passwd, auto_bind = True )
+        self.ldc = ldap3.Connection(self.ldap_bind_host, self.ldap_bind_dn, self.ldap_passwd, auto_bind=True)
 
-        logger.debug( 'returning' )
+        logger.debug('returning')
+
 
 def ual_grouper_base(basename):
     """
@@ -71,7 +73,7 @@ def ual_grouper_base(basename):
 
 
 def ual_ldap_query(org_code):
-    '''
+    """
     Construct RFC 4512-compatible LDAP query to search for those with UA
     Library privileges within an organization specified by the org_code
     input
@@ -79,19 +81,19 @@ def ual_ldap_query(org_code):
     :param org_code: A string of the org code (e.g., '0212')
 
     :return ldap_query: list containing the str
-    '''
+    """
 
-    ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code)+\
-                 '({}) '.format(ual_grouper_base('ual-faculty'))+\
-                 '({}) '.format(ual_grouper_base('ual-staff'))+\
-                 '({}) '.format(ual_grouper_base('ual-students'))+\
+    ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code) + \
+                 '({}) '.format(ual_grouper_base('ual-faculty')) + \
+                 '({}) '.format(ual_grouper_base('ual-staff')) + \
+                 '({}) '.format(ual_grouper_base('ual-students')) + \
                  '({}) ) )'.format(ual_grouper_base('ual-dcc'))
 
     return [ldap_query]
 
 
 def ual_ldap_queries(org_codes):
-    '''
+    """
     Construct *multiple* RFC 4512-compatible LDAP queries to search for
     those with UA Library privileges within multiple organizations
     specified by the org_codes input
@@ -100,7 +102,7 @@ def ual_ldap_queries(org_codes):
                       (e.g., ['0212','0213','0214'])
 
     :return ldap_queries: list of str
-    '''
+    """
 
     ldap_queries = [ual_ldap_query(org_code)[0] for org_code in org_codes]
 
@@ -108,7 +110,7 @@ def ual_ldap_queries(org_codes):
 
 
 def ldap_search(ldapconnection, ldap_query):
-    '''
+    """
     Function that queries a define LDAP connection and retrieve members
 
     :param ldapconnection: An ldap3 Connection from LDAPConnection(),
@@ -118,7 +120,7 @@ def ldap_search(ldapconnection, ldap_query):
         String (list of strings) containing the query (ies)
 
     :return member: set containing list of members
-    '''
+    """
 
     ldap_search_dn = ldapconnection.ldap_search_dn
     ldap_attribs = ldapconnection.ldap_attribs
