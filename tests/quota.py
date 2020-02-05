@@ -37,6 +37,6 @@ def ual_ldap_quota_query(ual_class):
         ldap_query = '({})'.format(ual_grouper_base('ual-grads'))
 
     if ual_class == 'undergrad':
-        ldap_query = '({})'.format(ual_grouper_base('ual-undergrads'))
+        ldap_query = '({})'.format(ual_grouper_base('ual-ugrads'))
 
     return [ldap_query]
