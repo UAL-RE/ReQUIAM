@@ -23,7 +23,7 @@ def ual_ldap_quota_query(ual_class):
     :return ldap_query: list containing a single query string
     """
 
-    if ual_class != ['faculty', 'grad', 'ugrad']:
+    if ual_class not in ['faculty', 'grad', 'ugrad']:
         print("[ual_class] must either be 'faculty', 'grad', or 'ugrad'")
         print("Exiting!")
         return
