@@ -64,7 +64,7 @@ def ual_grouper_base(basename):
 
     Usage:
       grouper_base = ldap_connection.ual_grouper_base('ual-faculty')
-
+        > ismemberof=arizona.edu:dept:LBRY:pgrps:ual-faculty
 
     :param basename: string containing Grouper group name basename.
         Options are:
@@ -87,6 +87,11 @@ def ual_ldap_query(org_code):
 
     Usage:
       ldap_query = ldap_connection.ual_ldap_query('0212')
+        > ['(& (employeePrimaryDept=0212) (|
+            (ismemberof=arizona.edu:dept:LBRY:pgrps:ual-faculty)
+            (ismemberof=arizona.edu:dept:LBRY:pgrps:ual-staff)
+            (ismemberof=arizona.edu:dept:LBRY:pgrps:ual-students)
+            (ismemberof=arizona.edu:dept:LBRY:pgrps:ual-dcc) ) )']
 
 
     :param org_code: A string of the org code (e.g., '0212')
@@ -134,7 +139,6 @@ def ldap_search(ldapconnection, ldap_query):
 
     Usage (see description in LDAPConnection:
       members = ldap_connection.ldap_search(ldc, ldap_query)
-
 
     :param ldapconnection: An ldap3 Connection from LDAPConnection(),
         ldapconnection = LDAPConnection(**)
