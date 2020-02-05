@@ -17,7 +17,7 @@ class LDAPConnection(object):
 
     Usage:
       Quick how to:
-        from DataRepository_patrons.tests import ldap_connection, query
+        from DataRepository_patrons.tests import ldap_connection
         eds_hostname = 'eds.arizona.edu'
         ldap_base_dn = 'dc=eds,dc=arizona,dc=edu'
         ldc = ldap_connection.LDAPConnection(eds_hostname, ldap_base_dn,
@@ -61,6 +61,11 @@ def ual_grouper_base(basename):
       Note that this only returns a string, it is not RFC 4512
       compatible. See ual_ldap_query()
 
+
+    Usage:
+      grouper_base = ldap_connection.ual_grouper_base('ual-faculty')
+
+
     :param basename: string containing Grouper group name basename.
         Options are:
             ual-dcc, ual-faculty, ual-hsl, ual-staff, ual-students,
@@ -78,6 +83,11 @@ def ual_ldap_query(org_code):
       Construct RFC 4512-compatible LDAP query to search for those with UA
       Library privileges within an organization specified by the org_code
       input
+
+
+    Usage:
+      ldap_query = ldap_connection.ual_ldap_query('0212')
+
 
     :param org_code: A string of the org code (e.g., '0212')
 
@@ -100,6 +110,11 @@ def ual_ldap_queries(org_codes):
       those with UA Library privileges within multiple organizations
       specified by the org_codes input
 
+
+    Usage:
+      ldap_queries = ldap_connection.ual_ldap_queries(['0212','0213','0214'])
+
+
     :param org_codes: A list of strings containining org codes
                       (e.g., ['0212','0213','0214'])
 
@@ -115,6 +130,11 @@ def ldap_search(ldapconnection, ldap_query):
     """
     Purpose:
       Function that queries a define LDAP connection and retrieve members
+
+
+    Usage (see description in LDAPConnection:
+      members = ldap_connection.ldap_search(ldc, ldap_query)
+
 
     :param ldapconnection: An ldap3 Connection from LDAPConnection(),
         ldapconnection = LDAPConnection(**)
