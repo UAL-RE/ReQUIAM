@@ -1,36 +1,34 @@
 import ldap3
 import logging
 
-logger = logging.getLogger( __name__ )
+logger = logging.getLogger(__name__)
 
-class LDAPConnection( object ):
-    '''
-    This class initializes a connection to a specified LDAP server.  It
-    allows for repeated LDAP queries. Originally patron group developed
-    the connection to use with individual queries.  The queries have
-    been broken off since our use with the data repository could
-    involve up to 1000 queries given the number of different
-    organizations that we have.
 
-    Quick how to:
+class LDAPConnection(object):
+    """
+    Purpose:
+      This class initializes a connection to a specified LDAP server.
+      It allows for repeated LDAP queries. Originally patron group
+      developed the connection to use with individual queries.  The
+      queries have been broken off since our use with the data
+      repository could involve up to 1000 queries given the number of
+      different organizations that we have.
 
-    from DataRepository_patrons.tests import ldap_connection
-    eds_hostname = 'eds.arizona.edu'
-    ldap_base_dn = 'dc=eds,dc=arizona,dc=edu'
-    ldc = ldap_connection.LDAPConnection(eds_hostname, ldap_base_dn, USERNAME, PASSWORD)
 
-    ldap_search_dn = 'ou=people,' + ldap_base_dn
-    ldap_attribs = [ 'uaid' ]
+    Usage:
+      Quick how to:
+        from DataRepository_patrons.tests import ldap_connection
+        eds_hostname = 'eds.arizona.edu'
+        ldap_base_dn = 'dc=eds,dc=arizona,dc=edu'
+        ldc = ldap_connection.LDAPConnection(eds_hostname, ldap_base_dn,
+                                             USERNAME, PASSWORD)
 
-    ldap_query = '(& (employeePrimaryDept=0404) )'
-    ldc.ldc.search(ldap_search_dn, ldap_query, attributes = ldap_attribs )
+        portal_query = ldap_connection.ual_ldap_queries(['0404', '0413', '0411'])
+        members = ldap_connection.ldap_search(ldc, portal_query)
+    """
 
-    # You can retrieve the uaid via:
-    members = {e.uaid.value for e in ldc.ldc.entries}
-    '''
-
-    def __init__( self, ldap_host, ldap_base_dn, ldap_user, ldap_passwd):
-        logger.debug( 'entered' )
+    def __init__(self, ldap_host, ldap_base_dn, ldap_user, ldap_passwd):
+        logger.debug('entered')
         
         #
         # set properties
@@ -43,64 +41,90 @@ class LDAPConnection( object ):
         self.ldap_bind_host = 'ldaps://' + ldap_host
         self.ldap_bind_dn = 'uid=' + ldap_user + ',ou=app users,' + ldap_base_dn
         self.ldap_search_dn = 'ou=people,' + ldap_base_dn
-        self.ldap_attribs = [ 'uaid' ]
+        self.ldap_attribs = ['uaid']
         
         #
         # execute ldap query and populate members property
 
-        self.ldc = ldap3.Connection( self.ldap_bind_host, self.ldap_bind_dn, self.ldap_passwd, auto_bind = True )
+        self.ldc = ldap3.Connection(self.ldap_bind_host, self.ldap_bind_dn, self.ldap_passwd, auto_bind=True)
 
-        logger.debug( 'returning' )
+        logger.debug('returning')
+
 
 def ual_grouper_base(basename):
-    '''
-    Returns a string to use in LDAP queries that provide the Grouper
-    ismemberof stem organization that UA Libraries use for patron
-    management
+    """
+    Purpose:
+      Returns a string to use in LDAP queries that provide the Grouper
+      ismemberof stem organization that UA Libraries use for patron
+      management
 
-    Note that this only provides the string, it is not RFC 4512
-    compatible. See ual_ldap_query()
+      Note that this only returns a string, it is not RFC 4512
+      compatible. See ual_ldap_query()
+
+
+    Usage:
+      grouper_base = ldap_connection.ual_grouper_base('ual-faculty')
+        > ismemberof=arizona.edu:dept:LBRY:pgrps:ual-faculty
 
     :param basename: string containing Grouper group name basename.
         Options are:
-            ual-dcc, ual-faculty, ual-hsl, ual-staff, ual-students
-    :return:
-    '''
+            ual-dcc, ual-faculty, ual-hsl, ual-staff, ual-students,
+            ual-grads, ual-ugrads
+
+    :return: str with ismemberof attribute
+    """
 
     return 'ismemberof=arizona.edu:dept:LBRY:pgrps:{}'.format(basename)
 
 
 def ual_ldap_query(org_code):
-    '''
-    Construct RFC 4512-compatible LDAP query to search for those with UA
-    Library privileges within an organization specified by the org_code
-    input
+    """
+    Purpose:
+      Construct RFC 4512-compatible LDAP query to search for those with UA
+      Library privileges within an organization specified by the org_code
+      input
+
+
+    Usage:
+      ldap_query = ldap_connection.ual_ldap_query('0212')
+        > ['(& (employeePrimaryDept=0212) (|
+            (ismemberof=arizona.edu:dept:LBRY:pgrps:ual-faculty)
+            (ismemberof=arizona.edu:dept:LBRY:pgrps:ual-staff)
+            (ismemberof=arizona.edu:dept:LBRY:pgrps:ual-students)
+            (ismemberof=arizona.edu:dept:LBRY:pgrps:ual-dcc) ) )']
+
 
     :param org_code: A string of the org code (e.g., '0212')
 
     :return ldap_query: list containing the str
-    '''
+    """
 
-    ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code)+\
-                 '({}) '.format(ual_grouper_base('ual-faculty'))+\
-                 '({}) '.format(ual_grouper_base('ual-staff'))+\
-                 '({}) '.format(ual_grouper_base('ual-students'))+\
+    ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code) + \
+                 '({}) '.format(ual_grouper_base('ual-faculty')) + \
+                 '({}) '.format(ual_grouper_base('ual-staff')) + \
+                 '({}) '.format(ual_grouper_base('ual-students')) + \
                  '({}) ) )'.format(ual_grouper_base('ual-dcc'))
 
     return [ldap_query]
 
 
 def ual_ldap_queries(org_codes):
-    '''
-    Construct *multiple* RFC 4512-compatible LDAP queries to search for
-    those with UA Library privileges within multiple organizations
-    specified by the org_codes input
+    """
+    Purpose:
+      Construct *multiple* RFC 4512-compatible LDAP queries to search for
+      those with UA Library privileges within multiple organizations
+      specified by the org_codes input
+
+
+    Usage:
+      ldap_queries = ldap_connection.ual_ldap_queries(['0212','0213','0214'])
+
 
     :param org_codes: A list of strings containining org codes
                       (e.g., ['0212','0213','0214'])
 
     :return ldap_queries: list of str
-    '''
+    """
 
     ldap_queries = [ual_ldap_query(org_code)[0] for org_code in org_codes]
 
@@ -108,8 +132,13 @@ def ual_ldap_queries(org_codes):
 
 
 def ldap_search(ldapconnection, ldap_query):
-    '''
-    Function that queries a define LDAP connection and retrieve members
+    """
+    Purpose:
+      Function that queries a define LDAP connection and retrieve members
+
+
+    Usage (see description in LDAPConnection:
+      members = ldap_connection.ldap_search(ldc, ldap_query)
 
     :param ldapconnection: An ldap3 Connection from LDAPConnection(),
         ldapconnection = LDAPConnection(**)
@@ -118,7 +147,7 @@ def ldap_search(ldapconnection, ldap_query):
         String (list of strings) containing the query (ies)
 
     :return member: set containing list of members
-    '''
+    """
 
     ldap_search_dn = ldapconnection.ldap_search_dn
     ldap_attribs = ldapconnection.ldap_attribs
