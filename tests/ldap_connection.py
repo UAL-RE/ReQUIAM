@@ -50,19 +50,22 @@ class LDAPConnection( object ):
         logger.debug( 'returning' )
 
 def ual_grouper_base(basename):
-    '''
-    Returns a string to use in LDAP queries that provide the Grouper
-    ismemberof stem organization that UA Libraries use for patron
-    management
+    """
+    Purpose:
+      Returns a string to use in LDAP queries that provide the Grouper
+      ismemberof stem organization that UA Libraries use for patron
+      management
 
-    Note that this only provides the string, it is not RFC 4512
-    compatible. See ual_ldap_query()
+      Note that this only returns a string, it is not RFC 4512
+      compatible. See ual_ldap_query()
 
     :param basename: string containing Grouper group name basename.
         Options are:
-            ual-dcc, ual-faculty, ual-hsl, ual-staff, ual-students
-    :return:
-    '''
+            ual-dcc, ual-faculty, ual-hsl, ual-staff, ual-students,
+            ual-grads, ual-ugrads
+
+    :return: str with ismemberof attribute
+    """
 
     return 'ismemberof=arizona.edu:dept:LBRY:pgrps:{}'.format(basename)
 
