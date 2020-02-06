@@ -8,6 +8,20 @@ logger = logging.getLogger(__name__)
 
 
 class Delta(object):
+    """
+    Purpose:
+      This class compares results from an LDAP query and a Grouper query
+      to identify common, additions, and deletions so that the two
+      will be in sync.
+
+      This code was adapted from the following repository:
+         https://github.com/ualibraries/patron-groups
+
+    Usage:
+      Quick how to:
+        from DataRepository_patrons.tests import delta
+
+    """
 
     def __init__(self, ldap_query_instance, grouper_query_instance, batch_size,
                  batch_timeout, batch_delay, sync_max):
