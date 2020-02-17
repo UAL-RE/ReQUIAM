@@ -23,11 +23,11 @@ class Delta(object):
 
     """
 
-    def __init__(self, ldap_query_instance, grouper_query_instance, batch_size,
+    def __init__(self, ldap_members, grouper_query_instance, batch_size,
                  batch_timeout, batch_delay, sync_max):
         logger.debug('entered')
 
-        self.ldap_query_instance = ldap_query_instance
+        self.ldap_members = ldap_members
         self.grouper_query_instance = grouper_query_instance
         self.batch_size = batch_size
         self.batch_timeout = batch_timeout
@@ -41,7 +41,7 @@ class Delta(object):
     def common(self):
         logger.debug('entered')
 
-        common = self.ldap_query_instance.members & self.grouper_query_instance.members
+        common = self.ldap_members & self.grouper_query_instance.members
 
         logger.debug('returning')
         return common
@@ -50,7 +50,7 @@ class Delta(object):
     def adds(self):
         logger.debug('entered')
 
-        adds = self.ldap_query_instance.members - self.grouper_query_instance.members
+        adds = self.ldap_members - self.grouper_query_instance.members
 
         logger.debug('returning')
         return adds
@@ -59,7 +59,7 @@ class Delta(object):
     def drops(self):
         logger.debug('entered')
 
-        drops = self.grouper_query_instance.members - self.ldap_query_instance.members
+        drops = self.grouper_query_instance.members - self.ldap_members
 
         logger.debug('returning')
         return drops
