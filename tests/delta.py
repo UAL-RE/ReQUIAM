@@ -87,7 +87,7 @@ class Delta(object):
             start_t = datetime.datetime.now()
             rsp = requests.post(self.grouper_query_instance.grouper_group_members_url,
                                 auth=(self.grouper_query_instance.grouper_user,
-                                      self.grouper_query_instance.grouper_passwd),
+                                      self.grouper_query_instance.grouper_password),
                                 data=json.dumps({
                                     'WsRestDeleteMemberRequest': {
                                         'replaceAllExisting': 'F',
@@ -119,7 +119,7 @@ class Delta(object):
             start_t = datetime.datetime.now()
             rsp = requests.put(self.grouper_query_instance.grouper_group_members_url,
                                auth=(self.grouper_query_instance.grouper_user,
-                                     self.grouper_query_instance.grouper_passwd),
+                                     self.grouper_query_instance.grouper_password),
                                data=json.dumps({
                                    'WsRestAddMemberRequest': {
                                        'replaceAllExisting': 'F',
