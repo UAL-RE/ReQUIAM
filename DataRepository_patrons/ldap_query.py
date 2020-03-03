@@ -46,7 +46,8 @@ class LDAPConnection(object):
         #
         # execute ldap query and populate members property
 
-        self.ldc = ldap3.Connection(self.ldap_bind_host, self.ldap_bind_dn, self.ldap_passwd, auto_bind=True)
+        self.ldc = ldap3.Connection(self.ldap_bind_host, self.ldap_bind_dn,
+                                    self.ldap_passwd, auto_bind=True)
 
         logger.debug('returning')
 
