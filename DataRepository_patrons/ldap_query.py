@@ -144,8 +144,8 @@ def ldap_search(ldapconnection, ldap_query):
     :param ldapconnection: An ldap3 Connection from LDAPConnection(),
         ldapconnection = LDAPConnection(**)
 
-    :param ldap_query: str or list of strings
-        String (list of strings) containing the query (ies)
+    :param ldap_query: list of strings
+        String (list of strings) containing the query(ies)
 
     :return member: set containing list of members
     """
