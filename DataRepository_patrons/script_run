@@ -5,7 +5,9 @@ from datetime import date
 import configparser
 import argparse
 
-import ldap_query, grouper_query, delta
+import ldap_query
+import grouper_query
+import delta
 
 co_filename = __file__
 co_dir = path.dirname(co_filename)
@@ -56,3 +58,11 @@ if __name__ == '__main__':
 
     print('    sync = %s', args.sync)
     print('    debug = %s', args.debug)
+
+    # Initiate LDAP connection
+    ldc = ldap_query.LDAPConnection(ldap_host=vargs['ldap_host'],
+                                    ldap_base_dn=vargs['ldap_base_dn'],
+                                    ldap_user=vargs['ldap_user'],
+                                    ldap_password=vargs['ldap_password'])
+
+
