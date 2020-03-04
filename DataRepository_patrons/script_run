@@ -1,0 +1,58 @@
+from os import path
+
+from datetime import date
+
+import configparser
+import argparse
+
+import ldap_query, grouper_query, delta
+
+co_filename = __file__
+co_dir = path.dirname(co_filename)
+
+if __name__ == '__main__':
+
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description='Command-line driver for figshare patron management.')
+    parser.add_argument('--config', required=True, help='path to configuration file')
+    parser.add_argument('--ldap_host', help='LDAP host')
+    parser.add_argument('--ldap_base_dn', help='base DN for LDAP bind and query')
+    parser.add_argument('--ldap_user', help='user name for LDAP login')
+    parser.add_argument('--ldap_password', help='password for LDAP login')
+    parser.add_argument('--grouper_host', help='Grouper host')
+    parser.add_argument('--grouper_base_path', help='base path for Grouper API')
+    parser.add_argument('--grouper_user', help='user name for Grouper login')
+    parser.add_argument('--grouper_password', help='password for Grouper login')
+    parser.add_argument('--batch_size', help='synchronization batch size')
+    parser.add_argument('--batch_timeout', help='synchronization batch timeout in seconds')
+    parser.add_argument('--batch_delay', help='delay between batches in seconds')
+    parser.add_argument('--sync', action='store_true', help='perform synchronization')
+    parser.add_argument('--sync_max', help='maximum membership delta to allow when synchronizing')
+    parser.add_argument('--debug', action='store_true', help='turn on debug logging')
+    args = parser.parse_args()
+
+    config = configparser.ConfigParser()
+    config.read(args.config)
+
+    vargs = vars(args)
+    for p in ['ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
+              'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
+              'batch_size', 'batch_timeout', 'batch_delay', 'sync_max']:
+
+        if (p in vargs) and (vargs[p] is not None):
+            vargs[p] = vargs[p]
+        elif (p in config['global']) and (config['global'][p] is not None):
+            vargs[p] = config['global'][p]
+        else:
+            vargs[p] = '(unset)'
+
+        if p in ['ldap_password', 'grouper_password']:
+            if vargs[p] is '(unset)':
+                print('    %s = (unset)', p)
+            else:
+                print('    %s = (set)', p)
+        else:
+            print('    %s = %s', p, vargs[p])
+
+    print('    sync = %s', args.sync)
+    print('    debug = %s', args.debug)
