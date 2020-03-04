@@ -6,9 +6,9 @@ from datetime import date
 import configparser
 import argparse
 
-import ldap_query
-import grouper_query
-import delta
+from DataRepository_patrons import ldap_query
+from DataRepository_patrons import grouper_query
+from DataRepository_patrons import delta
 
 co_filename = __file__
 co_dir = path.dirname(co_filename)
