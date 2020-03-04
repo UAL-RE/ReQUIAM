@@ -1,4 +1,5 @@
 from os import path
+import pandas as pd
 
 from datetime import date
 
@@ -59,10 +60,28 @@ if __name__ == '__main__':
     print('    sync = %s', args.sync)
     print('    debug = %s', args.debug)
 
+    # Read in CSV file
+    csv_url = config.get('global', 'csv_url')
+    df = pd.read_csv(csv_url)
+
+    unique_portals = df['Sub-portals'].unique()
+
     # Initiate LDAP connection
     ldc = ldap_query.LDAPConnection(ldap_host=vargs['ldap_host'],
                                     ldap_base_dn=vargs['ldap_base_dn'],
                                     ldap_user=vargs['ldap_user'],
                                     ldap_password=vargs['ldap_password'])
 
+    for portal in unique_portals:
+        print("Working on {} portal".format(portal))
+        df_sub = df.loc[df['Sub-portals'] == portal]
+        print(df_sub)
 
+        # Get list of org codes for [portal]
+        org_code_list = df_sub['Org Code']
+        print("Org codes: {}".format(", ".join(org_code_list)))
+
+        ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
+
+        members = ldap_query.ldap_search(ldc, ldap_queries)
+        print(" size {}".format(len(members)))
