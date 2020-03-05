@@ -88,8 +88,8 @@ if __name__ == '__main__':
             # LDAP query to retrieve members
             ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
 
-            members = ldap_query.ldap_search(ldc, ldap_queries)
-            print(" size {}".format(len(members)))
+            ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+            print(" EDS size {}".format(len(ldap_members)))
 
             # Grouper query
             grouper_portal = grouper_query.figshare_group(portal, 'portal')
@@ -98,4 +98,22 @@ if __name__ == '__main__':
                                             grouper_user=vargs['grouper_user'],
                                             grouper_password=vargs['grouper_password'],
                                             grouper_group=grouper_portal)
-            print(" size {}".format(len(gq.members)))
+            print(" Grouper size {}".format(len(gq.members)))
+
+            d = delta.Delta(ldap_members=ldap_members,
+                            grouper_query_instance=gq,
+                            batch_size=int(vargs['batch_size']),
+                            batch_timeout=int(vargs['batch_timeout']),
+                            batch_delay=int(vargs['batch_delay']),
+                            sync_max=int(vargs['sync_max']))
+
+            print('ldap and grouper have {} members in common'.format(len(d.common)))
+            print('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+            print('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+
+            if args.sync:
+                print('synchronizing ...')
+                d.synchronize()
+            else:
+                print('dry run, not performing synchronization')
+
