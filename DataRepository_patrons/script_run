@@ -46,14 +46,16 @@ if __name__ == '__main__':
 
         if (p in vargs) and (vargs[p] is not None):
             vargs[p] = vargs[p]
-        elif (p in config['global']) and (config['global'][p] is not None):
+        elif (p in config['global']) and (config['global'][p] is not None) and \
+                (config['global'][p] != "***override***"):
             vargs[p] = config['global'][p]
         else:
             vargs[p] = '(unset)'
 
-        if p in ['ldap_password', 'grouper_password']:
+        if p in ['ldap_user', 'ldap_password', 'grouper_user', 'grouper_password']:
             if vargs[p] is '(unset)':
                 print('    %s = (unset)', p)
+                cred_err += 1
             else:
                 print('    %s = (set)', p)
         else:
