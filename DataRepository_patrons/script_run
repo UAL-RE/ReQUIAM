@@ -86,20 +86,21 @@ if __name__ == '__main__':
     log.info('    sync = %s', args.sync)
     log.info('    debug = %s', args.debug)
 
-    # Read in CSV file
-    csv_url = config.get('global', 'csv_url')
-    df = pd.read_csv(csv_url)
-
-    unique_portals = df['Sub-portals'].unique()
-
     # Initiate LDAP connection
     ldc = ldap_query.LDAPConnection(ldap_host=vargs['ldap_host'],
                                     ldap_base_dn=vargs['ldap_base_dn'],
                                     ldap_user=vargs['ldap_user'],
                                     ldap_password=vargs['ldap_password'])
 
-    # Loop over sub-portals
+    # Perform EDS-Grouper synchronization for research portals
     if args.portal:
+        # Read in CSV file
+        csv_url = config.get('global', 'csv_url')
+        df = pd.read_csv(csv_url)
+
+        unique_portals = df['Sub-portals'].unique()
+
+        # Loop over sub-portals
         for portal in unique_portals:
             log.info("Working on {} portal".format(portal))
             df_sub = df.loc[df['Sub-portals'] == portal]
