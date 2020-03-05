@@ -8,9 +8,12 @@ from datetime import date
 import configparser
 import argparse
 
+import ast
+
 from DataRepository_patrons import ldap_query
 from DataRepository_patrons import grouper_query
 from DataRepository_patrons import delta
+from DataRepository_patrons import quota
 from DataRepository_patrons.logger import LogClass
 
 today = date.today()
@@ -144,6 +147,42 @@ if __name__ == '__main__':
 
     # Perform EDS-Grouper synchronization for figshare quota
     if args.quota:
-        quota_list = config['global']['quota_list']
+        quota_list  = ast.literal_eval(config['global']['quota_list'])
+        quota_class = ast.literal_eval(config['global']['quota_class'])
+
+        for q, c in zip(quota_list, quota_class):
+            log.info("Working on {} quota for {}".format(q, c))
+
+            # LDAP query to retrieve members
+            ldap_queries = quota.ual_ldap_quota_query(c)
+
+            ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+            log.info(" EDS size {}".format(len(ldap_members)))
+
+            # Grouper query
+            grouper_portal = grouper_query.figshare_group(q, 'quota')
+            gq = grouper_query.GrouperQuery(grouper_host=vargs['grouper_host'],
+                                            grouper_base_path=vargs['grouper_base_path'],
+                                            grouper_user=vargs['grouper_user'],
+                                            grouper_password=vargs['grouper_password'],
+                                            grouper_group=grouper_portal)
+            log.info(" Grouper size {}".format(len(gq.members)))
+
+            d = delta.Delta(ldap_members=ldap_members,
+                            grouper_query_instance=gq,
+                            batch_size=int(vargs['batch_size']),
+                            batch_timeout=int(vargs['batch_timeout']),
+                            batch_delay=int(vargs['batch_delay']),
+                            sync_max=int(vargs['sync_max']))
+
+            log.info('ldap and grouper have {} members in common'.format(len(d.common)))
+            log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+            log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+
+            if args.sync:
+                log.info('synchronizing ...')
+                d.synchronize()
+            else:
+                log.info('dry run, not performing synchronization')
 
     log.info("Completed script_run successfully!")
