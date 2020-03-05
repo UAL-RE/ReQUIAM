@@ -1,4 +1,6 @@
 from os import path
+from os import mkdir
+
 import pandas as pd
 
 from datetime import date
@@ -9,6 +11,9 @@ import argparse
 from DataRepository_patrons import ldap_query
 from DataRepository_patrons import grouper_query
 from DataRepository_patrons import delta
+from DataRepository_patrons.logger import LogClass
+
+today = date.today()
 
 co_filename = __file__
 co_dir = path.dirname(co_filename)
@@ -38,6 +43,15 @@ if __name__ == '__main__':
 
     config = configparser.ConfigParser()
     config.read(args.config)
+
+    # Define logfile
+    log_dir = config.get('global', 'log_dir')
+    if not path.exists(log_dir):
+        mkdir(log_dir)
+    logfile_prefix = config.get('global', 'logfile_prefix')
+    logfile = "{}.{}.log".format(logfile_prefix, today.strftime("%Y-%m-%d"))
+
+    log = LogClass(log_dir, logfile).get_logger()
 
     cred_err = 0
     vargs = vars(args)
