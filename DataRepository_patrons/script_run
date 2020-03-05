@@ -39,6 +39,7 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read(args.config)
 
+    cred_err = 0
     vargs = vars(args)
     for p in ['ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
               'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
@@ -60,6 +61,11 @@ if __name__ == '__main__':
                 print('    %s = (set)', p)
         else:
             print('    %s = %s', p, vargs[p])
+
+    if cred_err:
+        print("Not all credentials available!")
+        print("Exiting")
+        raise ValueError
 
     print('    sync = %s', args.sync)
     print('    debug = %s', args.debug)
