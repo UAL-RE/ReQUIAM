@@ -92,7 +92,7 @@ if __name__ == '__main__':
                                     ldap_user=vargs['ldap_user'],
                                     ldap_password=vargs['ldap_password'])
 
-    # Perform EDS-Grouper synchronization for research portals
+    # Perform EDS-Grouper synchronization for figshare research portals
     if args.portal:
         # Read in CSV file
         csv_url = config.get('global', 'csv_url')
