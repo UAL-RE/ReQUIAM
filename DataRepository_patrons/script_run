@@ -142,4 +142,8 @@ if __name__ == '__main__':
             else:
                 log.info('dry run, not performing synchronization')
 
+    # Perform EDS-Grouper synchronization for figshare quota
+    if args.quota:
+        quota_list = config['global']['quota_list']
+
     log.info("Completed script_run successfully!")
