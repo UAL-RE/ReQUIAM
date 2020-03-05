@@ -29,6 +29,8 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', help='synchronization batch size')
     parser.add_argument('--batch_timeout', help='synchronization batch timeout in seconds')
     parser.add_argument('--batch_delay', help='delay between batches in seconds')
+    parser.add_argument('--portal', action='store_true', help='perform portal synchronization')
+    parser.add_argument('--quota', action='store_true', help='perform quota synchronization')
     parser.add_argument('--sync', action='store_true', help='perform synchronization')
     parser.add_argument('--sync_max', help='maximum membership delta to allow when synchronizing')
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
@@ -40,7 +42,7 @@ if __name__ == '__main__':
     vargs = vars(args)
     for p in ['ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
               'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
-              'batch_size', 'batch_timeout', 'batch_delay', 'sync_max']:
+              'batch_size', 'batch_timeout', 'batch_delay', 'portal', 'quota', 'sync_max']:
 
         if (p in vargs) and (vargs[p] is not None):
             vargs[p] = vargs[p]
@@ -73,26 +75,27 @@ if __name__ == '__main__':
                                     ldap_password=vargs['ldap_password'])
 
     # Loop over sub-portals
-    for portal in unique_portals:
-        print("Working on {} portal".format(portal))
-        df_sub = df.loc[df['Sub-portals'] == portal]
-        print(df_sub)
+    if args.portal:
+        for portal in unique_portals:
+            print("Working on {} portal".format(portal))
+            df_sub = df.loc[df['Sub-portals'] == portal]
+            print(df_sub)
 
-        # Get list of org codes for [portal]
-        org_code_list = df_sub['Org Code']
-        print("Org codes: {}".format(", ".join(org_code_list)))
+            # Get list of org codes for [portal]
+            org_code_list = df_sub['Org Code']
+            print("Org codes: {}".format(", ".join(org_code_list)))
 
-        # LDAP query to retrieve members
-        ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
+            # LDAP query to retrieve members
+            ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
 
-        members = ldap_query.ldap_search(ldc, ldap_queries)
-        print(" size {}".format(len(members)))
+            members = ldap_query.ldap_search(ldc, ldap_queries)
+            print(" size {}".format(len(members)))
 
-        # Grouper query
-        grouper_portal = grouper_query.figshare_group(portal, 'portal')
-        gq = grouper_query.GrouperQuery(grouper_host=vargs['grouper_host'],
-                                        grouper_base_path=vargs['grouper_base_path'],
-                                        grouper_user=vargs['grouper_user'],
-                                        grouper_password=vargs['grouper_password'],
-                                        grouper_group=grouper_portal)
-        print(" size {}".format(len(gq.members)))
+            # Grouper query
+            grouper_portal = grouper_query.figshare_group(portal, 'portal')
+            gq = grouper_query.GrouperQuery(grouper_host=vargs['grouper_host'],
+                                            grouper_base_path=vargs['grouper_base_path'],
+                                            grouper_user=vargs['grouper_user'],
+                                            grouper_password=vargs['grouper_password'],
+                                            grouper_group=grouper_portal)
+            print(" size {}".format(len(gq.members)))
