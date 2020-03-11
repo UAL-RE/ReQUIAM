@@ -151,7 +151,7 @@ if __name__ == '__main__':
         quota_class = ast.literal_eval(config['global']['quota_class'])
 
         for q, c in zip(quota_list, quota_class):
-            log.info("Working on {} quota for {}".format(q, c))
+            log.info("Working on {} quota : {} bytes".format(c, q))
 
             # LDAP query to retrieve members
             ldap_queries = quota.ual_ldap_quota_query(c)
