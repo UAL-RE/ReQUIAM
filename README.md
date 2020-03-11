@@ -82,6 +82,18 @@ execute the following command:
                        --ldap_password $password --grouper_password $password
 ```
 
+
+## Execution
+
+To execute the script and update Grouper and EDS, include the `portal`, `quota`,
+and `sync` arguments:
+
+```
+(figshare_patrons) $ python DataRepository_patrons/script_run --quota --portal --sync \
+                       --config config/petl.ini --ldap_password $password --grouper_password $password
+```
+
+
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the
