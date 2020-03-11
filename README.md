@@ -71,6 +71,17 @@ You can confirm installation via `conda list`
 You should see that the version is `0.6.0`.
 
 
+### Testing Installation
+
+To test the installation without performing the Grouper synchronization,
+execute the following command:
+
+```
+(figshare_patrons) $ export password="insert_password"
+(figshare_patrons) $ python DataRepository_patrons/script_run --config config/petl.ini \
+                       --ldap_password $password --grouper_password $password
+```
+
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the
