@@ -4,6 +4,8 @@
 - [Getting Started](#getting-started)
     - [Requirements](#requirements)
     - [Installation Instructions](#installation-instructions)
+    - [Testing Installation](#testing-installation)
+- [Execution](#execution)
 - [Versioning](#versioning)
 - [Authors](#authors)
 - [License](#license)
