@@ -23,7 +23,8 @@ These instructions will have the code running on your local or virtual machine.
 
 ### Requirements
 
-You will need the following to have a working copy of this software. See [installation](#installation-instructions) steps:
+You will need the following to have a working copy of this software. See
+[installation](#installation-instructions) steps:
 1. Python (3.7.5)
 2. [`pandas`](https://pandas.pydata.org/) ([0.25.3](https://pandas.pydata.org/pandas-docs/version/0.25.3/))
 3. `ldap3` (2.6.1)
