@@ -86,7 +86,7 @@ if __name__ == '__main__':
         log.warning("Exiting")
         raise ValueError
 
-    log.info('    sync = %s', args.sync)
+    log.info('     sync = %s', args.sync)
     log.info('    debug = %s', args.debug)
 
     # Initiate LDAP connection
