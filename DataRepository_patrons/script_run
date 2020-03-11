@@ -168,6 +168,7 @@ if __name__ == '__main__':
                                             grouper_group=grouper_portal)
             log.info(" Grouper size {}".format(len(gq.members)))
 
+            # Delta between LDAP and Grouper
             d = delta.Delta(ldap_members=ldap_members,
                             grouper_query_instance=gq,
                             batch_size=int(vargs['batch_size']),
