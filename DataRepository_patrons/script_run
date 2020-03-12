@@ -174,7 +174,7 @@ if __name__ == '__main__':
                             batch_size=int(vargs['batch_size']),
                             batch_timeout=int(vargs['batch_timeout']),
                             batch_delay=int(vargs['batch_delay']),
-                            sync_max=int(vargs['sync_max']), logger=logger)
+                            sync_max=int(vargs['sync_max']), logger=log)
 
             log.info('ldap and grouper have {} members in common'.format(len(d.common)))
             log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
