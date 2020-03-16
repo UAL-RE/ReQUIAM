@@ -100,6 +100,11 @@ if __name__ == '__main__':
                         grouper_user=vargs['grouper_user'],
                         grouper_password=vargs['grouper_password'])
 
+    delta_dict = dict(batch_size=int(vargs['batch_size']),
+                      batch_timeout=int(vargs['batch_timeout']),
+                      batch_delay=int(vargs['batch_delay']),
+                      sync_max=int(vargs['sync_max']))
+
     # Perform EDS-Grouper synchronization for figshare research portals
     if args.portal:
         # Read in CSV file
@@ -132,10 +137,7 @@ if __name__ == '__main__':
 
             d = delta.Delta(ldap_members=ldap_members,
                             grouper_query_instance=gq,
-                            batch_size=int(vargs['batch_size']),
-                            batch_timeout=int(vargs['batch_timeout']),
-                            batch_delay=int(vargs['batch_delay']),
-                            sync_max=int(vargs['sync_max']),
+                            **delta_dict,
                             log=log)
 
             log.info('ldap and grouper have {} members in common'.format(len(d.common)))
@@ -171,10 +173,7 @@ if __name__ == '__main__':
             # Delta between LDAP and Grouper
             d = delta.Delta(ldap_members=ldap_members,
                             grouper_query_instance=gq,
-                            batch_size=int(vargs['batch_size']),
-                            batch_timeout=int(vargs['batch_timeout']),
-                            batch_delay=int(vargs['batch_delay']),
-                            sync_max=int(vargs['sync_max']),
+                            **delta_dict,
                             log=log)
 
             log.info('ldap and grouper have {} members in common'.format(len(d.common)))
