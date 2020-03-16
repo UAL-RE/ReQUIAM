@@ -18,6 +18,21 @@ Query EDS information to set `ismemberof` Grouper attributes specific for
 Figshare identity and access management.
 
 
+This software performs the following:
+ 1. The allowed user quota for upload is set by membership in a Grouper
+    `figshare:quota:<value>` group.
+ 2. Their association in "research themes/portals" is set by
+    membership in a Grouper `figshare:portal:<portal>` group.
+
+For the latter, these portals and their association with University
+organization code(s) are defined within this
+[CSV file](https://raw.githubusercontent.com/ualibraries/DataRepository_research_themes/master/DataRepository_research_themes/data/research_themes.csv).
+
+Note that access is granted to the service through membership in a Grouper
+`figshare:active` group.  These memberships are done indirectly based on
+other Grouper membership set forth by University Library privileges.
+
+
 ## Getting Started
 
 These instructions will have the code running on your local or virtual machine.
@@ -98,6 +113,7 @@ and `sync` arguments:
 Note: Without the `sync` argument, the above command line will perform a
 "dry run" where both `quota` and `portal` queries are conducted. It will
 indicate what Grouper updates will occur.
+
 
 ## Versioning
 
