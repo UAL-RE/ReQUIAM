@@ -21,10 +21,17 @@ identity and access management protocols.
 
 
 This software performs the following:
- 1. The allowed user quota for upload is set by membership in a Grouper
+ 1. It conducts EDS queries to retrieve classification information
+    (e.g., student, staff, and/or faculty) and association with
+    organization codes (i.e., departments)
+ 2. Based on classification information and primary organization
+    association, it updates Grouper membership
+
+The Grouper memberships are as follow:
+ 1. The allowed user quota for upload is set by Grouper
     `figshare:quota:<value>` group.
- 2. Their association in "research themes/portals" is set by
-    membership in a Grouper `figshare:portal:<portal>` group.
+ 2. The "research theme/portal" is set by Grouper `figshare:portal:<value>`
+    group.
 
 For the latter, these portals and their association with University
 organization code(s) are defined within this
