@@ -95,6 +95,9 @@ and `sync` arguments:
                        --config config/petl.ini --ldap_password $password --grouper_password $password
 ```
 
+Note: Without the `sync` argument, the above command line will perform a
+"dry run" where both `quota` and `portal` queries are conducted. It will
+indicate what Grouper updates will occur.
 
 ## Versioning
 
