@@ -123,6 +123,9 @@ if __name__ == '__main__':
             org_code_list = df_sub['Org Code']
             log.info("Org codes: {}".format(", ".join(org_code_list)))
 
+            org_name_list = df_sub['Departments/Colleges/Labs/Centers']
+            log.info("Org names: {}".format(", ".join(org_name_list)))
+
             # LDAP query to retrieve members
             ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
 
