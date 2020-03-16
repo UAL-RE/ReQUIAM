@@ -163,9 +163,9 @@ if __name__ == '__main__':
             log.info(" EDS size {}".format(len(ldap_members)))
 
             # Grouper query
-            grouper_portal = grouper_query.figshare_group(q, 'quota')
+            grouper_quota = grouper_query.figshare_group(q, 'quota')
             gq = grouper_query.GrouperQuery(**grouper_dict,
-                                            grouper_group=grouper_portal)
+                                            grouper_group=grouper_quota)
             log.info(" Grouper size {}".format(len(gq.members)))
 
             # Delta between LDAP and Grouper
