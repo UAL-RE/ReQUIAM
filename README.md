@@ -14,8 +14,10 @@
 
 ## Overview
 
-Query EDS information to set `ismemberof` Grouper attributes specific for
-Figshare identity and access management.
+Query EDS information to set `ismemberof`
+[Grouper](https://www.incommon.org/software/grouper/) attributes specific for
+the [University of Arizona's Figshare data repository](https://arizona.figshare.com)'s
+identity and access management protocols.
 
 
 This software performs the following:
