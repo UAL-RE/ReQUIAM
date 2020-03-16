@@ -112,10 +112,11 @@ if __name__ == '__main__':
         df = pd.read_csv(csv_url)
 
         unique_portals = df['Sub-portals'].unique()
+        unique_portals_name = df['Research Themes'].unique()
 
         # Loop over sub-portals
-        for portal in unique_portals:
-            log.info("Working on {} portal".format(portal))
+        for portal, portal_name in zip(unique_portals, unique_portals_name):
+            log.info("Working on {} ({}) portal".format(portal_name, portal))
             df_sub = df.loc[df['Sub-portals'] == portal]
             print(df_sub)
 
