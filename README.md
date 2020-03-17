@@ -37,7 +37,7 @@ Note that access is granted to the service through membership in a Grouper
 other Grouper membership set forth by University Library privileges.
 
 This software is based on the [existing patron software](https://github.com/ualibraries/patron-groups)
-developed for the [University of Arizona Libraries.
+developed for the [University of Arizona Libraries](https://new.library.arizona.edu/).
 
 ## Getting Started
 
