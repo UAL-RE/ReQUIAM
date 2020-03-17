@@ -16,6 +16,7 @@ from DataRepository_patrons import grouper_query
 from DataRepository_patrons import delta
 from DataRepository_patrons import quota
 from DataRepository_patrons.logger import LogClass
+from DataRepository_patrons import TimerClass
 
 today = date.today()
 
@@ -44,7 +45,8 @@ if __name__ == '__main__':
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
 
-    t_start = dt.now()
+    main_timer = TimerClass()
+    main_timer._start()
 
     config = configparser.ConfigParser()
     config.read(args.config)
@@ -192,15 +194,7 @@ if __name__ == '__main__':
             else:
                 log.info('dry run, not performing synchronization')
 
-
     log.info("Completed script_run successfully!")
 
-    t_stop = dt.now()
-
-    delta = t_stop - t_start
-    sec = delta.seconds + delta.microseconds/1e6
-    HH = int(sec // 3600)
-    MM = int((sec // 60) - (HH * 60))
-    SS = sec - (HH * 3600) - (MM * 60)
-    t_format = "Total time: {0: 02d} hours  {1: 02d} minutes  {2: .2f} seconds".format(HH, MM, SS)
-    log.info(t_format)
+    main_timer._stop()
+    log.info(main_timer.format)
