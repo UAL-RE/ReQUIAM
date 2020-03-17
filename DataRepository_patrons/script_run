@@ -111,6 +111,9 @@ if __name__ == '__main__':
 
     # Perform EDS-Grouper synchronization for figshare research portals
     if args.portal:
+        portal_timer = TimerClass()
+        portal_timer._start()
+
         # Read in CSV file
         csv_url = config.get('global', 'csv_url')
         df = pd.read_csv(csv_url)
@@ -158,8 +161,14 @@ if __name__ == '__main__':
             else:
                 log.info('dry run, not performing synchronization')
 
+        portal_timer._stop()
+        log.info("PORTAL : " + portal_timer.format)
+
     # Perform EDS-Grouper synchronization for figshare quota
     if args.quota:
+        quota_timer = TimerClass()
+        quota_timer._start()
+
         quota_list  = ast.literal_eval(config['global']['quota_list'])
         quota_class = ast.literal_eval(config['global']['quota_class'])
 
@@ -193,6 +202,9 @@ if __name__ == '__main__':
                 d.synchronize()
             else:
                 log.info('dry run, not performing synchronization')
+
+        quota_timer._stop()
+        log.info("QUOTA : "+quota_timer.format)
 
     log.info("Completed script_run successfully!")
 
