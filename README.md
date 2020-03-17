@@ -14,18 +14,13 @@
 
 ## Overview
 
-Query EDS information to set `ismemberof`
-[Grouper](https://www.incommon.org/software/grouper/) attributes specific for
-the [University of Arizona's Figshare data repository](https://arizona.figshare.com)'s
-identity and access management protocols.
-
-
-This software performs the following:
+This identity and access management (IAM) software performs the following for
+the [University of Arizona's Figshare data repository](https://arizona.figshare.com):
  1. It conducts EDS queries to retrieve classification information
     (e.g., student, staff, and/or faculty) and association with
     organization codes (i.e., departments)
  2. Based on classification information and primary organization
-    association, it updates Grouper membership
+    association, it sets `ismemberof` [Grouper](https://www.incommon.org/software/grouper/) membership
 
 The Grouper memberships are as follow:
  1. The allowed user quota for upload is set by Grouper
@@ -42,7 +37,7 @@ Note that access is granted to the service through membership in a Grouper
 other Grouper membership set forth by University Library privileges.
 
 This software is based on the [existing patron software](https://github.com/ualibraries/patron-groups)
-developed for the University of Arizona Libraries.
+developed for the [University of Arizona Libraries.
 
 ## Getting Started
 
