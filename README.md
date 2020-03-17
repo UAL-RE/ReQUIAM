@@ -24,9 +24,9 @@ the [University of Arizona's Figshare data repository](https://arizona.figshare.
 
 The Grouper memberships are as follow:
  1. The allowed user quota for upload is set by Grouper
-    `figshare:quota:<value>` group.
+    `figshare:quota:<value>` group. This is determined by the user's classification.
  2. The "research theme/portal" is set by Grouper `figshare:portal:<value>`
-    group.
+    group. This is determined by the user's organizational affiliation.
 
 For the latter, these portals and their association with University
 organization code(s) are defined within this
