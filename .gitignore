@@ -1,3 +1,9 @@
+# log_dir path
+logs/
+
+# PyCharm
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

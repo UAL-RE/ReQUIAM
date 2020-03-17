@@ -1,0 +1,212 @@
+from os import path
+from os import mkdir
+
+import pandas as pd
+
+from datetime import date
+from datetime import datetime as dt
+
+import configparser
+import argparse
+
+import ast
+
+from DataRepository_patrons import ldap_query
+from DataRepository_patrons import grouper_query
+from DataRepository_patrons import delta
+from DataRepository_patrons import quota
+from DataRepository_patrons.logger import LogClass
+from DataRepository_patrons import TimerClass
+
+today = date.today()
+
+co_filename = __file__
+co_dir = path.dirname(co_filename)
+
+if __name__ == '__main__':
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description='Command-line driver for figshare patron management.')
+    parser.add_argument('--config', required=True, help='path to configuration file')
+    parser.add_argument('--ldap_host', help='LDAP host')
+    parser.add_argument('--ldap_base_dn', help='base DN for LDAP bind and query')
+    parser.add_argument('--ldap_user', help='user name for LDAP login')
+    parser.add_argument('--ldap_password', help='password for LDAP login')
+    parser.add_argument('--grouper_host', help='Grouper host')
+    parser.add_argument('--grouper_base_path', help='base path for Grouper API')
+    parser.add_argument('--grouper_user', help='user name for Grouper login')
+    parser.add_argument('--grouper_password', help='password for Grouper login')
+    parser.add_argument('--batch_size', help='synchronization batch size')
+    parser.add_argument('--batch_timeout', help='synchronization batch timeout in seconds')
+    parser.add_argument('--batch_delay', help='delay between batches in seconds')
+    parser.add_argument('--portal', action='store_true', help='perform portal queries')
+    parser.add_argument('--quota', action='store_true', help='perform quota queries')
+    parser.add_argument('--sync', action='store_true', help='perform synchronization')
+    parser.add_argument('--sync_max', help='maximum membership delta to allow when synchronizing')
+    parser.add_argument('--debug', action='store_true', help='turn on debug logging')
+    args = parser.parse_args()
+
+    main_timer = TimerClass()
+    main_timer._start()
+
+    config = configparser.ConfigParser()
+    config.read(args.config)
+
+    # Define logfile
+    log_dir = config.get('global', 'log_dir')
+    if not path.exists(log_dir):
+        mkdir(log_dir)
+    logfile_prefix = config.get('global', 'logfile_prefix')
+    logfile = "{}.{}.log".format(logfile_prefix, today.strftime("%Y-%m-%d"))
+
+    log = LogClass(log_dir, logfile).get_logger()
+
+    log.info("Started script_run")
+
+    cred_err = 0
+    vargs = vars(args)
+    for p in ['ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
+              'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
+              'batch_size', 'batch_timeout', 'batch_delay', 'portal', 'quota', 'sync_max']:
+
+        if (p in vargs) and (vargs[p] is not None):
+            vargs[p] = vargs[p]
+        elif (p in config['global']) and (config['global'][p] is not None) and \
+                (config['global'][p] != "***override***"):
+            vargs[p] = config['global'][p]
+        else:
+            vargs[p] = '(unset)'
+
+        if p in ['ldap_user', 'ldap_password', 'grouper_user', 'grouper_password']:
+            if vargs[p] is '(unset)':
+                log.info('   {0: >17} = (unset)'.format(p))
+                cred_err += 1
+            else:
+                log.info('   {0: >17} = (set)'.format(p))
+        else:
+            log.info('   {0: >17} = {1:}'. format(p, vargs[p]))
+
+    if cred_err:
+        log.warning("Not all credentials available!")
+        log.warning("Exiting")
+        raise ValueError
+
+    log.info('     sync = %s', args.sync)
+    log.info('    debug = %s', args.debug)
+
+    # Initiate LDAP connection
+    ldc = ldap_query.LDAPConnection(ldap_host=vargs['ldap_host'],
+                                    ldap_base_dn=vargs['ldap_base_dn'],
+                                    ldap_user=vargs['ldap_user'],
+                                    ldap_password=vargs['ldap_password'])
+
+    grouper_dict = dict(grouper_host=vargs['grouper_host'],
+                        grouper_base_path=vargs['grouper_base_path'],
+                        grouper_user=vargs['grouper_user'],
+                        grouper_password=vargs['grouper_password'])
+
+    delta_dict = dict(batch_size=int(vargs['batch_size']),
+                      batch_timeout=int(vargs['batch_timeout']),
+                      batch_delay=int(vargs['batch_delay']),
+                      sync_max=int(vargs['sync_max']))
+
+    # Perform EDS-Grouper synchronization for figshare research portals
+    if args.portal:
+        portal_timer = TimerClass()
+        portal_timer._start()
+
+        # Read in CSV file
+        csv_url = config.get('global', 'csv_url')
+        df = pd.read_csv(csv_url)
+
+        unique_portals = df['Sub-portals'].unique()
+        unique_portals_name = df['Research Themes'].unique()
+
+        # Loop over sub-portals
+        for portal, portal_name in zip(unique_portals, unique_portals_name):
+            log.info("Working on {} ({}) portal".format(portal_name, portal))
+            df_sub = df.loc[df['Sub-portals'] == portal]
+            print(df_sub)
+
+            # Get list of org codes for [portal]
+            org_code_list = df_sub['Org Code']
+            log.info("Org codes: {}".format(", ".join(org_code_list)))
+
+            org_name_list = df_sub['Departments/Colleges/Labs/Centers']
+            log.info("Org names: {}".format(", ".join(org_name_list)))
+
+            # LDAP query to retrieve members
+            ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
+
+            ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+            log.info(" EDS size {}".format(len(ldap_members)))
+
+            # Grouper query
+            grouper_portal = grouper_query.figshare_group(portal, 'portal')
+            gq = grouper_query.GrouperQuery(**grouper_dict,
+                                            grouper_group=grouper_portal)
+            log.info(" Grouper size {}".format(len(gq.members)))
+
+            d = delta.Delta(ldap_members=ldap_members,
+                            grouper_query_instance=gq,
+                            **delta_dict,
+                            log=log)
+
+            log.info('ldap and grouper have {} members in common'.format(len(d.common)))
+            log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+            log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+
+            if args.sync:
+                log.info('synchronizing ...')
+                d.synchronize()
+            else:
+                log.info('dry run, not performing synchronization')
+
+        portal_timer._stop()
+        log.info("PORTAL : " + portal_timer.format)
+
+    # Perform EDS-Grouper synchronization for figshare quota
+    if args.quota:
+        quota_timer = TimerClass()
+        quota_timer._start()
+
+        quota_list  = ast.literal_eval(config['global']['quota_list'])
+        quota_class = ast.literal_eval(config['global']['quota_class'])
+
+        for q, c in zip(quota_list, quota_class):
+            log.info("Working on {} quota : {} bytes".format(c, q))
+
+            # LDAP query to retrieve members
+            ldap_queries = quota.ual_ldap_quota_query(c)
+
+            ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+            log.info(" EDS size {}".format(len(ldap_members)))
+
+            # Grouper query
+            grouper_quota = grouper_query.figshare_group(q, 'quota')
+            gq = grouper_query.GrouperQuery(**grouper_dict,
+                                            grouper_group=grouper_quota)
+            log.info(" Grouper size {}".format(len(gq.members)))
+
+            # Delta between LDAP and Grouper
+            d = delta.Delta(ldap_members=ldap_members,
+                            grouper_query_instance=gq,
+                            **delta_dict,
+                            log=log)
+
+            log.info('ldap and grouper have {} members in common'.format(len(d.common)))
+            log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+            log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+
+            if args.sync:
+                log.info('synchronizing ...')
+                d.synchronize()
+            else:
+                log.info('dry run, not performing synchronization')
+
+        quota_timer._stop()
+        log.info("QUOTA : "+quota_timer.format)
+
+    log.info("Completed script_run successfully!")
+
+    main_timer._stop()
+    log.info(main_timer.format)

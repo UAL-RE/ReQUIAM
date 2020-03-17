@@ -1,4 +1,4 @@
-from .ldap_connection import ual_grouper_base
+from .ldap_query import ual_grouper_base
 
 
 def ual_ldap_quota_query(ual_class):
