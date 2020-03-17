@@ -109,14 +109,14 @@ execute the following command:
 ## Execution
 
 To execute the script and update Grouper and EDS, include the `portal`, `quota`,
-and `sync` arguments:
+and `sync` command-line flags:
 
 ```
 (figshare_patrons) $ python DataRepository_patrons/script_run --quota --portal --sync \
                        --config config/petl.ini --ldap_password $password --grouper_password $password
 ```
 
-Note: Without the `sync` argument, the above command line will perform a
+Note: Without the `sync` flag, the above command line will perform a
 "dry run" where both `quota` and `portal` queries are conducted. It will
 indicate what Grouper updates will occur.
 
