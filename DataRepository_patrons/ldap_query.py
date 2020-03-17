@@ -27,7 +27,7 @@ class LDAPConnection(object):
         members = ldap_connection.ldap_search(ldc, portal_query)
     """
 
-    def __init__(self, ldap_host, ldap_base_dn, ldap_user, ldap_passwd):
+    def __init__(self, ldap_host, ldap_base_dn, ldap_user, ldap_password):
         logger.debug('entered')
         
         #
@@ -36,7 +36,7 @@ class LDAPConnection(object):
         self.ldap_host = ldap_host
         self.ldap_base_dn = ldap_base_dn
         self.ldap_user = ldap_user
-        self.ldap_passwd = ldap_passwd
+        self.ldap_password = ldap_password
 
         self.ldap_bind_host = 'ldaps://' + ldap_host
         self.ldap_bind_dn = 'uid=' + ldap_user + ',ou=app users,' + ldap_base_dn
@@ -46,7 +46,8 @@ class LDAPConnection(object):
         #
         # execute ldap query and populate members property
 
-        self.ldc = ldap3.Connection(self.ldap_bind_host, self.ldap_bind_dn, self.ldap_passwd, auto_bind=True)
+        self.ldc = ldap3.Connection(self.ldap_bind_host, self.ldap_bind_dn,
+                                    self.ldap_password, auto_bind=True)
 
         logger.debug('returning')
 
@@ -143,8 +144,8 @@ def ldap_search(ldapconnection, ldap_query):
     :param ldapconnection: An ldap3 Connection from LDAPConnection(),
         ldapconnection = LDAPConnection(**)
 
-    :param ldap_query: str or list of strings
-        String (list of strings) containing the query (ies)
+    :param ldap_query: list of strings
+        String (list of strings) containing the query(ies)
 
     :return member: set containing list of members
     """
