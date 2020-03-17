@@ -101,7 +101,7 @@ execute the following command:
 
 ```
 (figshare_patrons) $ export password="insert_password"
-(figshare_patrons) $ python DataRepository_patrons/script_run --config config/petl.ini \
+(figshare_patrons) $ python DataRepository_patrons/script_run --config config/figshare.ini \
                        --ldap_password $password --grouper_password $password
 ```
 
@@ -113,7 +113,7 @@ and `sync` command-line flags:
 
 ```
 (figshare_patrons) $ python DataRepository_patrons/script_run --quota --portal --sync \
-                       --config config/petl.ini --ldap_password $password --grouper_password $password
+                       --config config/figshare.ini --ldap_password $password --grouper_password $password
 ```
 
 Note: Without the `sync` flag, the above command line will perform a
