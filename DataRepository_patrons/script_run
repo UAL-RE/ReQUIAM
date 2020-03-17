@@ -4,6 +4,7 @@ from os import mkdir
 import pandas as pd
 
 from datetime import date
+from datetime import datetime as dt
 
 import configparser
 import argparse
@@ -22,7 +23,6 @@ co_filename = __file__
 co_dir = path.dirname(co_filename)
 
 if __name__ == '__main__':
-
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description='Command-line driver for figshare patron management.')
     parser.add_argument('--config', required=True, help='path to configuration file')
@@ -43,6 +43,8 @@ if __name__ == '__main__':
     parser.add_argument('--sync_max', help='maximum membership delta to allow when synchronizing')
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
+
+    t_start = dt.now()
 
     config = configparser.ConfigParser()
     config.read(args.config)
@@ -190,4 +192,15 @@ if __name__ == '__main__':
             else:
                 log.info('dry run, not performing synchronization')
 
+
     log.info("Completed script_run successfully!")
+
+    t_stop = dt.now()
+
+    delta = t_stop - t_start
+    sec = delta.seconds + delta.microseconds/1e6
+    HH = int(sec // 3600)
+    MM = int((sec // 60) - (HH * 60))
+    SS = sec - (HH * 3600) - (MM * 60)
+    t_format = "Total time: {0: 02d} hours  {1: 02d} minutes  {2: .2f} seconds".format(HH, MM, SS)
+    log.info(t_format)
