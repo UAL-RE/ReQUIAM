@@ -42,6 +42,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_delay', help='delay between batches in seconds')
     parser.add_argument('--portal', action='store_true', help='perform portal queries')
     parser.add_argument('--quota', action='store_true', help='perform quota queries')
+    parser.add_argument('--test', action='store_true', help='perform test query')
     parser.add_argument('--sync', action='store_true', help='perform synchronization')
     parser.add_argument('--sync_max', help='maximum membership delta to allow when synchronizing')
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
@@ -68,7 +69,7 @@ if __name__ == '__main__':
     vargs = vars(args)
     for p in ['ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
               'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
-              'batch_size', 'batch_timeout', 'batch_delay', 'portal', 'quota', 'sync_max']:
+              'batch_size', 'batch_timeout', 'batch_delay', 'portal', 'quota', 'test', 'sync_max']:
 
         if (p in vargs) and (vargs[p] is not None):
             vargs[p] = vargs[p]
@@ -207,6 +208,40 @@ if __name__ == '__main__':
 
         quota_timer._stop()
         log.info("QUOTA : "+quota_timer.format)
+
+    # Perform EDS-Grouper synchronization for simple test
+    if args.test:
+        test_timer = TimerClass()
+        test_timer._start()
+
+        log.info("Working on test sync")
+
+        # LDAP query to retrieve members
+        ldap_queries = ldap_query.uid_query(config.get('global', 'uid'))
+
+        ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+        log.info(" EDS size {}".format(len(ldap_members)))
+
+        grouper_test = grouper_query.figshare_group('test', '')
+        gq = grouper_query.GrouperQuery(**grouper_dict, grouper_group=grouper_test)
+        log.info(" Grouper size {}".format(len(gq.members)))
+
+        # Delta between LDAP and Grouper
+        d = delta.Delta(ldap_members=ldap_members, grouper_query_instance=gq,
+                        **delta_dict, log=log)
+
+        log.info('ldap and grouper have {} members in common'.format(len(d.common)))
+        log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+        log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+
+        if args.sync:
+            log.info('synchronizing ...')
+            d.synchronize()
+        else:
+            log.info('dry run, not performing synchronization')
+
+        test_timer._stop()
+        log.info("TEST_SYNC : "+test_timer.format)
 
     log.info("Completed script_run successfully!")
 
