@@ -91,7 +91,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list datarepository-patrons
 ```
 
-You should see that the version is `0.6.1`.
+You should see that the version is `0.7.0`.
 
 
 ### Testing Installation
