@@ -90,6 +90,11 @@ if __name__ == '__main__':
         else:
             log.info('   {0: >17} = {1:}'. format(p, vargs[p]))
 
+    if vargs['test'] and vargs['test_reverse']:
+        log.warning("Cannot provide --test and --test_reverse")
+        log.warning("Exiting")
+        raise ValueError
+
     if cred_err:
         log.warning("Not all credentials available!")
         log.warning("Exiting")
