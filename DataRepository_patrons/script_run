@@ -223,11 +223,11 @@ if __name__ == '__main__':
         ldap_queries = ldap_query.uid_query(test_uid)
         log.info(" test account : {}".format(test_uid))
 
+        ldap_members = set()
         if args.test:
             ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
             log.info(" EDS size {}".format(len(ldap_members)))
         if args.test_reverse:
-            ldap_members = set()
             log.info(" Providing empty member list")
 
         grouper_test = grouper_query.figshare_group('test', '')
