@@ -61,6 +61,7 @@ def uid_query(uid):
       ldap_query = ldap_connection.ual_test_query('<netid>)
         > ['(uid=<netid>)']
 
+    :param uid: str of NetID handle
     :return ldap_query: list containing the str
     """
 
