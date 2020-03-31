@@ -217,7 +217,9 @@ if __name__ == '__main__':
         log.info("Working on test sync")
 
         # LDAP query to retrieve members
-        ldap_queries = ldap_query.uid_query(config.get('global', 'uid'))
+        test_uid = config.get('global', 'uid')
+        ldap_queries = ldap_query.uid_query(test_uid)
+        log.info(" test account : {}".format(test_uid))
 
         ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
         log.info(" EDS size {}".format(len(ldap_members)))
