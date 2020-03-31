@@ -91,12 +91,12 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list datarepository-patrons
 ```
 
-You should see that the version is `0.6.1`.
+You should see that the version is `0.7.0`.
 
 
 ### Testing Installation
 
-To test the installation without performing the Grouper synchronization,
+To test the installation without performing any `portal` or `quota` query,
 execute the following command:
 
 ```
@@ -105,6 +105,28 @@ execute the following command:
                        --ldap_password $password --grouper_password $password
 ```
 
+Test command-line flags (`test` and `test_reverse`) are available to test EDS
+query and Grouper synchronization (with the `sync` flag) by executing the following :
+
+```
+(figshare_patrons) $ python DataRepository_patrons/script_run --test \
+                       --sync --config config/figshare.ini \
+                       --ldap_password $password --grouper_password $password
+```
+
+Note that the above will add a test NetID account to the following Grouper
+group: `arizona.edu:LBRY:figshare:test`
+
+Without the `sync` flag, the above command line will perform a
+"dry run". It will indicate what Grouper updates will occur.
+
+To undo this change, use the `test_reverse` flag:
+
+```
+(figshare_patrons) $ python DataRepository_patrons/script_run --test_reverse \
+                       --sync --config config/figshare.ini \
+                       --ldap_password $password --grouper_password $password
+```
 
 ## Execution
 
