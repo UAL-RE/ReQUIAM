@@ -43,6 +43,7 @@ if __name__ == '__main__':
     parser.add_argument('--portal', action='store_true', help='perform portal queries')
     parser.add_argument('--quota', action='store_true', help='perform quota queries')
     parser.add_argument('--test', action='store_true', help='perform test query')
+    parser.add_argument('--test_reverse', action='store_true', help='reverse test query (i.e., remove from Grouper)')
     parser.add_argument('--sync', action='store_true', help='perform synchronization')
     parser.add_argument('--sync_max', help='maximum membership delta to allow when synchronizing')
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
@@ -69,7 +70,8 @@ if __name__ == '__main__':
     vargs = vars(args)
     for p in ['ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
               'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
-              'batch_size', 'batch_timeout', 'batch_delay', 'portal', 'quota', 'test', 'sync_max']:
+              'batch_size', 'batch_timeout', 'batch_delay', 'portal', 'quota',
+              'test', 'test_reverse', 'sync_max']:
 
         if (p in vargs) and (vargs[p] is not None):
             vargs[p] = vargs[p]
@@ -210,7 +212,7 @@ if __name__ == '__main__':
         log.info("QUOTA : "+quota_timer.format)
 
     # Perform EDS-Grouper synchronization for simple test
-    if args.test:
+    if args.test or args.test_reverse:
         test_timer = TimerClass()
         test_timer._start()
 
@@ -221,8 +223,12 @@ if __name__ == '__main__':
         ldap_queries = ldap_query.uid_query(test_uid)
         log.info(" test account : {}".format(test_uid))
 
-        ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
-        log.info(" EDS size {}".format(len(ldap_members)))
+        if args.test:
+            ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+            log.info(" EDS size {}".format(len(ldap_members)))
+        if args.test_reverse:
+            ldap_members = set()
+            log.info(" Providing empty member list")
 
         grouper_test = grouper_query.figshare_group('test', '')
         gq = grouper_query.GrouperQuery(**grouper_dict, grouper_group=grouper_test)
