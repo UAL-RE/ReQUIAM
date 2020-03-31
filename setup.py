@@ -8,7 +8,7 @@ with open("requirements.txt", "r") as fr:
 
 setup(
     name='DataRepository_patrons',
-    version='v0.6.1',
+    version='v0.7.0',
     packages=find_packages('DataRepository_patrons'),
     url='https://github.com/ualibraries/DataRepository_patrons',
     license='MIT License',

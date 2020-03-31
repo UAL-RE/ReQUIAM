@@ -52,6 +52,24 @@ class LDAPConnection(object):
         logger.debug('returning')
 
 
+def uid_query(uid):
+    """
+    Purpose:
+      Construct RFC 4512-compatible LDAP query for a single NetID account
+
+    Usage:
+      ldap_query = ldap_connection.ual_test_query('<netid>)
+        > ['(uid=<netid>)']
+
+    :param uid: str of NetID handle
+    :return ldap_query: list containing the str
+    """
+
+    ldap_query = '(uid={})'.format(uid)
+
+    return [ldap_query]
+
+
 def ual_grouper_base(basename):
     """
     Purpose:
