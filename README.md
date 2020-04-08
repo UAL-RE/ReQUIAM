@@ -1,4 +1,4 @@
-# DataRepository_patrons
+# ![ReDATA EDS Query and Update for Identity and Access Management](REQUIAM_1417x336.svg) ReDATA EDS Query and Update for Identity and Access Management
 
 - [Overview](#overview)
 - [Getting Started](#getting-started)
