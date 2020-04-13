@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="7600" height="650" viewBox="0 0 7600 650">
+  <defs>
+    <style>
+      .cls-1, .cls-2, .cls-6 {
+        font-size: 258.333px;
+      }
+
+      .cls-2, .cls-8 {
+        fill: #ab0520;
+        font-family: PilGi;
+      }
+
+      .cls-3 {
+        fill: #0c234b;
+        font-weight: 700;
+      }
+
+      .cls-3, .cls-5, .cls-6 {
+        font-family: Georgia;
+      }
+
+      .cls-4 {
+        font-family: Times;
+      }
+
+      .cls-7, .cls-8 {
+        font-size: 625px;
+      }
+
+      .cls-9 {
+        font-size: 416.667px;
+      }
+    </style>
+  </defs>
+  <text id="ReDATA_EDS_Query_and_Update_for" data-name="ReDATA EDS Query and Update for" class="cls-1" x="3441.113" y="235.245"><tspan class="cls-2">Re<tspan class="cls-3">DATA</tspan><tspan class="cls-4"> </tspan></tspan>EDS <tspan class="cls-5">Q</tspan>uery and <tspan>U</tspan>pdate for</text>
+  <text id="Identity_and_Access_Management" data-name="Identity and Access Management" class="cls-6" x="3441.113" y="485.245">I<tspan class="cls-4">dentity and </tspan>A<tspan>ccess </tspan>M<tspan>anagement</tspan></text>
+  <text id="ReQUIAM_" data-name="ReQUIAM  |" class="cls-7" x="43.706" y="493.056"><tspan class="cls-8">Re<tspan class="cls-3">QUIAM<tspan class="cls-9"> </tspan></tspan><tspan> </tspan></tspan>|</text>
+</svg>
