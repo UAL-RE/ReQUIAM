@@ -73,13 +73,13 @@ Next, clone this repository into a parent folder:
 
 ```
 (figshare_patrons) $ cd /path/to/parent/folder
-(figshare_patrons) $ git clone https://github.com/ualibraries/DataRepository_patrons.git
+(figshare_patrons) $ git clone https://github.com/ualibraries/ReQUIAM.git
 ```
 
 With the activated `conda` environment, you can install with the `setup.py` script:
 
 ```
-(figshare_patrons) $ cd /path/to/parent/folder/DataRepository_patrons
+(figshare_patrons) $ cd /path/to/parent/folder/ReQUIAM
 (figshare_patrons) $ (sudo) python setup.py develop
 ```
 
@@ -88,7 +88,7 @@ This will automatically installed the required `pandas`, `ldap3`, and `requests`
 You can confirm installation via `conda list`
 
 ```
-(figshare_patrons) $ conda list datarepository-patrons
+(figshare_patrons) $ conda list requiam
 ```
 
 You should see that the version is `0.8.0`.
@@ -101,7 +101,7 @@ execute the following command:
 
 ```
 (figshare_patrons) $ export password="insert_password"
-(figshare_patrons) $ python DataRepository_patrons/script_run --config config/figshare.ini \
+(figshare_patrons) $ python ReQUIAM/script_run --config config/figshare.ini \
                        --ldap_password $password --grouper_password $password
 ```
 
@@ -109,7 +109,7 @@ Test command-line flags (`test` and `test_reverse`) are available to test EDS
 query and Grouper synchronization (with the `sync` flag) by executing the following :
 
 ```
-(figshare_patrons) $ python DataRepository_patrons/script_run --test \
+(figshare_patrons) $ python ReQUIAM/script_run --test \
                        --sync --config config/figshare.ini \
                        --ldap_password $password --grouper_password $password
 ```
@@ -123,7 +123,7 @@ Without the `sync` flag, the above command line will perform a
 To undo this change, use the `test_reverse` flag:
 
 ```
-(figshare_patrons) $ python DataRepository_patrons/script_run --test_reverse \
+(figshare_patrons) $ python ReQUIAM/script_run --test_reverse \
                        --sync --config config/figshare.ini \
                        --ldap_password $password --grouper_password $password
 ```
@@ -134,7 +134,7 @@ To execute the script and update Grouper and EDS, include the `portal`, `quota`,
 and `sync` command-line flags:
 
 ```
-(figshare_patrons) $ python DataRepository_patrons/script_run --quota --portal --sync \
+(figshare_patrons) $ python ReQUIAM/script_run --quota --portal --sync \
                        --config config/figshare.ini --ldap_password $password --grouper_password $password
 ```
 
@@ -146,7 +146,7 @@ indicate what Grouper updates will occur.
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the
-[tags on this repository](https://github.com/ualibraries/DataRepository_patrons/tags).
+[tags on this repository](https://github.com/ualibraries/ReQUIAM/tags).
 
 
 ## Authors
@@ -154,7 +154,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 * Chun Ly, Ph.D. ([@astrochun](http://www.github.com/astrochun)) - [University of Arizona Libraries](https://github.com/ualibraries), [Office of Digital Innovation and Stewardship](https://github.com/UAL-ODIS)
 
 See also the list of
-[contributors](https://github.com/ualibraries/DataRepository_patrons/contributors) who participated in this project.
+[contributors](https://github.com/ualibraries/ReQUIAM/contributors) who participated in this project.
 
 
 ## License
