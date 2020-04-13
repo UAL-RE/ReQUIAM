@@ -7,10 +7,10 @@ with open("requirements.txt", "r") as fr:
     requirements = fr.read().splitlines()
 
 setup(
-    name='DataRepository_patrons',
-    version='v0.8.0',
-    packages=find_packages('DataRepository_patrons'),
-    url='https://github.com/ualibraries/DataRepository_patrons',
+    name='ReQUIAM',
+    version='v0.8.1',
+    packages=find_packages('ReQUIAM'),
+    url='https://github.com/ualibraries/ReQUIAM',
     license='MIT License',
     author='Chun Ly',
     author_email='astro.chun@gmail.com',
