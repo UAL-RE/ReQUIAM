@@ -6,7 +6,6 @@ from os import mkdir
 import pandas as pd
 
 from datetime import date
-from datetime import datetime as dt
 
 import configparser
 import argparse
