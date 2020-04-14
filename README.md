@@ -1,4 +1,4 @@
-# ![ReDATA EDS Query and Update for Identity and Access Management](ReQUIAM_full.svg)
+# ![ReDATA EDS Query and Update for Identity and Access Management](ReQUIAM_full.png)
 
 - [Overview](#overview)
 - [Getting Started](#getting-started)
@@ -91,7 +91,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.8.2`.
+You should see that the version is `0.8.3`.
 
 
 ### Testing Installation
