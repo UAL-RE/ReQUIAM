@@ -16,7 +16,7 @@ class Delta(object):
 
     Usage:
       Quick how to:
-        from DataRepository_patrons.tests import delta
+        from ReQUIAM import delta
 
     """
 
