@@ -1,4 +1,4 @@
-# ![ReDATA EDS Query and Update for Identity and Access Management](ReQUIAM_full.svg)
+# ![ReDATA EDS Query and Update for Identity and Access Management](ReQUIAM_full.png)
 
 - [Overview](#overview)
 - [Getting Started](#getting-started)
