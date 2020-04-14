@@ -17,14 +17,14 @@ class LDAPConnection(object):
 
     Usage:
       Quick how to:
-        from DataRepository_patrons.tests import ldap_connection
+        from ReQUIAM import ldap_query
         eds_hostname = 'eds.arizona.edu'
         ldap_base_dn = 'dc=eds,dc=arizona,dc=edu'
-        ldc = ldap_connection.LDAPConnection(eds_hostname, ldap_base_dn,
-                                             USERNAME, PASSWORD)
+        ldc = ldap_query.LDAPConnection(eds_hostname, ldap_base_dn,
+                                        USERNAME, PASSWORD)
 
-        portal_query = ldap_connection.ual_ldap_queries(['0404', '0413', '0411'])
-        members = ldap_connection.ldap_search(ldc, portal_query)
+        portal_query = ldap_query.ual_ldap_queries(['0404', '0413', '0411'])
+        members = ldap_query.ldap_search(ldc, portal_query)
     """
 
     def __init__(self, ldap_host, ldap_base_dn, ldap_user, ldap_password):
@@ -58,7 +58,7 @@ def uid_query(uid):
       Construct RFC 4512-compatible LDAP query for a single NetID account
 
     Usage:
-      ldap_query = ldap_connection.ual_test_query('<netid>)
+      ldap_query = ldap_query.ual_test_query('<netid>)
         > ['(uid=<netid>)']
 
     :param uid: str of NetID handle
@@ -82,7 +82,7 @@ def ual_grouper_base(basename):
 
 
     Usage:
-      grouper_base = ldap_connection.ual_grouper_base('ual-faculty')
+      grouper_base = ldap_query.ual_grouper_base('ual-faculty')
         > ismemberof=arizona.edu:dept:LBRY:pgrps:ual-faculty
 
     :param basename: string containing Grouper group name basename.
@@ -105,7 +105,7 @@ def ual_ldap_query(org_code):
 
 
     Usage:
-      ldap_query = ldap_connection.ual_ldap_query('0212')
+      ldap_query = ldap_query.ual_ldap_query('0212')
         > ['(& (employeePrimaryDept=0212) (|
             (ismemberof=arizona.edu:dept:LBRY:pgrps:ual-faculty)
             (ismemberof=arizona.edu:dept:LBRY:pgrps:ual-staff)
@@ -136,7 +136,7 @@ def ual_ldap_queries(org_codes):
 
 
     Usage:
-      ldap_queries = ldap_connection.ual_ldap_queries(['0212','0213','0214'])
+      ldap_queries = ldap_query.ual_ldap_queries(['0212','0213','0214'])
 
 
     :param org_codes: A list of strings containining org codes
@@ -157,7 +157,7 @@ def ldap_search(ldapconnection, ldap_query):
 
 
     Usage (see description in LDAPConnection:
-      members = ldap_connection.ldap_search(ldc, ldap_query)
+      members = ldap_query.ldap_search(ldc, ldap_query)
 
     :param ldapconnection: An ldap3 Connection from LDAPConnection(),
         ldapconnection = LDAPConnection(**)
