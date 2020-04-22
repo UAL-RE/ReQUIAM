@@ -6,19 +6,18 @@ from os import mkdir
 import pandas as pd
 
 from datetime import date
-from datetime import datetime as dt
 
 import configparser
 import argparse
 
 import ast
 
-from DataRepository_patrons import ldap_query
-from DataRepository_patrons import grouper_query
-from DataRepository_patrons import delta
-from DataRepository_patrons import quota
-from DataRepository_patrons.logger import LogClass
-from DataRepository_patrons import TimerClass
+from ReQUIAM import ldap_query
+from ReQUIAM import grouper_query
+from ReQUIAM import delta
+from ReQUIAM import quota
+from ReQUIAM.logger import LogClass
+from ReQUIAM import TimerClass
 
 today = date.today()
 
