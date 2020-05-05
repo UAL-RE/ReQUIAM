@@ -39,6 +39,10 @@ other Grouper membership set forth by University Library privileges.
 This software is based on the [existing patron software](https://github.com/ualibraries/patron-groups)
 developed for the [University of Arizona Libraries](https://new.library.arizona.edu/).
 
+An illustration of the service architecture workflow is provided below.
+
+# ![ReQUIAM Service Architecture](img/ReQUIAM_architecture.png)
+
 ## Getting Started
 
 These instructions will have the code running on your local or virtual machine.
