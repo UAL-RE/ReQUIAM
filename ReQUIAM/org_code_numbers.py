@@ -1,0 +1,95 @@
+from os import path
+
+# For database/CSV
+import pandas as pd
+from urllib.error import URLError
+
+# For LDAP query
+from ReQUIAM import ldap_query
+
+from datetime import date
+
+import configparser
+import argparse
+
+today = date.today()
+
+config = configparser.ConfigParser()
+config.read(path.join('config/figshare.ini'))
+
+org_url = config.get('org_code', 'org_url')
+
+
+def get_numbers(ldc):
+    """
+    Purpose:
+      Determine number of individuals in each organization code with
+      Library services
+
+    :return:
+    """
+
+    try:
+        df = pd.read_csv(org_url)
+
+        print(f"Number of organizational codes : {df.shape[0]}")
+
+        org_codes = df['Organization Code'].values
+        for org_code in org_codes:
+            query = ldap_query.ual_ldap_query(org_code)
+            members = ldap_query.ldap_search(ldc, query)
+            print(f"{org_code} {len(members)}")
+
+    except URLError:
+        print("Unable to retrieve data from URL !")
+        print("Please check your internet connection !")
+        print("create_csv terminating !")
+        raise URLError("Unable to retrieve Google Sheet")
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Command-line driver for figshare patron management.')
+    parser.add_argument('--config', required=True, help='path to configuration file')
+    parser.add_argument('--ldap_host', help='LDAP host')
+    parser.add_argument('--ldap_base_dn', help='base DN for LDAP bind and query')
+    parser.add_argument('--ldap_user', help='user name for LDAP login')
+    parser.add_argument('--ldap_password', help='password for LDAP login')
+    parser.add_argument('--debug', action='store_true', help='turn on debug logging')
+    args = parser.parse_args()
+
+    config = configparser.ConfigParser()
+    config.read(args.config)
+
+    cred_err = 0
+    vargs = vars(args)
+    for p in ['ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password']:
+
+        if (p in vargs) and (vargs[p] is not None):
+            vargs[p] = vargs[p]
+        elif (p in config['global']) and (config['global'][p] is not None) and \
+                (config['global'][p] != "***override***"):
+            vargs[p] = config['global'][p]
+        else:
+            vargs[p] = '(unset)'
+
+        if p in ['ldap_user', 'ldap_password']:
+            if vargs[p] is '(unset)':
+                print('   {0: >17} = (unset)'.format(p))
+                cred_err += 1
+            else:
+                print('   {0: >17} = (set)'.format(p))
+        else:
+            print('   {0: >17} = {1:}'. format(p, vargs[p]))
+
+    if cred_err:
+        print("Not all credentials available!")
+        print("Exiting")
+        raise ValueError
+
+    ldc = ldap_query.LDAPConnection(ldap_host=vargs['ldap_host'],
+                                    ldap_base_dn=vargs['ldap_base_dn'],
+                                    ldap_user=vargs['ldap_user'],
+                                    ldap_password=vargs['ldap_password'])
+
+    get_numbers(ldc)
+
