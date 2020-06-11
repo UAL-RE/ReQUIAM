@@ -14,19 +14,16 @@ import argparse
 
 today = date.today()
 
-config = configparser.ConfigParser()
-config.read(path.join('config/figshare.ini'))
 
-org_url = config.get('org_code', 'org_url')
-
-
-def get_numbers(ldc):
+def get_numbers(lc, org_url):
     """
     Purpose:
       Determine number of individuals in each organization code with
       Library services
 
-    :return:
+    :param lc: LDAPConnection() object
+    :param org_url: URL that provides CSV
+    :return ldc:
     """
 
     try:
@@ -37,7 +34,7 @@ def get_numbers(ldc):
         org_codes = df['Organization Code'].values
         for org_code in org_codes:
             query = ldap_query.ual_ldap_query(org_code)
-            members = ldap_query.ldap_search(ldc, query)
+            members = ldap_query.ldap_search(lc, query)
             print(f"{org_code} {len(members)}")
 
     except URLError:
@@ -54,6 +51,7 @@ if __name__ == '__main__':
     parser.add_argument('--ldap_base_dn', help='base DN for LDAP bind and query')
     parser.add_argument('--ldap_user', help='user name for LDAP login')
     parser.add_argument('--ldap_password', help='password for LDAP login')
+    parser.add_argument('--org_url', help='URL that exports CSV file with organizational code ')
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
 
@@ -86,10 +84,19 @@ if __name__ == '__main__':
         print("Exiting")
         raise ValueError
 
+    for p in ['org_url']:
+        if (p in vargs) and (vargs[p] is not None):
+            vargs[p] = vargs[p]
+        elif (p in config['org_code']) and (config['org_code'][p] is not None) and \
+                (config['org_code'][p] != "***override***"):
+            vargs[p] = config['org_code'][p]
+        else:
+            vargs[p] = '(unset)'
+
     ldc = ldap_query.LDAPConnection(ldap_host=vargs['ldap_host'],
                                     ldap_base_dn=vargs['ldap_base_dn'],
                                     ldap_user=vargs['ldap_user'],
                                     ldap_password=vargs['ldap_password'])
 
-    get_numbers(ldc)
+    get_numbers(ldc, vargs['org_url'])
 
