@@ -6,7 +6,7 @@ import numpy as np
 from urllib.error import URLError
 
 # For LDAP query
-from ReQUIAM import ldap_query
+from ReQUIAM.ldap_query import ual_ldap_query, ldap_search, LDAPConnection
 
 from datetime import date
 
@@ -35,12 +35,13 @@ def get_numbers(lc, org_url):
 
         org_codes = df['Organization Code'].values
 
-        lib_privilege = np.zeros(n_org_codes)
-        for org_code, ii in zip(org_codes, range(n_org_codes)):
-            query = ldap_query.ual_ldap_query(org_code)
-            lib_privilege[ii] = ldap_query.ldap_search(lc, query)
+        lib_total_privilege   = np.zeros(n_org_codes)
 
-        df['lib_privilege'] = lib_privilege
+        for org_code, ii in zip(org_codes, range(n_org_codes)):
+            query = ual_ldap_query(org_code)
+            lib_total_privilege[ii] = ldap_search(lc, query)
+
+        df['lib_privilege'] = lib_total_privilege
 
     except URLError:
         print("Unable to retrieve data from URL !")
@@ -98,10 +99,10 @@ if __name__ == '__main__':
         else:
             vargs[p] = '(unset)'
 
-    ldc = ldap_query.LDAPConnection(ldap_host=vargs['ldap_host'],
-                                    ldap_base_dn=vargs['ldap_base_dn'],
-                                    ldap_user=vargs['ldap_user'],
-                                    ldap_password=vargs['ldap_password'])
+    ldc = LDAPConnection(ldap_host=vargs['ldap_host'],
+                         ldap_base_dn=vargs['ldap_base_dn'],
+                         ldap_user=vargs['ldap_user'],
+                         ldap_password=vargs['ldap_password'])
 
     get_numbers(ldc, vargs['org_url'])
 
