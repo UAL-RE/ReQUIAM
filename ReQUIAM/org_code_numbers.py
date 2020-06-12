@@ -2,6 +2,7 @@ from os import path
 
 # For database/CSV
 import pandas as pd
+import numpy as np
 from urllib.error import URLError
 
 # For LDAP query
@@ -19,7 +20,7 @@ def get_numbers(lc, org_url):
     """
     Purpose:
       Determine number of individuals in each organization code with
-      Library services
+      Library privileges
 
     :param lc: LDAPConnection() object
     :param org_url: URL that provides CSV
@@ -29,13 +30,17 @@ def get_numbers(lc, org_url):
     try:
         df = pd.read_csv(org_url)
 
-        print(f"Number of organizational codes : {df.shape[0]}")
+        n_org_codes = df.shape[0]
+        print(f"Number of organizational codes : {n_org_codes}")
 
         org_codes = df['Organization Code'].values
-        for org_code in org_codes:
+
+        lib_privilege = np.zeros(n_org_codes)
+        for org_code, ii in zip(org_codes, range(n_org_codes)):
             query = ldap_query.ual_ldap_query(org_code)
-            members = ldap_query.ldap_search(lc, query)
-            print(f"{org_code} {len(members)}")
+            lib_privilege[ii] = ldap_query.ldap_search(lc, query)
+
+        df['lib_privilege'] = lib_privilege
 
     except URLError:
         print("Unable to retrieve data from URL !")
