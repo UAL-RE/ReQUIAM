@@ -45,7 +45,7 @@ def get_numbers(lc, org_url):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Command-line driver for figshare patron management.')
+    parser = argparse.ArgumentParser(description='Command-line driver for Organization Code summary information.')
     parser.add_argument('--config', required=True, help='path to configuration file')
     parser.add_argument('--ldap_host', help='LDAP host')
     parser.add_argument('--ldap_base_dn', help='base DN for LDAP bind and query')
