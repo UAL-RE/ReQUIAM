@@ -115,13 +115,13 @@ def ual_ldap_query(org_code, members='all'):
 
     :param org_code: A string of the org code (e.g., '0212')
     :param members: Optional string input. Default: 'all'.
-                    Others: 'faculty', 'staff', 'dcc', 'student
+                    Others: 'faculty', 'staff', 'student', 'dcc'
     :return ldap_query: list containing the str
     """
 
     ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code)
 
-    classification_list = ['all', 'faculty', 'staff', 'students', 'dcc']
+    classification_list = ['all', 'faculty', 'staff', 'student', 'dcc']
     if members not in classification_list:
         raise ValueError("Incorrect members input")
 
@@ -130,6 +130,8 @@ def ual_ldap_query(org_code, members='all'):
             ldap_query += '({}) '.format(ual_grouper_base(f'ual-{member}'))
     else:
         ldap_query += '({}) '.format(ual_grouper_base(f'ual-{members}'))
+
+    ldap_query += ') )'
 
     return [ldap_query]
 
