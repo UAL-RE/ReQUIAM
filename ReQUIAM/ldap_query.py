@@ -96,7 +96,7 @@ def ual_grouper_base(basename):
     return 'ismemberof=arizona.edu:dept:LBRY:pgrps:{}'.format(basename)
 
 
-def ual_ldap_query(org_code):
+def ual_ldap_query(org_code, members='all'):
     """
     Purpose:
       Construct RFC 4512-compatible LDAP query to search for those with UA
@@ -114,15 +114,22 @@ def ual_ldap_query(org_code):
 
 
     :param org_code: A string of the org code (e.g., '0212')
-
+    :param members: Optional string input. Default: 'all'.
+                    Others: 'faculty', 'staff', 'dcc', 'student
     :return ldap_query: list containing the str
     """
 
-    ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code) + \
-                 '({}) '.format(ual_grouper_base('ual-faculty')) + \
-                 '({}) '.format(ual_grouper_base('ual-staff')) + \
-                 '({}) '.format(ual_grouper_base('ual-students')) + \
-                 '({}) ) )'.format(ual_grouper_base('ual-dcc'))
+    ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code)
+
+    classification_list = ['all', 'faculty', 'staff', 'students', 'dcc']
+    if members not in classification_list:
+        raise ValueError("Incorrect members input")
+
+    if members == 'all':
+        for member in classification_list[1:]:
+            ldap_query += '({}) '.format(ual_grouper_base(f'ual-{member}'))
+    else:
+        ldap_query += '({}) '.format(ual_grouper_base(f'ual-{members}'))
 
     return [ldap_query]
 
