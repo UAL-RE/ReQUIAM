@@ -6,7 +6,7 @@ import numpy as np
 from urllib.error import URLError
 
 # For LDAP query
-from ReQUIAM.ldap_query import ual_ldap_query, ldap_search, LDAPConnection
+from ReQUIAM.ldap_query import ual_grouper_base, ual_ldap_query, ldap_search, LDAPConnection
 
 # Logging
 from ReQUIAM import TimerClass
@@ -50,18 +50,34 @@ def get_numbers(lc, org_url):
         lib_student = np.zeros(n_org_codes, dtype=int)
         lib_dcc     = np.zeros(n_org_codes, dtype=int)
 
+        # Query based on Library patron group for set logic
+        faculty_query = ['({})'.format(ual_grouper_base('ual-faculty'))]
+        staff_query   = ['({})'.format(ual_grouper_base('ual-staff'))]
+        student_query = ['({})'.format(ual_grouper_base('ual-students'))]
+        dcc_query     = ['({})'.format(ual_grouper_base('ual-dcc'))]
+
+        faculty_members = ldap_search(lc, faculty_query)
+        staff_members   = ldap_search(lc, staff_query)
+        student_members = ldap_search(lc, student_query)
+        dcc_members     = ldap_search(lc, dcc_query)
+
         members_list = ['all', 'faculty', 'staff', 'student', 'dcc']
         for org_code, ii in zip(org_codes, range(n_org_codes)):
             # for arr0, member in zip(lib_list, members_list):
             #    query = ual_ldap_query(org_code, members=member)
             #    arr0[ii] = ldap_search(lc, query)
 
-            total[ii]       = len(ldap_search(lc, ual_ldap_query(org_code, classification='none')))
-            lib_total[ii]   = len(ldap_search(lc, ual_ldap_query(org_code)))
-            lib_faculty[ii] = len(ldap_search(lc, ual_ldap_query(org_code, classification='faculty')))
-            lib_staff[ii]   = len(ldap_search(lc, ual_ldap_query(org_code, classification='staff')))
-            lib_student[ii] = len(ldap_search(lc, ual_ldap_query(org_code, classification='students')))
-            lib_dcc[ii]     = len(ldap_search(lc, ual_ldap_query(org_code, classification='dcc')))
+            total_members   = ldap_search(lc, ual_ldap_query(org_code,
+                                                             classification='none'))
+            library_members = ldap_search(lc, ual_ldap_query(org_code))
+
+            total[ii]       = len(total_members)
+            lib_total[ii]   = len(library_members)
+
+            lib_faculty[ii] = len(library_members & faculty_members)
+            lib_staff[ii]   = len(library_members & staff_members)
+            lib_student[ii] = len(library_members & student_members)
+            lib_dcc[ii]     = len(library_members & dcc_members)
 
         df['total']         = total
         df['pgrps-tot']     = lib_total
@@ -70,7 +86,8 @@ def get_numbers(lc, org_url):
         df['pgrps-student'] = lib_student
         df['pgrps-dcc']     = lib_dcc
 
-        df.to_csv('org_code_numbers.csv', index=False)
+        df_sort = df.sort_values(by='Organization Code')
+        df_sort.to_csv('org_code_numbers.csv', index=False)
 
     except URLError:
         print("Unable to retrieve data from URL !")
