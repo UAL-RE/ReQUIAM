@@ -135,8 +135,7 @@ def ual_ldap_query(org_code, classification='all'):
             for member in classification_list[1:]:
                 ldap_query += '({}) '.format(ual_grouper_base(f'ual-{member}'))
         else:
-            if 'none' not in classification:
-                ldap_query += '({}) '.format(ual_grouper_base(f'ual-{classification}'))
+            ldap_query += '({}) '.format(ual_grouper_base(f'ual-{classification}'))
 
         ldap_query += ') )'
 
