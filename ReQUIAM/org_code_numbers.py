@@ -8,7 +8,7 @@ from urllib.error import URLError
 # For LDAP query
 from ReQUIAM.ldap_query import ual_ldap_query, ldap_search, LDAPConnection
 
-from datetime import date
+from datetime import date, datetime
 
 import configparser
 import argparse
@@ -27,6 +27,10 @@ def get_numbers(lc, org_url):
     :return ldc:
     """
 
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    print("Current Time =", current_time)
+
     try:
         df = pd.read_csv(org_url)
 
@@ -35,19 +39,45 @@ def get_numbers(lc, org_url):
 
         org_codes = df['Organization Code'].values
 
-        lib_total_privilege   = np.zeros(n_org_codes)
+        # Arrays for members with library privileges based on classification
+        total       = np.zeros(n_org_codes, dtype=int)
+        lib_total   = np.zeros(n_org_codes, dtype=int)
+        lib_faculty = np.zeros(n_org_codes, dtype=int)
+        lib_staff   = np.zeros(n_org_codes, dtype=int)
+        lib_student = np.zeros(n_org_codes, dtype=int)
+        lib_dcc     = np.zeros(n_org_codes, dtype=int)
 
+        members_list = ['all', 'faculty', 'staff', 'student', 'dcc']
         for org_code, ii in zip(org_codes, range(n_org_codes)):
-            query = ual_ldap_query(org_code)
-            lib_total_privilege[ii] = ldap_search(lc, query)
+            # for arr0, member in zip(lib_list, members_list):
+            #    query = ual_ldap_query(org_code, members=member)
+            #    arr0[ii] = ldap_search(lc, query)
 
-        df['lib_privilege'] = lib_total_privilege
+            total[ii]       = len(ldap_search(lc, ual_ldap_query(org_code, classification='none')))
+            lib_total[ii]   = len(ldap_search(lc, ual_ldap_query(org_code)))
+            lib_faculty[ii] = len(ldap_search(lc, ual_ldap_query(org_code, classification='faculty')))
+            lib_staff[ii]   = len(ldap_search(lc, ual_ldap_query(org_code, classification='staff')))
+            lib_student[ii] = len(ldap_search(lc, ual_ldap_query(org_code, classification='student')))
+            lib_dcc[ii]     = len(ldap_search(lc, ual_ldap_query(org_code, classification='dcc')))
+
+        df['total']         = total
+        df['pgrps-tot']     = lib_total
+        df['pgrps-faculty'] = lib_faculty
+        df['pgrps-staff']   = lib_staff
+        df['pgrps-student'] = lib_student
+        df['pgrps-dcc']     = lib_dcc
+
+        df.to_csv('org_code_numbers.csv', index=False)
 
     except URLError:
         print("Unable to retrieve data from URL !")
         print("Please check your internet connection !")
         print("create_csv terminating !")
         raise URLError("Unable to retrieve Google Sheet")
+
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    print("Current Time =", current_time)
 
 
 if __name__ == '__main__':
@@ -105,4 +135,3 @@ if __name__ == '__main__':
                          ldap_password=vargs['ldap_password'])
 
     get_numbers(ldc, vargs['org_url'])
-
