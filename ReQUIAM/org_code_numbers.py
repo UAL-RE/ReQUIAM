@@ -60,7 +60,7 @@ def get_numbers(lc, org_url):
             lib_total[ii]   = len(ldap_search(lc, ual_ldap_query(org_code)))
             lib_faculty[ii] = len(ldap_search(lc, ual_ldap_query(org_code, classification='faculty')))
             lib_staff[ii]   = len(ldap_search(lc, ual_ldap_query(org_code, classification='staff')))
-            lib_student[ii] = len(ldap_search(lc, ual_ldap_query(org_code, classification='student')))
+            lib_student[ii] = len(ldap_search(lc, ual_ldap_query(org_code, classification='students')))
             lib_dcc[ii]     = len(ldap_search(lc, ual_ldap_query(org_code, classification='dcc')))
 
         df['total']         = total
