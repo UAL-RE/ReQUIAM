@@ -114,24 +114,31 @@ def ual_ldap_query(org_code, members='all'):
 
 
     :param org_code: A string of the org code (e.g., '0212')
-    :param members: Optional string input. Default: 'all'.
-                    Others: 'faculty', 'staff', 'student', 'dcc'
+    :param members: Optional string input to identify which patron group.
+                    Default: 'all'.
+                    Others: 'faculty', 'staff', 'student', 'dcc', 'none'
+                    The 'none' input will provide org_code-only query
+
     :return ldap_query: list containing the str
     """
 
-    ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code)
-
-    classification_list = ['all', 'faculty', 'staff', 'student', 'dcc']
-    if members not in classification_list:
-        raise ValueError("Incorrect members input")
-
-    if members == 'all':
-        for member in classification_list[1:]:
-            ldap_query += '({}) '.format(ual_grouper_base(f'ual-{member}'))
+    if members == 'none':
+        ldap_query = '(employeePrimaryDept={})'.format(org_code)
     else:
-        ldap_query += '({}) '.format(ual_grouper_base(f'ual-{members}'))
+        ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code)
 
-    ldap_query += ') )'
+        classification_list = ['all', 'faculty', 'staff', 'student', 'dcc']
+        if members not in classification_list:
+            raise ValueError("Incorrect members input")
+
+        if members == 'all':
+            for member in classification_list[1:]:
+                ldap_query += '({}) '.format(ual_grouper_base(f'ual-{member}'))
+        else:
+            if 'none' not in members:
+                ldap_query += '({}) '.format(ual_grouper_base(f'ual-{members}'))
+
+        ldap_query += ') )'
 
     return [ldap_query]
 
