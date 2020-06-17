@@ -8,6 +8,9 @@ from urllib.error import URLError
 # For LDAP query
 from ReQUIAM.ldap_query import ual_ldap_query, ldap_search, LDAPConnection
 
+# Logging
+from ReQUIAM import TimerClass
+
 from datetime import date, datetime
 
 import configparser
@@ -91,6 +94,9 @@ if __name__ == '__main__':
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
 
+    main_timer = TimerClass()
+    main_timer._start()
+
     config = configparser.ConfigParser()
     config.read(args.config)
 
@@ -135,3 +141,8 @@ if __name__ == '__main__':
                          ldap_password=vargs['ldap_password'])
 
     get_numbers(ldc, vargs['org_url'])
+
+    print("Completed org_code_numbers successfully!")
+
+    main_timer._stop()
+    print(main_timer.format)
