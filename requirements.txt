@@ -1,3 +1,4 @@
 pandas==0.25.3
 ldap3==2.6.1
 requests==2.22.0
+numpy==1.18.0
