@@ -13,7 +13,7 @@ from ReQUIAM.ldap_query import ual_grouper_base, ual_ldap_query, ldap_search, LD
 from ReQUIAM.logger import LogClass
 from ReQUIAM import TimerClass
 
-from datetime import date, datetime
+from datetime import date
 
 import configparser
 import argparse
@@ -33,10 +33,6 @@ def get_numbers(lc, org_url, log_func):
 
     :return ldc:
     """
-
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    log_func.info(f"Current Time = {current_time}")
 
     try:
         df = pd.read_csv(org_url)
@@ -99,10 +95,6 @@ def get_numbers(lc, org_url, log_func):
         log_func.info("Please check your internet connection !")
         log_func.info("create_csv terminating !")
         raise URLError("Unable to retrieve Google Sheet")
-
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    log_func.info(f"Current Time = {current_time}")
 
 
 if __name__ == '__main__':
