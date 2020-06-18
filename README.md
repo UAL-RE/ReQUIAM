@@ -52,7 +52,7 @@ You will need the following to have a working copy of this software. See
 2. [`pandas`](https://pandas.pydata.org/) ([0.25.3](https://pandas.pydata.org/pandas-docs/version/0.25.3/))
 3. [`ldap3`](https://ldap3.readthedocs.io/en/latest/) (2.6.1)
 4. [`requests`](https://requests.readthedocs.io/en/master/) (2.22.0)
-
+5. [`numpy`](https://numpy.org/doc/) ([1.18.0](https://numpy.org/doc/1.18/)
 
 ### Installation Instructions
 
@@ -83,7 +83,7 @@ With the activated `conda` environment, you can install with the `setup.py` scri
 (figshare_patrons) $ (sudo) python setup.py develop
 ```
 
-This will automatically installed the required `pandas`, `ldap3`, and `requests` packages.
+This will automatically installed the required `pandas`, `ldap3`, `requests`, and `numpy` packages.
 
 You can confirm installation via `conda list`
 
@@ -91,7 +91,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.8.3`.
+You should see that the version is `0.9.0`.
 
 
 ### Testing Installation
