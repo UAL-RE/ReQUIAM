@@ -65,7 +65,7 @@ def get_numbers(lc, org_url, log_func):
 
         for org_code, ii in zip(org_codes, range(n_org_codes)):
 
-            if ii % round(n_org_codes/10) == 0:
+            if ii % round(n_org_codes/10) == 0 or ii == n_org_codes-1:
                 log_func.info("{0: >3}% completed ...".format(round(ii/n_org_codes * 100)))
 
             total_members   = ldap_search(lc, ual_ldap_query(org_code,
