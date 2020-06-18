@@ -36,7 +36,7 @@ def get_numbers(lc, org_url, log_func):
 
     now = datetime.now()
     current_time = now.strftime("%H:%M:%S")
-    log_func.info("Current Time =", current_time)
+    log_func.info(f"Current Time = {current_time}")
 
     try:
         df = pd.read_csv(org_url)
@@ -60,10 +60,12 @@ def get_numbers(lc, org_url, log_func):
         student_query = ['({})'.format(ual_grouper_base('ual-students'))]
         dcc_query     = ['({})'.format(ual_grouper_base('ual-dcc'))]
 
+        log_func.info("Getting faculty, staff, student, and dcc members ... ")
         faculty_members = ldap_search(lc, faculty_query)
         staff_members   = ldap_search(lc, staff_query)
         student_members = ldap_search(lc, student_query)
         dcc_members     = ldap_search(lc, dcc_query)
+        log_func.info("Completed faculty, staff, student, and dcc queries")
 
         for org_code, ii in zip(org_codes, range(n_org_codes)):
 
@@ -100,7 +102,7 @@ def get_numbers(lc, org_url, log_func):
 
     now = datetime.now()
     current_time = now.strftime("%H:%M:%S")
-    log_func.info("Current Time =", current_time)
+    log_func.info(f"Current Time = {current_time}")
 
 
 if __name__ == '__main__':
