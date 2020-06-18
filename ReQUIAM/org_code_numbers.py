@@ -121,8 +121,7 @@ if __name__ == '__main__':
     log_dir = config.get('global', 'log_dir')
     if not path.exists(log_dir):
         mkdir(log_dir)
-    logfile_prefix = config.get('global', 'logfile_prefix')
-    logfile = "{}.{}.log".format(logfile_prefix, today.strftime("%Y-%m-%d"))
+    logfile = "org_code_numbers.{}.log".format(logfile_prefix, today.strftime("%Y-%m-%d"))
 
     log = LogClass(log_dir, logfile).get_logger()
 
