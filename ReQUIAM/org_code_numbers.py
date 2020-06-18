@@ -1,4 +1,5 @@
 from os import path
+from os import mkdir
 
 # For database/CSV
 import pandas as pd
@@ -20,7 +21,7 @@ import argparse
 today = date.today()
 
 
-def get_numbers(lc, org_url):
+def get_numbers(lc, org_url, log_func):
     """
     Purpose:
       Determine number of individuals in each organization code with
@@ -28,18 +29,20 @@ def get_numbers(lc, org_url):
 
     :param lc: LDAPConnection() object
     :param org_url: URL that provides CSV
+    :param log_func: LogClass object for logging
+
     :return ldc:
     """
 
     now = datetime.now()
     current_time = now.strftime("%H:%M:%S")
-    print("Current Time =", current_time)
+    log_func.info("Current Time =", current_time)
 
     try:
         df = pd.read_csv(org_url)
 
         n_org_codes = df.shape[0]
-        print(f"Number of organizational codes : {n_org_codes}")
+        log_func.info(f"Number of organizational codes : {n_org_codes}")
 
         org_codes = df['Organization Code'].values
 
@@ -91,14 +94,14 @@ def get_numbers(lc, org_url):
         df_sort.to_csv('org_code_numbers.csv', index=False)
 
     except URLError:
-        print("Unable to retrieve data from URL !")
-        print("Please check your internet connection !")
-        print("create_csv terminating !")
+        log_func.info("Unable to retrieve data from URL !")
+        log_func.info("Please check your internet connection !")
+        log_func.info("create_csv terminating !")
         raise URLError("Unable to retrieve Google Sheet")
 
     now = datetime.now()
     current_time = now.strftime("%H:%M:%S")
-    print("Current Time =", current_time)
+    log_func.info("Current Time =", current_time)
 
 
 if __name__ == '__main__':
@@ -169,7 +172,7 @@ if __name__ == '__main__':
                          ldap_user=vargs['ldap_user'],
                          ldap_password=vargs['ldap_password'])
 
-    get_numbers(ldc, vargs['org_url'])
+    get_numbers(ldc, vargs['org_url'], log)
 
     main_timer._stop()
     log.info(main_timer.format)
