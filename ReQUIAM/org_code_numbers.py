@@ -65,11 +65,7 @@ def get_numbers(lc, org_url, log_func):
         student_members = ldap_search(lc, student_query)
         dcc_members     = ldap_search(lc, dcc_query)
 
-        members_list = ['all', 'faculty', 'staff', 'student', 'dcc']
         for org_code, ii in zip(org_codes, range(n_org_codes)):
-            # for arr0, member in zip(lib_list, members_list):
-            #    query = ual_ldap_query(org_code, members=member)
-            #    arr0[ii] = ldap_search(lc, query)
 
             total_members   = ldap_search(lc, ual_ldap_query(org_code,
                                                              classification='none'))
