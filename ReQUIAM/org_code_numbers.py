@@ -9,6 +9,7 @@ from urllib.error import URLError
 from ReQUIAM.ldap_query import ual_grouper_base, ual_ldap_query, ldap_search, LDAPConnection
 
 # Logging
+from ReQUIAM.logger import LogClass
 from ReQUIAM import TimerClass
 
 from datetime import date, datetime
@@ -117,6 +118,17 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read(args.config)
 
+    # Define logfile
+    log_dir = config.get('global', 'log_dir')
+    if not path.exists(log_dir):
+        mkdir(log_dir)
+    logfile_prefix = config.get('global', 'logfile_prefix')
+    logfile = "{}.{}.log".format(logfile_prefix, today.strftime("%Y-%m-%d"))
+
+    log = LogClass(log_dir, logfile).get_logger()
+
+    log.info("Started org_code_numbers script")
+
     cred_err = 0
     vargs = vars(args)
     for p in ['ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password']:
@@ -131,16 +143,16 @@ if __name__ == '__main__':
 
         if p in ['ldap_user', 'ldap_password']:
             if vargs[p] is '(unset)':
-                print('   {0: >17} = (unset)'.format(p))
+                log.info('   {0: >17} = (unset)'.format(p))
                 cred_err += 1
             else:
-                print('   {0: >17} = (set)'.format(p))
+                log.info('   {0: >17} = (set)'.format(p))
         else:
-            print('   {0: >17} = {1:}'. format(p, vargs[p]))
+            log.info('   {0: >17} = {1:}'. format(p, vargs[p]))
 
     if cred_err:
-        print("Not all credentials available!")
-        print("Exiting")
+        log.warning("Not all credentials available!")
+        log.warning("Exiting")
         raise ValueError
 
     for p in ['org_url']:
@@ -159,7 +171,7 @@ if __name__ == '__main__':
 
     get_numbers(ldc, vargs['org_url'])
 
-    print("Completed org_code_numbers successfully!")
-
     main_timer._stop()
-    print(main_timer.format)
+    log.info(main_timer.format)
+
+    log.info("Completed org_code_numbers successfully!")
