@@ -12,12 +12,12 @@ import argparse
 
 import ast
 
-from ReQUIAM import ldap_query
-from ReQUIAM import grouper_query
-from ReQUIAM import delta
-from ReQUIAM import quota
-from ReQUIAM.logger import LogClass
-from ReQUIAM import TimerClass
+from requiam import ldap_query
+from requiam import grouper_query
+from requiam import delta
+from requiam import quota
+from requiam.logger import LogClass
+from requiam import TimerClass
 
 today = date.today()
 

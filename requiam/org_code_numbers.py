@@ -7,11 +7,11 @@ import numpy as np
 from urllib.error import URLError
 
 # For LDAP query
-from ReQUIAM.ldap_query import ual_grouper_base, ual_ldap_query, ldap_search, LDAPConnection
+from requiam.ldap_query import ual_grouper_base, ual_ldap_query, ldap_search, LDAPConnection
 
 # Logging
-from ReQUIAM.logger import LogClass
-from ReQUIAM import TimerClass
+from requiam.logger import LogClass
+from requiam import TimerClass
 
 from datetime import date
 
