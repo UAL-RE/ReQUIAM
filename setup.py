@@ -7,9 +7,9 @@ with open("requirements.txt", "r") as fr:
     requirements = fr.read().splitlines()
 
 setup(
-    name='ReQUIAM',
+    name='requiam',
     version='v0.9.0',
-    packages=find_packages('ReQUIAM'),
+    packages=find_packages('requiam'),
     url='https://github.com/ualibraries/ReQUIAM',
     license='MIT License',
     author='Chun Ly',
