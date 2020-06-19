@@ -17,7 +17,7 @@ class LDAPConnection(object):
 
     Usage:
       Quick how to:
-        from ReQUIAM import ldap_query
+        from requiam import ldap_query
         eds_hostname = 'eds.arizona.edu'
         ldap_base_dn = 'dc=eds,dc=arizona,dc=edu'
         ldc = ldap_query.LDAPConnection(eds_hostname, ldap_base_dn,
