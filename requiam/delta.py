@@ -16,7 +16,7 @@ class Delta(object):
 
     Usage:
       Quick how to:
-        from ReQUIAM import delta
+        from requiam import delta
 
     """
 
