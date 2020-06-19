@@ -10,7 +10,7 @@ class GrouperQuery(object):
 
     Usage:
       Quick how to:
-        from ReQUIAM import grouper_query
+        from requiam import grouper_query
         grouper_host = 'grouper.iam.arizona.edu'
         grouper_base_path = 'grouper-ws/servicesRest/json/v2_2_001/groups'
         grouper_group = 'arizona.edu:dept:LBRY:figshare:portal:sci_math'
