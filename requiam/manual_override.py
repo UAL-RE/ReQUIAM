@@ -63,12 +63,18 @@ class ManualOverride:
         new_ldap_set = set(ldap_set)
 
         if action == 'remove':
-            print(f"Removing : {list(netid)}")
+            if isinstance(netid, list):
+                print(f"Removing : {list(netid)}")
+            if isinstance(netid, str):
+                print(f"Removing : {netid}")
             new_ldap_set = ldap_set - uaid
 
         if action == 'add':
-            print(f"Adding : {list(netid)}")
-            new_ldap_set = ldap_set + uaid
+            if isinstance(netid, list):
+                print(f"Adding : {list(netid)}")
+            if isinstance(netid, str):
+                print(f"Adding : {netid}")
+            new_ldap_set = set.union(ldap_set, uaid)
 
         return new_ldap_set
 
