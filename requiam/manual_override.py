@@ -1,7 +1,8 @@
 import pandas as pd
 
-from .ldap_query import LDAPConnection, uid_query
+from .ldap_query import LDAPConnection
 from .grouper_query import figshare_stem
+
 
 class ManualOverride:
     """
@@ -136,6 +137,7 @@ class ManualOverride:
         portal = [s for s in membership if ((portal_stem in s) and ('grouper' not in s))]
         if len(portal) == 0:
             log.info("No Grouper group found!")
+            figshare_dict['portal'] = ''  # Initialize to use later
         else:
             if len(portal) != 1:
                 log.warning("ERROR! Multiple Grouper portal found")
@@ -149,6 +151,7 @@ class ManualOverride:
         quota = [s for s in membership if ((quota_stem in s) and ('grouper' not in s))]
         if len(quota) == 0:
             log.info("No Grouper group found!")
+            figshare_dict['quota'] = ''  # Initialize to use later
         else:
             if len(quota) != 1:
                 log.warning("ERROR! Multiple Grouper quota found")
