@@ -1,5 +1,7 @@
 import pandas as pd
 
+from .ldap_query import LDAPConnection, uid_query
+from .grouper_query import figshare_stem
 
 class ManualOverride:
     """
@@ -109,3 +111,46 @@ class ManualOverride:
             new_ldap_set = add_ldap_set
 
         return new_ldap_set
+
+    @staticmethod
+    def get_current_groups(uid, ldap_dict, log):
+        """Retrieve current Figshare ismemberof association"""
+        mo_ldc = LDAPConnection(**ldap_dict)
+        mo_ldc.ldap_attribs = ['ismemberof']
+
+        user_query = f'(uid={uid})'
+        print(user_query)
+
+        mo_ldc.ldc.search(mo_ldc.ldap_search_dn, user_query, attributes=mo_ldc.ldap_attribs)
+
+        membership = mo_ldc.ldc.entries[0].ismemberof.value
+
+        figshare_dict = dict()
+
+        # Extract portal
+        portal_stem = figshare_stem('portal')
+        portal = [s for s in membership if ((portal_stem in s) and ('grouper' not in s))]
+        if len(portal) == 0:
+            log.info("No Grouper group found!")
+        else:
+            if len(portal) != 1:
+                log.warning("ERROR! Multiple Grouper portal found")
+                raise ValueError
+            else:
+                figshare_dict['portal'] = portal[0].replace(portal_stem + ':', '')
+                log.info(f"Current portal is : {figshare_dict['portal']}")
+
+        # Extract quota
+        quota_stem = figshare_stem('quota')
+        quota = [s for s in membership if ((quota_stem in s) and ('grouper' not in s))]
+        if len(quota) == 0:
+            log.info("No Grouper group found!")
+        else:
+            if len(quota) != 1:
+                log.warning("ERROR! Multiple Grouper quota found")
+                raise ValueError
+            else:
+                figshare_dict['quota'] = quota[0].replace(quota_stem + ':', '')
+                log.info(f"Current quota is : {figshare_dict['quota']} bytes")
+
+        return figshare_dict
