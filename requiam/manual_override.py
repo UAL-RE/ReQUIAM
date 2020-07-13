@@ -125,6 +125,10 @@ class ManualOverride:
 
         membership = mo_ldc.ldc.entries[0].ismemberof.value
 
+        if isinstance(membership, type(None)):
+            log.warning("No ismembersof attributes")
+            raise TypeError
+
         figshare_dict = dict()
 
         # Extract portal
