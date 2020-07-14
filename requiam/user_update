@@ -9,12 +9,10 @@ import configparser
 import argparse
 
 from requiam import ldap_query
-from requiam import grouper_query
-from requiam import delta
-from requiam import quota
+from requiam.grouper_query import grouper_delta_user
 from requiam.logger import LogClass
 from requiam import TimerClass
-from requiam.manual_override import ManualOverride, update_entries, get_current_groups
+from requiam.manual_override import ManualOverride, get_current_groups
 
 today = date.today()
 
@@ -132,21 +130,12 @@ if __name__ == '__main__':
         else:
             log.info(f"Removing from current {current_dict['portal']} portal")
 
-            portal_query = grouper_query.figshare_group(current_dict['portal'], 'portal')
-            gq = grouper_query.GrouperQuery(**grouper_dict,
-                                            grouper_group=portal_query)
-            portal_set = gq.members
-            portal_set = update_entries(portal_set, vargs['netid'], user_uaid, 'remove')
-
-            log.info(" Grouper size {}".format(len(gq.members)))
-
-            d = delta.Delta(ldap_members=portal_set,
-                            grouper_query_instance=gq,
-                            **delta_dict,
-                            log=log)
+            d = grouper_delta_user(current_dict['portal'], 'portal',
+                                   vargs['netid'], user_uaid, 'remove',
+                                   grouper_dict, delta_dict, log)
 
             log.info(f"ldap and grouper have {len(d.common)} members in common")
-            log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {current_dict['portal']} group")
+            log.info(f"synchronization will drop {len(d.drops)} entries from Grouper {current_dict['portal']} group")
             log.info(f"synchronization will add {len(d.adds)} entries to Grouper {current_dict['portal']} group")
 
             if args.sync:
@@ -157,19 +146,10 @@ if __name__ == '__main__':
 
         # Add to new portal group
         log.info(f"Adding to {vargs['portal']} portal")
-        portal_query = grouper_query.figshare_group(vargs['portal'], 'portal')
-        gq = grouper_query.GrouperQuery(**grouper_dict,
-                                        grouper_group=portal_query)
-        portal_set = gq.members
-        portal_set = update_entries(portal_set, vargs['netid'], user_uaid, 'add')
 
-        # Grouper query
-        log.info(" Grouper size {}".format(len(gq.members)))
-
-        d = delta.Delta(ldap_members=portal_set,
-                        grouper_query_instance=gq,
-                        **delta_dict,
-                        log=log)
+        d = grouper_delta_user(vargs['portal'], 'portal',
+                               vargs['netid'], user_uaid, 'add',
+                               grouper_dict, delta_dict, log)
 
         log.info(f"ldap and grouper have {len(d.common)} members in common")
         log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {vargs['portal']} group")
@@ -184,6 +164,7 @@ if __name__ == '__main__':
     # Quota update
     if vargs['quota'] != '(unset)':
         log.info(f"Updating {vargs['quota']} portal")
+        '''
         quota_query = grouper_query.figshare_group(vargs['quota'], 'quota')
         gq = grouper_query.GrouperQuery(**grouper_dict,
                                         grouper_group=quota_query)
@@ -199,7 +180,7 @@ if __name__ == '__main__':
                         log=log)
 
         log.info(f"ldap and grouper have {len(d.common)} members in common")
-        log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {vargs['quota']} group")
+        log.info(f"synchronization will drop {len(d.drops)} entries from Grouper {vargs['quota']} group")
         log.info(f"synchronization will add {len(d.adds)} entries to Grouper {vargs['quota']} group")
 
         if args.sync:
@@ -207,5 +188,5 @@ if __name__ == '__main__':
             d.synchronize()
         else:
             log.info('dry run, not performing synchronization')
-
+        '''
     # Update manual CSV file
