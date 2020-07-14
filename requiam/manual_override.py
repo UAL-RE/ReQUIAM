@@ -1,7 +1,7 @@
 import pandas as pd
 
 from .ldap_query import LDAPConnection
-from .grouper_query import figshare_stem
+from .commons import figshare_stem
 
 
 class ManualOverride:
