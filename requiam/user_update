@@ -14,7 +14,7 @@ from requiam import delta
 from requiam import quota
 from requiam.logger import LogClass
 from requiam import TimerClass
-from requiam import manual_override
+from requiam.manual_override import ManualOverride, update_entries, get_current_groups
 
 today = date.today()
 
@@ -111,7 +111,7 @@ if __name__ == '__main__':
                       sync_max=int(vargs['sync_max']))
 
     # Manual override class
-    mo = manual_override.ManualOverride(vargs['portal_file'], vargs['quota_file'])
+    mo = ManualOverride(vargs['portal_file'], vargs['quota_file'])
 
     # Initiate LDAP connection
     ldc = ldap_query.LDAPConnection(**ldap_dict)
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     log.info(f" uaid for {vargs['netid']} : {list(user_uaid)[0]}")
 
     # Retrieve ismemberof figshare information
-    current_dict = mo.get_current_groups(vargs['netid'], ldap_dict, log)
+    current_dict = get_current_groups(vargs['netid'], ldap_dict, log)
 
     # Portal update
     if vargs['portal'] != '(unset)':
@@ -136,7 +136,7 @@ if __name__ == '__main__':
             gq = grouper_query.GrouperQuery(**grouper_dict,
                                             grouper_group=portal_query)
             portal_set = gq.members
-            portal_set = mo.update_entries(portal_set, vargs['netid'], user_uaid, 'remove')
+            portal_set = update_entries(portal_set, vargs['netid'], user_uaid, 'remove')
 
             log.info(" Grouper size {}".format(len(gq.members)))
 
@@ -161,7 +161,7 @@ if __name__ == '__main__':
         gq = grouper_query.GrouperQuery(**grouper_dict,
                                         grouper_group=portal_query)
         portal_set = gq.members
-        portal_set = mo.update_entries(portal_set, vargs['netid'], user_uaid, 'add')
+        portal_set = update_entries(portal_set, vargs['netid'], user_uaid, 'add')
 
         # Grouper query
         log.info(" Grouper size {}".format(len(gq.members)))
@@ -188,7 +188,7 @@ if __name__ == '__main__':
         gq = grouper_query.GrouperQuery(**grouper_dict,
                                         grouper_group=quota_query)
         quota_set = gq.members
-        quota_set = mo.update_entries(quota_set, vargs['netid'], user_uaid, 'add')
+        quota_set = update_entries(quota_set, vargs['netid'], user_uaid, 'add')
 
         # Grouper query
         log.info(" Grouper size {}".format(len(gq.members)))

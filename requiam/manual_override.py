@@ -42,44 +42,8 @@ class ManualOverride:
         self.quota_file = quota_file
 
         # Read in as pandas DataFrame
-        self.portal_df = self.read_manual_file(self.portal_file)
-        self.quota_df = self.read_manual_file(self.quota_file)
-
-    @staticmethod
-    def read_manual_file(input_file):
-        """Read in manual override file as pandas DataFrame"""
-
-        try:
-            df = pd.read_csv(input_file, comment='#')
-
-            return df
-        except FileNotFoundError:
-            print(f"File not found! : {input_file}")
-
-    @staticmethod
-    def update_entries(ldap_set, netid, uaid, action):
-        """Add/remove entries from a set"""
-
-        if action not in ['remove', 'add']:
-            raise ValueError("Incorrect [action] input")
-
-        new_ldap_set = set(ldap_set)
-
-        if action == 'remove':
-            if isinstance(netid, list):
-                print(f"Removing : {list(netid)}")
-            if isinstance(netid, str):
-                print(f"Removing : {netid}")
-            new_ldap_set = ldap_set - uaid
-
-        if action == 'add':
-            if isinstance(netid, list):
-                print(f"Adding : {list(netid)}")
-            if isinstance(netid, str):
-                print(f"Adding : {netid}")
-            new_ldap_set = set.union(ldap_set, uaid)
-
-        return new_ldap_set
+        self.portal_df = read_manual_file(self.portal_file)
+        self.quota_df = read_manual_file(self.quota_file)
 
     def identify_changes(self, ldap_set, group, group_type):
         """Identify changes to call update_entries accordingly"""
@@ -100,66 +64,127 @@ class ManualOverride:
         add_ldap_set = set(ldap_set)
         if len(add_df) > 0:
             # Add to ldap_set
-            add_ldap_set = self.update_entries(ldap_set, add_df['netid'],
-                                               add_df['uaid'], 'add')
+            add_ldap_set = update_entries(ldap_set, add_df['netid'],
+                                          add_df['uaid'], 'add')
 
         # Identify those that needs to be excluded in [group]
         outside_df = manual_df.loc[manual_df[group_type] != group]
         if len(outside_df) > 0:
-            new_ldap_set = self.update_entries(add_ldap_set, outside_df['netid'],
-                                               outside_df['uaid'], 'remove')
+            new_ldap_set = update_entries(add_ldap_set, outside_df['netid'],
+                                          outside_df['uaid'], 'remove')
         else:
             new_ldap_set = add_ldap_set
 
         return new_ldap_set
 
-    @staticmethod
-    def get_current_groups(uid, ldap_dict, log):
-        """Retrieve current Figshare ismemberof association"""
-        mo_ldc = LDAPConnection(**ldap_dict)
-        mo_ldc.ldap_attribs = ['ismemberof']
 
-        user_query = f'(uid={uid})'
+def read_manual_file(input_file):
+    """
+    Purpose:
+      Read in manual override file as pandas DataFrame
 
-        mo_ldc.ldc.search(mo_ldc.ldap_search_dn, user_query, attributes=mo_ldc.ldap_attribs)
+    :param input_file: full filename
+    :return df: pandas DataFrame
+    """
 
-        membership = mo_ldc.ldc.entries[0].ismemberof.value
+    try:
+        df = pd.read_csv(input_file, comment='#')
 
-        figshare_dict = dict()
+        return df
+    except FileNotFoundError:
+        print(f"File not found! : {input_file}")
 
-        if isinstance(membership, type(None)):
-            log.warning("No ismembersof attributes")
 
-            figshare_dict['portal'] = ''
-            figshare_dict['quota'] = ''
-            return figshare_dict
+def update_entries(ldap_set, netid, uaid, action):
+    """
+    Purpose:
+      Add/remove entries from a set
 
-        # Extract portal
-        portal_stem = figshare_stem('portal')
-        portal = [s for s in membership if ((portal_stem in s) and ('grouper' not in s))]
-        if len(portal) == 0:
-            log.info("No Grouper group found!")
-            figshare_dict['portal'] = ''  # Initialize to use later
-        else:
-            if len(portal) != 1:
-                log.warning("ERROR! Multiple Grouper portal found")
-                raise ValueError
-            else:
-                figshare_dict['portal'] = portal[0].replace(portal_stem + ':', '')
-                log.info(f"Current portal is : {figshare_dict['portal']}")
+    :param ldap_set: set of uaid values
+    :param netid: User netid
+    :param uaid: User uaid
+    :param action: str
+      Action to perform. Either 'remove' or 'add'
+    :return new_ldap_set: Updated set of uaid values
+    """
 
-        # Extract quota
-        quota_stem = figshare_stem('quota')
-        quota = [s for s in membership if ((quota_stem in s) and ('grouper' not in s))]
-        if len(quota) == 0:
-            log.info("No Grouper group found!")
-            figshare_dict['quota'] = ''  # Initialize to use later
-        else:
-            if len(quota) != 1:
-                log.warning("ERROR! Multiple Grouper quota found")
-                raise ValueError
-            else:
-                figshare_dict['quota'] = quota[0].replace(quota_stem + ':', '')
-                log.info(f"Current quota is : {figshare_dict['quota']} bytes")
+    if action not in ['remove', 'add']:
+        raise ValueError("Incorrect [action] input")
 
+    new_ldap_set = set(ldap_set)
+
+    if action == 'remove':
+        if isinstance(netid, list):
+            print(f"Removing : {list(netid)}")
+        if isinstance(netid, str):
+            print(f"Removing : {netid}")
+        new_ldap_set = ldap_set - uaid
+
+    if action == 'add':
+        if isinstance(netid, list):
+            print(f"Adding : {list(netid)}")
+        if isinstance(netid, str):
+            print(f"Adding : {netid}")
+        new_ldap_set = set.union(ldap_set, uaid)
+
+    return new_ldap_set
+
+
+def get_current_groups(uid, ldap_dict, log):
+    """
+    Purpose:
+      Retrieve current Figshare ismemberof association
+
+    :param uid: str containing User NetID
+    :param ldap_dict: dict containing ldap settings
+    :param log: LogClass object for logging
+    :return figshare_dict: dict containing current Figshare portal and quota
+    """
+
+    mo_ldc = LDAPConnection(**ldap_dict)
+    mo_ldc.ldap_attribs = ['ismemberof']
+
+    user_query = f'(uid={uid})'
+
+    mo_ldc.ldc.search(mo_ldc.ldap_search_dn, user_query, attributes=mo_ldc.ldap_attribs)
+
+    membership = mo_ldc.ldc.entries[0].ismemberof.value
+
+    figshare_dict = dict()
+
+    if isinstance(membership, type(None)):
+        log.warning("No ismembersof attributes")
+
+        figshare_dict['portal'] = ''
+        figshare_dict['quota'] = ''
         return figshare_dict
+
+    # Extract portal
+    portal_stem = figshare_stem('portal')
+    portal = [s for s in membership if ((portal_stem in s) and ('grouper' not in s))]
+    if len(portal) == 0:
+        log.info("No Grouper group found!")
+        figshare_dict['portal'] = ''  # Initialize to use later
+    else:
+        if len(portal) != 1:
+            log.warning("ERROR! Multiple Grouper portal found")
+            raise ValueError
+        else:
+            figshare_dict['portal'] = portal[0].replace(portal_stem + ':', '')
+            log.info(f"Current portal is : {figshare_dict['portal']}")
+
+    # Extract quota
+    quota_stem = figshare_stem('quota')
+    quota = [s for s in membership if ((quota_stem in s) and ('grouper' not in s))]
+    if len(quota) == 0:
+        log.info("No Grouper group found!")
+        figshare_dict['quota'] = ''  # Initialize to use later
+    else:
+        if len(quota) != 1:
+            log.warning("ERROR! Multiple Grouper quota found")
+            raise ValueError
+        else:
+            figshare_dict['quota'] = quota[0].replace(quota_stem + ':', '')
+            log.info(f"Current quota is : {figshare_dict['quota']} bytes")
+
+    return figshare_dict
