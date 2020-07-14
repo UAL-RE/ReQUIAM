@@ -1,5 +1,7 @@
 import requests
 
+from .delta import Delta
+from .manual_override import update_entries
 from .commons import figshare_stem
 
 
@@ -78,3 +80,43 @@ def figshare_group(group, root_stem):
         grouper_group = '{}:{}'.format(stem_query, group)
 
     return grouper_group
+
+
+def grouper_delta_user(group, stem, netid, uaid, action,
+                       grouper_dict, delta_dict, log):
+    """
+    Purpose:
+      Construct a Delta object for addition/deletion based for a specified
+      user. This is designed primarily for the user_update script
+
+    :param group: str
+      The Grouper group to update
+    :param stem: str
+      The Grouper stem (e.g., 'portal', 'quota')
+    :param netid: str
+      The User NetID
+    :param uaid: str
+      The User UA ID
+    :param action: str
+      The action to perform. 'add' or 'remove'
+    :param grouper_dict: dict
+      Dictionary containing grouper settings
+    :param delta_dict:
+      Dictionary containing delta settings
+    :param log: LogClass object
+      For logging
+    :return d: Delta object class
+    """
+
+    grouper_query = figshare_group(group, stem)
+    gq = GrouperQuery(**grouper_dict, grouper_group=grouper_query)
+
+    member_set = gq.members
+    member_set = update_entries(member_set, netid, uaid, action)
+
+    d = Delta(ldap_members=member_set,
+              grouper_query_instance=gq,
+              **delta_dict,
+              log=log)
+
+    return d
