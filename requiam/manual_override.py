@@ -8,9 +8,9 @@ class ManualOverride:
     """
     Purpose:
       This class handles manual override changes.  It reads in CSV
-      configuration files and queries pandas DataFrame
-      to identify additions and deletions. Employ set operations for
-      simplicity
+      configuration files and queries pandas DataFrame to identify additions
+      and deletions. Employ set operations for simplicity. It also update
+      the pandas DataFrame
 
     Attributes
     ----------
@@ -76,6 +76,35 @@ class ManualOverride:
             new_ldap_set = add_ldap_set
 
         return new_ldap_set
+
+    def update_dataframe(self, netid, uaid, group, group_type):
+        """Update pandas DataFrame with necessary changes"""
+
+        if group_type not in ['portal', 'quota']:
+            raise ValueError("Incorrect [group_type] input")
+
+        if group_type == 'portal':
+            revised_df = self.portal_df
+        if group_type == 'quota':
+            revised_df = self.quota_df
+
+        loc0 = revised_df.loc[revised_df['netid'] == netid].index
+        if len(loc0) == 0:
+            print(f"Adding entry for {netid}")
+            revised_df.loc[len(revised_df)] = [netid, uaid, group]
+        else:
+            print(f"Updating entry for {netid}")
+            revised_df.loc[loc0[0]] = [netid, uaid, group]
+
+        if group_type == 'portal':
+            self.portal_df = revised_df
+            print("Update portal csv")
+            self.portal_df.to_csv(self.portal_file)
+
+        if group_type == 'quota':
+            self.quota_df = revised_df
+            print("Update quota csv")
+            self.quota_df.to_csv(self.portal_file)
 
 
 def read_manual_file(input_file):
