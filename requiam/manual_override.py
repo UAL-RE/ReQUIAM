@@ -120,17 +120,19 @@ class ManualOverride:
         mo_ldc.ldap_attribs = ['ismemberof']
 
         user_query = f'(uid={uid})'
-        print(user_query)
 
         mo_ldc.ldc.search(mo_ldc.ldap_search_dn, user_query, attributes=mo_ldc.ldap_attribs)
 
         membership = mo_ldc.ldc.entries[0].ismemberof.value
 
+        figshare_dict = dict()
+
         if isinstance(membership, type(None)):
             log.warning("No ismembersof attributes")
-            raise TypeError
 
-        figshare_dict = dict()
+            figshare_dict['portal'] = ''
+            figshare_dict['quota'] = ''
+            return figshare_dict
 
         # Extract portal
         portal_stem = figshare_stem('portal')
