@@ -122,42 +122,38 @@ if __name__ == '__main__':
     log.info(f" uaid for {vargs['netid']} : {list(user_uaid)[0]}")
 
     # Retrieve ismemberof figshare information
-    try:
-        current_dict = mo.get_current_groups(vargs['netid'], ldap_dict, log)
-        remove_current_group = 1
-    except TypeError:
-        remove_current_group = 0
-        pass  # Can proceed forward. Just no current association
+    current_dict = mo.get_current_groups(vargs['netid'], ldap_dict, log)
 
     # Portal update
     if vargs['portal'] != '(unset)':
         # First remove from current portal group
-        if remove_current_group:
-            if current_dict['portal'] != '':
-                log.info(f"Removing from current {current_dict['portal']} portal")
+        if current_dict['portal'] == '':
+            log.info("Currently not assigned to a portal. Skipping removal")
+        else:
+            log.info(f"Removing from current {current_dict['portal']} portal")
 
-                portal_query = grouper_query.figshare_group(current_dict['portal'], 'portal')
-                gq = grouper_query.GrouperQuery(**grouper_dict,
-                                                grouper_group=portal_query)
-                portal_set = gq.members
-                portal_set = mo.update_entries(portal_set, vargs['netid'], user_uaid, 'remove')
+            portal_query = grouper_query.figshare_group(current_dict['portal'], 'portal')
+            gq = grouper_query.GrouperQuery(**grouper_dict,
+                                            grouper_group=portal_query)
+            portal_set = gq.members
+            portal_set = mo.update_entries(portal_set, vargs['netid'], user_uaid, 'remove')
 
-                log.info(" Grouper size {}".format(len(gq.members)))
+            log.info(" Grouper size {}".format(len(gq.members)))
 
-                d = delta.Delta(ldap_members=portal_set,
-                                grouper_query_instance=gq,
-                                **delta_dict,
-                                log=log)
+            d = delta.Delta(ldap_members=portal_set,
+                            grouper_query_instance=gq,
+                            **delta_dict,
+                            log=log)
 
-                log.info(f"ldap and grouper have {len(d.common)} members in common")
-                log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {current_dict['portal']} group")
-                log.info(f"synchronization will add {len(d.adds)} entries to Grouper {current_dict['portal']} group")
+            log.info(f"ldap and grouper have {len(d.common)} members in common")
+            log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {current_dict['portal']} group")
+            log.info(f"synchronization will add {len(d.adds)} entries to Grouper {current_dict['portal']} group")
 
-                if args.sync:
-                    log.info('synchronizing ...')
-                    d.synchronize()
-                else:
-                    log.info('dry run, not performing synchronization')
+            if args.sync:
+                log.info('synchronizing ...')
+                d.synchronize()
+            else:
+                log.info('dry run, not performing synchronization')
 
         # Add to new portal group
         log.info(f"Adding to {vargs['portal']} portal")
