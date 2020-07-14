@@ -163,21 +163,32 @@ if __name__ == '__main__':
 
     # Quota update
     if vargs['quota'] != '(unset)':
-        log.info(f"Updating {vargs['quota']} portal")
-        '''
-        quota_query = grouper_query.figshare_group(vargs['quota'], 'quota')
-        gq = grouper_query.GrouperQuery(**grouper_dict,
-                                        grouper_group=quota_query)
-        quota_set = gq.members
-        quota_set = update_entries(quota_set, vargs['netid'], user_uaid, 'add')
+        # First remove from current quota group
+        if current_dict['quota'] == '':
+            log.info("Currently not assigned to a quota. Skipping removal")
+        else:
+            log.info(f"Removing from current {current_dict['quota']} quota")
 
-        # Grouper query
-        log.info(" Grouper size {}".format(len(gq.members)))
+            d = grouper_delta_user(current_dict['quota'], 'quota',
+                                   vargs['netid'], user_uaid, 'remove',
+                                   grouper_dict, delta_dict, log)
 
-        d = delta.Delta(ldap_members=quota_set,
-                        grouper_query_instance=gq,
-                        **delta_dict,
-                        log=log)
+            log.info(f"ldap and grouper have {len(d.common)} members in common")
+            log.info(f"synchronization will drop {len(d.drops)} entries from Grouper {current_dict['quota']} group")
+            log.info(f"synchronization will add {len(d.adds)} entries to Grouper {current_dict['quota']} group")
+
+        if args.sync:
+            log.info('synchronizing ...')
+            d.synchronize()
+        else:
+            log.info('dry run, not performing synchronization')
+
+        # Add to new quota group
+        log.info(f"Updating {vargs['quota']} quota")
+
+        d = grouper_delta_user(vargs['quota'], 'quota',
+                               vargs['netid'], user_uaid, 'add',
+                               grouper_dict, delta_dict, log)
 
         log.info(f"ldap and grouper have {len(d.common)} members in common")
         log.info(f"synchronization will drop {len(d.drops)} entries from Grouper {vargs['quota']} group")
@@ -188,5 +199,5 @@ if __name__ == '__main__':
             d.synchronize()
         else:
             log.info('dry run, not performing synchronization')
-        '''
-    # Update manual CSV file
+
+    # Placeholder to update manual CSV file
