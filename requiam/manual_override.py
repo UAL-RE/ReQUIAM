@@ -41,9 +41,13 @@ class ManualOverride:
         self.portal_file = portal_file
         self.quota_file = quota_file
 
-        # Read in as pandas DataFrame
-        self.portal_df = read_manual_file(self.portal_file)
-        self.quota_df = read_manual_file(self.quota_file)
+        # Read in CSV as pandas DataFrame
+        self.portal_df = read_manual_file(self.portal_file, 'portal')
+        self.quota_df = read_manual_file(self.quota_file, 'quota')
+
+        # Read in CSV headers
+        self.portal_header = csv_commented_header(self.portal_file)
+        self.quota_header = csv_commented_header(self.quota_file)
 
     def identify_changes(self, ldap_set, group, group_type):
         """Identify changes to call update_entries accordingly"""
@@ -91,33 +95,69 @@ class ManualOverride:
         loc0 = revised_df.loc[revised_df['netid'] == netid].index
         if len(loc0) == 0:
             print(f"Adding entry for {netid}")
-            revised_df.loc[len(revised_df)] = [netid, uaid, group]
+            revised_df.loc[len(revised_df)] = [netid, list(uaid)[0], group]
         else:
             print(f"Updating entry for {netid}")
-            revised_df.loc[loc0[0]] = [netid, uaid, group]
+            revised_df.loc[loc0[0]] = [netid, list(uaid)[0], group]
 
+        print(f"Update {group_type} csv")
         if group_type == 'portal':
             self.portal_df = revised_df
-            print("Update portal csv")
-            self.portal_df.to_csv(self.portal_file)
+
+            print(f"Overwriting : {self.portal_file}")
+            f = open(self.portal_file, 'w')
+            f.writelines(self.portal_header)
+            self.portal_df.to_csv(f, index=False)
 
         if group_type == 'quota':
             self.quota_df = revised_df
-            print("Update quota csv")
-            self.quota_df.to_csv(self.portal_file)
+
+            print(f"Overwriting : {self.quota_file}")
+            f = open(self.quota_file, 'w')
+            f.writelines(self.quota_header)
+            self.quota_df.to_csv(f, index=False)
 
 
-def read_manual_file(input_file):
+def csv_commented_header(input_file):
+    """
+    Purpose:
+      Read in the comment header in CSV files to re-populate later
+
+    :param input_file: full filename
+
+    :return: header: list of strings
+    """
+
+    f = open(input_file, 'r')
+    f_all = f.readlines()
+    header = [line for line in f_all if line.startswith('#')]
+
+    f.close()
+    return header
+
+
+def read_manual_file(input_file, group_type):
     """
     Purpose:
       Read in manual override file as pandas DataFrame
 
     :param input_file: full filename
+    :param group_type: str containing group_type. Either 'portal' or 'quota'
     :return df: pandas DataFrame
     """
 
+    if group_type not in ['portal', 'quota']:
+        raise ValueError("Incorrect [group_type] input")
+
+    dtype_dict = {'netid': str, 'uaid': str}
+
+    if group_type == 'portal':
+        dtype_dict[group_type] = str
+    if group_type == 'quota':
+        dtype_dict[group_type] = int
+
     try:
-        df = pd.read_csv(input_file, comment='#')
+        df = pd.read_csv(input_file, comment='#', dtype=dtype_dict)
 
         return df
     except FileNotFoundError:
