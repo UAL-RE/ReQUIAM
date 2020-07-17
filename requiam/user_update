@@ -158,6 +158,9 @@ if __name__ == '__main__':
         if args.sync:
             log.info('synchronizing ...')
             d.synchronize()
+
+            # Update manual CSV file
+            mo.update_dataframe(vargs['netid'], user_uaid, vargs['portal'], 'portal')
         else:
             log.info('dry run, not performing synchronization')
 
@@ -177,11 +180,11 @@ if __name__ == '__main__':
             log.info(f"synchronization will drop {len(d.drops)} entries from Grouper {current_dict['quota']} group")
             log.info(f"synchronization will add {len(d.adds)} entries to Grouper {current_dict['quota']} group")
 
-        if args.sync:
-            log.info('synchronizing ...')
-            d.synchronize()
-        else:
-            log.info('dry run, not performing synchronization')
+            if args.sync:
+                log.info('synchronizing ...')
+                d.synchronize()
+            else:
+                log.info('dry run, not performing synchronization')
 
         # Add to new quota group
         log.info(f"Updating {vargs['quota']} quota")
@@ -197,7 +200,8 @@ if __name__ == '__main__':
         if args.sync:
             log.info('synchronizing ...')
             d.synchronize()
+
+            # Update manual CSV file
+            mo.update_dataframe(vargs['netid'], user_uaid, vargs['quota'], 'quota')
         else:
             log.info('dry run, not performing synchronization')
-
-    # Placeholder to update manual CSV file
