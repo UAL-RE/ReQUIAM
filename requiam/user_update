@@ -145,24 +145,25 @@ if __name__ == '__main__':
                 log.info('dry run, not performing synchronization')
 
         # Add to new portal group
-        log.info(f"Adding to {vargs['portal']} portal")
+        if vargs['portal'] != 'root':
+            log.info(f"Adding to {vargs['portal']} portal")
 
-        d = grouper_delta_user(vargs['portal'], 'portal',
-                               vargs['netid'], user_uaid, 'add',
-                               grouper_dict, delta_dict, log)
+            d = grouper_delta_user(vargs['portal'], 'portal',
+                                   vargs['netid'], user_uaid, 'add',
+                                   grouper_dict, delta_dict, log)
 
-        log.info(f"ldap and grouper have {len(d.common)} members in common")
-        log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {vargs['portal']} group")
-        log.info(f"synchronization will add {len(d.adds)} entries to Grouper {vargs['portal']} group")
+            log.info(f"ldap and grouper have {len(d.common)} members in common")
+            log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {vargs['portal']} group")
+            log.info(f"synchronization will add {len(d.adds)} entries to Grouper {vargs['portal']} group")
 
-        if args.sync:
-            log.info('synchronizing ...')
-            d.synchronize()
+            if args.sync:
+                log.info('synchronizing ...')
+                d.synchronize()
 
-            # Update manual CSV file
-            mo.update_dataframe(vargs['netid'], user_uaid, vargs['portal'], 'portal')
-        else:
-            log.info('dry run, not performing synchronization')
+                # Update manual CSV file
+                mo.update_dataframe(vargs['netid'], user_uaid, vargs['portal'], 'portal')
+            else:
+                log.info('dry run, not performing synchronization')
 
     # Quota update
     if vargs['quota'] != '(unset)':
