@@ -97,8 +97,12 @@ class ManualOverride:
             print(f"Adding entry for {netid}")
             revised_df.loc[len(revised_df)] = [netid, list(uaid)[0], group]
         else:
-            print(f"Updating entry for {netid}")
-            revised_df.loc[loc0[0]] = [netid, list(uaid)[0], group]
+            if group != 'root':
+                print(f"Updating entry for {netid}")
+                revised_df.loc[loc0[0]] = [netid, list(uaid)[0], group]
+            else:
+                print(f"Removing entry for {netid}")
+                revised_df = revised_df.drop(loc0)
 
         print(f"Update {group_type} csv")
         if group_type == 'portal':

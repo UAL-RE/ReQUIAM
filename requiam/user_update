@@ -164,6 +164,9 @@ if __name__ == '__main__':
                 mo.update_dataframe(vargs['netid'], user_uaid, vargs['portal'], 'portal')
             else:
                 log.info('dry run, not performing synchronization')
+        else:
+            # Remove entry from manual CSV file for 'root' case
+            mo.update_dataframe(vargs['netid'], user_uaid, vargs['portal'], 'portal')
 
     # Quota update
     if vargs['quota'] != '(unset)':
