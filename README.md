@@ -102,9 +102,14 @@ You should see that the version is `0.9.1`.
 
 Configuration settings are specified through the [config/figshare.ini](config/figshare.ini) file.
 The most important settings to set are those populated with `***override***`.
-However, for our scripts, these settings can be specified using multiple
-character options, such as `--ldap_password`.
+However, for our scripts, these settings can be specified using multi-character 
+flag options, such as `--ldap_password`.
 Note that most `figshare.ini` settings can be overwritten through the command line.
+
+For manual override (v0.11.0) where IAM portal and quota settings differ from
+norm, `config` will include two CSV templates for portal and quota to specify
+those changes.
+
 
 ### Testing Installation
 
