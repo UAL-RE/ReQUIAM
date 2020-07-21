@@ -4,6 +4,7 @@
 - [Getting Started](#getting-started)
     - [Requirements](#requirements)
     - [Installation Instructions](#installation-instructions)
+    - [Configuration Settings](#configuration-settings)
     - [Testing Installation](#testing-installation)
 - [Execution](#execution)
 - [Versioning](#versioning)
@@ -23,8 +24,8 @@ the [University of Arizona's Figshare data repository](https://arizona.figshare.
     association, it sets `ismemberof` [Grouper](https://www.incommon.org/software/grouper/) membership
 
 The Grouper memberships are as follow:
- 1. The allowed user quota for upload, determined by the user's classification,
-    is set by Grouper `figshare:quota:<value>` group.
+ 1. The allowed user quota for upload (in bytes), determined by the user's
+    classification, is set by Grouper `figshare:quota:<value>` group.
  2. The "research theme/portal", determined by the user's organizational
     affiliation, is set by Grouper `figshare:portal:<value>` group.
 
@@ -56,7 +57,7 @@ You will need the following to have a working copy of this software. See
 2. [`pandas`](https://pandas.pydata.org/) ([0.25.3](https://pandas.pydata.org/pandas-docs/version/0.25.3/))
 3. [`ldap3`](https://ldap3.readthedocs.io/en/latest/) (2.6.1)
 4. [`requests`](https://requests.readthedocs.io/en/master/) (2.22.0)
-5. [`numpy`](https://numpy.org/doc/) ([1.18.0](https://numpy.org/doc/1.18/)
+5. [`numpy`](https://numpy.org/doc/) ([1.18.0](https://numpy.org/doc/1.18/))
 
 ### Installation Instructions
 
@@ -97,6 +98,13 @@ You can confirm installation via `conda list`
 
 You should see that the version is `0.9.1`.
 
+### Configuration Settings
+
+Configuration settings are specified through the [config/figshare.ini](config/figshare.ini) file.
+The most important settings to set are those populated with `***override***`.
+However, for our scripts, these settings can be specified using multiple
+character options, such as `--ldap_password`.
+Note that most `figshare.ini` settings can be overwritten through the command line.
 
 ### Testing Installation
 
