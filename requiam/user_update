@@ -117,6 +117,10 @@ if __name__ == '__main__':
     # Get uaid based on NetID (uid)
     uid_query = ldap_query.uid_query(vargs['netid'])
     user_uaid = ldap_query.ldap_search(ldc, uid_query)
+    if len(user_uaid) == 0:
+        log.warning("netid not found!")
+        raise ValueError
+
     log.info(f" uaid for {vargs['netid']} : {list(user_uaid)[0]}")
 
     # Retrieve ismemberof figshare information
