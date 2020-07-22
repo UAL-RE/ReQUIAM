@@ -16,22 +16,22 @@
 ## Overview
 
 This identity and access management (IAM) software performs the following for
-the [University of Arizona's Figshare data repository](https://arizona.figshare.com):
+the [University of Arizona's Research Data Repository (ReDATA)](https://arizona.figshare.com):
  1. It conducts EDS queries to retrieve classification information
     (e.g., student, staff, and/or faculty) and association with
-    organization codes (i.e., departments)
+    organization codes (i.e., departments/colleges)
  2. Based on classification information and primary organization
     association, it sets `ismemberof` [Grouper](https://www.incommon.org/software/grouper/) membership
 
 The Grouper memberships are as follow:
  1. The allowed user quota for upload (in bytes), determined by the user's
-    classification, is set by Grouper `figshare:quota:<value>` group.
+    classification, is set by Grouper `figshare:quota:<value>` group
  2. The "research theme/portal", determined by the user's organizational
-    affiliation, is set by Grouper `figshare:portal:<value>` group.
+    affiliation, is set by Grouper `figshare:portal:<value>` group
 
 For the latter, these portals and their association with University
 organization code(s) are defined within this
-[CSV file](https://raw.githubusercontent.com/ualibraries/DataRepository_research_themes/master/DataRepository_research_themes/data/research_themes.csv).
+[CSV file](https://raw.githubusercontent.com/ualibraries/ReQUIAM_csv/master/requiam_csv/data/research_themes.csv).
 
 Note that access is granted to the service through membership in a Grouper
 `figshare:active` group.  These memberships are done indirectly based on
