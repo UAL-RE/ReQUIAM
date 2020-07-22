@@ -4,6 +4,7 @@
 - [Getting Started](#getting-started)
     - [Requirements](#requirements)
     - [Installation Instructions](#installation-instructions)
+    - [Configuration Settings](#configuration-settings)
     - [Testing Installation](#testing-installation)
 - [Execution](#execution)
 - [Versioning](#versioning)
@@ -15,22 +16,22 @@
 ## Overview
 
 This identity and access management (IAM) software performs the following for
-the [University of Arizona's Figshare data repository](https://arizona.figshare.com):
+the [University of Arizona's Research Data Repository (ReDATA)](https://arizona.figshare.com):
  1. It conducts EDS queries to retrieve classification information
     (e.g., student, staff, and/or faculty) and association with
-    organization codes (i.e., departments)
+    organization codes (i.e., departments/colleges)
  2. Based on classification information and primary organization
     association, it sets `ismemberof` [Grouper](https://www.incommon.org/software/grouper/) membership
 
 The Grouper memberships are as follow:
- 1. The allowed user quota for upload, determined by the user's classification,
-    is set by Grouper `figshare:quota:<value>` group.
+ 1. The allowed user quota for upload (in bytes), determined by the user's
+    classification, is set by Grouper `figshare:quota:<value>` group
  2. The "research theme/portal", determined by the user's organizational
-    affiliation, is set by Grouper `figshare:portal:<value>` group.
+    affiliation, is set by Grouper `figshare:portal:<value>` group
 
 For the latter, these portals and their association with University
 organization code(s) are defined within this
-[CSV file](https://raw.githubusercontent.com/ualibraries/DataRepository_research_themes/master/DataRepository_research_themes/data/research_themes.csv).
+[CSV file](https://raw.githubusercontent.com/ualibraries/ReQUIAM_csv/master/requiam_csv/data/research_themes.csv).
 
 Note that access is granted to the service through membership in a Grouper
 `figshare:active` group.  These memberships are done indirectly based on
@@ -56,7 +57,7 @@ You will need the following to have a working copy of this software. See
 2. [`pandas`](https://pandas.pydata.org/) ([0.25.3](https://pandas.pydata.org/pandas-docs/version/0.25.3/))
 3. [`ldap3`](https://ldap3.readthedocs.io/en/latest/) (2.6.1)
 4. [`requests`](https://requests.readthedocs.io/en/master/) (2.22.0)
-5. [`numpy`](https://numpy.org/doc/) ([1.18.0](https://numpy.org/doc/1.18/)
+5. [`numpy`](https://numpy.org/doc/) ([1.18.0](https://numpy.org/doc/1.18/))
 
 ### Installation Instructions
 
@@ -95,7 +96,19 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.9.1`.
+You should see that the version is `0.10.1`.
+
+### Configuration Settings
+
+Configuration settings are specified through the [config/figshare.ini](config/figshare.ini) file.
+The most important settings to set are those populated with `***override***`.
+However, for our scripts, these settings can be specified using multi-character 
+flag options, such as `--ldap_password`.
+Note that most `figshare.ini` settings can be overwritten through the command line.
+
+For manual override (v0.11.0) where IAM portal and quota settings differ from
+norm, `config` will include two CSV templates for portal and quota to specify
+those changes.
 
 
 ### Testing Installation
