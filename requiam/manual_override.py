@@ -10,14 +10,14 @@ class ManualOverride:
       This class handles manual override changes.  It reads in CSV
       configuration files and queries pandas DataFrame to identify additions
       and deletions. Employ set operations for simplicity. It also update
-      the pandas DataFrame
+      the pandas DataFrame after a change is implemented
 
     Attributes
     ----------
     portal_file : str
-      Full file path for CSV file containing manual portal specifications (e.g., config/portal_manual.csv)
+      Full file path for CSV file containing manual portal specs (e.g., config/portal_manual.csv)
     quota_file : str
-      Full file path for CSV file containing manual quota specifications (e.g., config/quota_manual.csv)
+      Full file path for CSV file containing manual quota specs (e.g., config/quota_manual.csv)
 
     portal_df : pandas.core.frame.DataFrame
       pandas DataFrame of [portal_csv]
@@ -37,13 +37,14 @@ class ManualOverride:
       Primary function that identify necessary changes based on specified
       group (either a portal or quota)
     """
-    def __init__(self, portal_file, quota_file):
+    def __init__(self, portal_file, quota_file, log):
         self.portal_file = portal_file
         self.quota_file = quota_file
+        self.log = log
 
         # Read in CSV as pandas DataFrame
-        self.portal_df = read_manual_file(self.portal_file, 'portal')
-        self.quota_df = read_manual_file(self.quota_file, 'quota')
+        self.portal_df = read_manual_file(self.portal_file, 'portal', log)
+        self.quota_df = read_manual_file(self.quota_file, 'quota', log)
 
         # Read in CSV headers
         self.portal_header = csv_commented_header(self.portal_file)
@@ -69,13 +70,13 @@ class ManualOverride:
         if len(add_df) > 0:
             # Add to ldap_set
             add_ldap_set = update_entries(ldap_set, add_df['netid'],
-                                          add_df['uaid'], 'add')
+                                          add_df['uaid'], 'add', self.log)
 
         # Identify those that needs to be excluded in [group]
         outside_df = manual_df.loc[manual_df[group_type] != group]
         if len(outside_df) > 0:
             new_ldap_set = update_entries(add_ldap_set, outside_df['netid'],
-                                          outside_df['uaid'], 'remove')
+                                          outside_df['uaid'], 'remove', self.log)
         else:
             new_ldap_set = add_ldap_set
 
@@ -94,21 +95,21 @@ class ManualOverride:
 
         loc0 = revised_df.loc[revised_df['netid'] == netid].index
         if len(loc0) == 0:
-            print(f"Adding entry for {netid}")
+            self.log.info(f"Adding entry for {netid}")
             revised_df.loc[len(revised_df)] = [netid, list(uaid)[0], group]
         else:
             if group != 'root':
-                print(f"Updating entry for {netid}")
+                self.log.info(f"Updating entry for {netid}")
                 revised_df.loc[loc0[0]] = [netid, list(uaid)[0], group]
             else:
-                print(f"Removing entry for {netid}")
+                self.log.info(f"Removing entry for {netid}")
                 revised_df = revised_df.drop(loc0)
 
-        print(f"Update {group_type} csv")
+        self.log.info(f"Updating {group_type} csv")
         if group_type == 'portal':
             self.portal_df = revised_df
 
-            print(f"Overwriting : {self.portal_file}")
+            self.log.info(f"Overwriting : {self.portal_file}")
             f = open(self.portal_file, 'w')
             f.writelines(self.portal_header)
             self.portal_df.to_csv(f, index=False)
@@ -116,7 +117,7 @@ class ManualOverride:
         if group_type == 'quota':
             self.quota_df = revised_df
 
-            print(f"Overwriting : {self.quota_file}")
+            self.log.info(f"Overwriting : {self.quota_file}")
             f = open(self.quota_file, 'w')
             f.writelines(self.quota_header)
             self.quota_df.to_csv(f, index=False)
@@ -140,7 +141,7 @@ def csv_commented_header(input_file):
     return header
 
 
-def read_manual_file(input_file, group_type):
+def read_manual_file(input_file, group_type, log):
     """
     Purpose:
       Read in manual override file as pandas DataFrame
@@ -165,10 +166,10 @@ def read_manual_file(input_file, group_type):
 
         return df
     except FileNotFoundError:
-        print(f"File not found! : {input_file}")
+        log.info(f"File not found! : {input_file}")
 
 
-def update_entries(ldap_set, netid, uaid, action):
+def update_entries(ldap_set, netid, uaid, action, log):
     """
     Purpose:
       Add/remove entries from a set
@@ -188,16 +189,16 @@ def update_entries(ldap_set, netid, uaid, action):
 
     if action == 'remove':
         if isinstance(netid, list):
-            print(f"Removing : {list(netid)}")
+            log.info(f"Removing : {list(netid)}")
         if isinstance(netid, str):
-            print(f"Removing : {netid}")
+            log.info(f"Removing : {netid}")
         new_ldap_set = ldap_set - uaid
 
     if action == 'add':
         if isinstance(netid, list):
-            print(f"Adding : {list(netid)}")
+            log.info(f"Adding : {list(netid)}")
         if isinstance(netid, str):
-            print(f"Adding : {netid}")
+            log.info(f"Adding : {netid}")
         new_ldap_set = set.union(ldap_set, uaid)
 
     return new_ldap_set
