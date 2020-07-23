@@ -109,7 +109,7 @@ if __name__ == '__main__':
                       sync_max=int(vargs['sync_max']))
 
     # Manual override class
-    mo = ManualOverride(vargs['portal_file'], vargs['quota_file'])
+    mo = ManualOverride(vargs['portal_file'], vargs['quota_file'], log)
 
     # Initiate LDAP connection
     ldc = ldap_query.LDAPConnection(**ldap_dict)
