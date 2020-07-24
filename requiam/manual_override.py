@@ -18,24 +18,25 @@ class ManualOverride:
       Full file path for CSV file containing manual portal specs (e.g., config/portal_manual.csv)
     quota_file : str
       Full file path for CSV file containing manual quota specs (e.g., config/quota_manual.csv)
+    log : LogClass object
+      For logging
 
     portal_df : pandas.core.frame.DataFrame
       pandas DataFrame of [portal_csv]
     quota_df : pandas.core.frame.DataFrame
       pandas DataFrame of [quota_csv]
 
+    portal_header : list containing portal header (commented out text) of [portal_csv]
+    quota_header : list containing portal header (commented out text) of [portal_csv]
+
     Methods
     -------
-    read_manual_file(input_file)
-      Read in CSV file with pandas and return pandas DataFrame
-
     update_entries(ldap_set, netid, uaid, action)
       Add/remove (action="add"/"remove") entries from set (ldap_set) based on
       uaid input
 
-    identify_changes(ldap_set, group, group_type):
-      Primary function that identify necessary changes based on specified
-      group (either a portal or quota)
+    update_dataframe(netid, uaid, group, group_type):
+      Update pandas DataFrame with necessary changes
     """
     def __init__(self, portal_file, quota_file, log):
         self.portal_file = portal_file
@@ -148,6 +149,7 @@ def read_manual_file(input_file, group_type, log):
 
     :param input_file: full filename
     :param group_type: str containing group_type. Either 'portal' or 'quota'
+    :param log: LogClass object
     :return df: pandas DataFrame
     """
 
@@ -179,6 +181,7 @@ def update_entries(ldap_set, netid, uaid, action, log):
     :param uaid: User uaid
     :param action: str
       Action to perform. Either 'remove' or 'add'
+    :param log: LogClass object
     :return new_ldap_set: Updated set of uaid values
     """
 
