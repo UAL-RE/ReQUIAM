@@ -119,4 +119,8 @@ def grouper_delta_user(group, stem, netid, uaid, action,
               **delta_dict,
               log=log)
 
+    log.info(f"ldap and grouper have {len(d.common)} members in common")
+    log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {group} group")
+    log.info(f"synchronization will add {len(d.adds)} entries to Grouper {group} group")
+
     return d

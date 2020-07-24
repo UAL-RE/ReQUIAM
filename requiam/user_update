@@ -141,10 +141,6 @@ if __name__ == '__main__':
                                        vargs['netid'], user_uaid, 'remove',
                                        grouper_dict, delta_dict, log)
 
-                log.info(f"ldap and grouper have {len(d.common)} members in common")
-                log.info(f"synchronization will drop {len(d.drops)} entries from Grouper {current_dict['portal']} group")
-                log.info(f"synchronization will add {len(d.adds)} entries to Grouper {current_dict['portal']} group")
-
                 if args.sync:
                     log.info('synchronizing ...')
                     d.synchronize()
@@ -158,10 +154,6 @@ if __name__ == '__main__':
                 d = grouper_delta_user(vargs['portal'], 'portal',
                                        vargs['netid'], user_uaid, 'add',
                                        grouper_dict, delta_dict, log)
-
-                log.info(f"ldap and grouper have {len(d.common)} members in common")
-                log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {vargs['portal']} group")
-                log.info(f"synchronization will add {len(d.adds)} entries to Grouper {vargs['portal']} group")
 
                 if args.sync:
                     log.info('synchronizing ...')
@@ -193,10 +185,6 @@ if __name__ == '__main__':
                                        vargs['netid'], user_uaid, 'remove',
                                        grouper_dict, delta_dict, log)
 
-                log.info(f"ldap and grouper have {len(d.common)} members in common")
-                log.info(f"synchronization will drop {len(d.drops)} entries from Grouper {current_dict['quota']} group")
-                log.info(f"synchronization will add {len(d.adds)} entries to Grouper {current_dict['quota']} group")
-
                 if args.sync:
                     log.info('synchronizing ...')
                     d.synchronize()
@@ -209,10 +197,6 @@ if __name__ == '__main__':
             d = grouper_delta_user(vargs['quota'], 'quota',
                                    vargs['netid'], user_uaid, 'add',
                                    grouper_dict, delta_dict, log)
-
-            log.info(f"ldap and grouper have {len(d.common)} members in common")
-            log.info(f"synchronization will drop {len(d.drops)} entries from Grouper {vargs['quota']} group")
-            log.info(f"synchronization will add {len(d.adds)} entries to Grouper {vargs['quota']} group")
 
             if args.sync:
                 log.info('synchronizing ...')
