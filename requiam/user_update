@@ -163,12 +163,13 @@ if __name__ == '__main__':
                     mo.update_dataframe(vargs['netid'], user_uaid, vargs['portal'], 'portal')
                 else:
                     log.info('dry run, not performing synchronization')
+                    log.info('dry run, not updating portal dataframe')
             else:
                 # Remove entry from manual CSV file for 'root' case
                 if args.sync:
                     mo.update_dataframe(vargs['netid'], user_uaid, vargs['portal'], 'portal')
                 else:
-                    log.info('dry run, not updating dataframe')
+                    log.info('dry run, not updating portal dataframe')
 
     # Quota update
     if vargs['quota'] != '(unset)':
@@ -206,3 +207,4 @@ if __name__ == '__main__':
                 mo.update_dataframe(vargs['netid'], user_uaid, vargs['quota'], 'quota')
             else:
                 log.info('dry run, not performing synchronization')
+                log.info('dry run, not updating quota dataframe')
