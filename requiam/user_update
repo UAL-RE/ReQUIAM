@@ -124,20 +124,24 @@ if __name__ == '__main__':
 
     log.info(f" uaid for {vargs['netid']} : {list(user_uaid)[0]}")
 
+    # Grouper API tool
     ga = GrouperAPI(**grouper_dict)
 
+    # Check to see if portal exists on Grouper before proceeding
     if vargs['portal'] != '(unset)':
         portal_check = ga.check_group_exists(vargs['portal'], 'portal')
 
     if not portal_check:
         log.warning("portal not found on Grouper!")
 
+    # Check to see if quota exists on Grouper before proceeding
     if vargs['quota'] != '(unset)':
         quota_check = ga.check_group_exists(vargs['quota'], 'quota')
 
     if not quota_check:
         log.warning("quota not found on Grouper!")
 
+    # Raise error if either Grouper checks fails
     if not portal_check or not quota_check:
         raise SystemError
 
