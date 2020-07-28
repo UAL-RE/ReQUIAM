@@ -13,6 +13,7 @@ from requiam.grouper_query import grouper_delta_user
 from requiam.logger import LogClass
 from requiam import TimerClass
 from requiam.manual_override import ManualOverride, get_current_groups
+from requiam.grouper_admin import GrouperAPI
 
 today = date.today()
 
@@ -122,6 +123,23 @@ if __name__ == '__main__':
         raise ValueError
 
     log.info(f" uaid for {vargs['netid']} : {list(user_uaid)[0]}")
+
+    ga = GrouperAPI(**grouper_dict)
+
+    if vargs['portal'] != '(unset)':
+        portal_check = ga.check_group_exists(vargs['portal'], 'portal')
+
+    if not portal_check:
+        log.warning("portal not found on Grouper!")
+
+    if vargs['quota'] != '(unset)':
+        quota_check = ga.check_group_exists(vargs['quota'], 'quota')
+
+    if not quota_check:
+        log.warning("quota not found on Grouper!")
+
+    if not portal_check or not quota_check:
+        raise SystemError
 
     # Retrieve ismemberof figshare information
     current_dict = get_current_groups(vargs['netid'], ldap_dict, log)
