@@ -1,6 +1,9 @@
 # log_dir path
 logs/
 
+# private csv files (templates not included)
+config/*_manual.csv
+
 # PyCharm
 .idea/
 

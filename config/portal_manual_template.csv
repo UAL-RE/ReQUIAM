@@ -1,0 +1,6 @@
+# DO NOT REMOVE THIS COMMENTED TEXT!
+# This is a template for the portal_manual.csv input file
+# netid: This is the NetID handle. Also known as the uid EDS attribute
+# uaid: This is the unique identifier.  LDAP queries will return this ID
+# portal: This is the name of the portal (Grouper group) for user association
+netid,uaid,portal

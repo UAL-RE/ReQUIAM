@@ -1,5 +1,9 @@
 import requests
 
+from .delta import Delta
+from .manual_override import update_entries
+from .commons import figshare_stem
+
 
 class GrouperQuery(object):
     """
@@ -47,28 +51,6 @@ class GrouperQuery(object):
         return set(self._members)
 
 
-def figshare_stem(stem):
-    """
-    Purpose:
-      Construct Grouper figshare stems
-
-    :param stem: string corresponding to the sub-stem
-       Options are: 'quota', 'portal'
-
-    :return stem_query: str
-
-    Usage:
-      For quota stem, call as: figshare_stem('quota')
-        > 'arizona.edu:dept:LBRY:figshare:quota'
-
-      For portal stem, call as: figshare_stem('portal')
-        > 'arizona.edu:dept:LBRY:figshare:portal'
-    """
-
-    stem_query = 'arizona.edu:dept:LBRY:figshare:{}'.format(stem)
-    return stem_query
-
-
 def figshare_group(group, root_stem):
     """
     Purpose:
@@ -98,3 +80,47 @@ def figshare_group(group, root_stem):
         grouper_group = '{}:{}'.format(stem_query, group)
 
     return grouper_group
+
+
+def grouper_delta_user(group, stem, netid, uaid, action,
+                       grouper_dict, delta_dict, log):
+    """
+    Purpose:
+      Construct a Delta object for addition/deletion based for a specified
+      user. This is designed primarily for the user_update script
+
+    :param group: str
+      The Grouper group to update
+    :param stem: str
+      The Grouper stem (e.g., 'portal', 'quota')
+    :param netid: str
+      The User NetID
+    :param uaid: str
+      The User UA ID
+    :param action: str
+      The action to perform. 'add' or 'remove'
+    :param grouper_dict: dict
+      Dictionary containing grouper settings
+    :param delta_dict:
+      Dictionary containing delta settings
+    :param log: LogClass object
+      For logging
+    :return d: Delta object class
+    """
+
+    grouper_query = figshare_group(group, stem)
+    gq = GrouperQuery(**grouper_dict, grouper_group=grouper_query)
+
+    member_set = gq.members
+    member_set = update_entries(member_set, netid, uaid, action, log)
+
+    d = Delta(ldap_members=member_set,
+              grouper_query_instance=gq,
+              **delta_dict,
+              log=log)
+
+    log.info(f"ldap and grouper have {len(d.common)} members in common")
+    log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {group} group")
+    log.info(f"synchronization will add {len(d.adds)} entries to Grouper {group} group")
+
+    return d
