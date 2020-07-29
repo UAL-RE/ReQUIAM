@@ -106,10 +106,11 @@ if __name__ == '__main__':
     log.info('    debug = %s', args.debug)
 
     try:
-        mo = manual_override.ManualOverride(vargs['portal_file'], vargs['quota_file'])
+        mo = manual_override.ManualOverride(vargs['portal_file'], vargs['quota_file'], log)
         mo_status = True
     except ValueError:
-        print("Unable to find manual CSV configuration files")
+        log.warning("Unable to find manual CSV configuration files")
+        log.warning("Skipping manual handling")
         mo_status = False
 
     # Initiate LDAP connection
