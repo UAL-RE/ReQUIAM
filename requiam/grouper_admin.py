@@ -5,6 +5,12 @@ from .commons import figshare_stem
 
 
 class GrouperAPI:
+    """
+    Purpose:
+      This class uses the Grouper API to retrieve a variety of content
+
+    Additional documentation forthcoming
+    """
 
     def __init__(self, grouper_host, grouper_base_path, grouper_user, grouper_password):
 
