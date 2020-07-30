@@ -18,6 +18,7 @@ from requiam import delta
 from requiam import quota
 from requiam.logger import LogClass
 from requiam import TimerClass
+from requiam import manual_override
 
 today = date.today()
 
@@ -43,6 +44,8 @@ if __name__ == '__main__':
     parser.add_argument('--quota', action='store_true', help='perform quota queries')
     parser.add_argument('--test', action='store_true', help='perform test query')
     parser.add_argument('--test_reverse', action='store_true', help='reverse test query (i.e., remove from Grouper)')
+    parser.add_argument('--portal_file', help='filename for manual-override portal file')
+    parser.add_argument('--quota_file', help='filename for manual-override quota file')
     parser.add_argument('--sync', action='store_true', help='perform synchronization')
     parser.add_argument('--sync_max', help='maximum membership delta to allow when synchronizing')
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
@@ -70,7 +73,7 @@ if __name__ == '__main__':
     for p in ['ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
               'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
               'batch_size', 'batch_timeout', 'batch_delay', 'portal', 'quota',
-              'test', 'test_reverse', 'sync_max']:
+              'portal_file', 'quota_file', 'test', 'test_reverse', 'sync_max']:
 
         if (p in vargs) and (vargs[p] is not None):
             vargs[p] = vargs[p]
@@ -101,6 +104,14 @@ if __name__ == '__main__':
 
     log.info('     sync = %s', args.sync)
     log.info('    debug = %s', args.debug)
+
+    try:
+        mo = manual_override.ManualOverride(vargs['portal_file'], vargs['quota_file'], log)
+        mo_status = True
+    except ValueError:
+        log.warning("Unable to find manual CSV configuration files")
+        log.warning("Skipping manual handling")
+        mo_status = False
 
     # Initiate LDAP connection
     ldc = ldap_query.LDAPConnection(ldap_host=vargs['ldap_host'],
@@ -147,6 +158,10 @@ if __name__ == '__main__':
             ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
 
             ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+
+            # Update based on CSV manual input files
+            if mo_status:
+                ldap_members = mo.identify_changes(ldap_members, portal, 'portal')
             log.info(" EDS size {}".format(len(ldap_members)))
 
             # Grouper query
@@ -188,6 +203,10 @@ if __name__ == '__main__':
             ldap_queries = quota.ual_ldap_quota_query(c)
 
             ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+
+            # Update based on CSV manual input files
+            if mo_status:
+                ldap_members = mo.identify_changes(ldap_members, q, 'quota')
             log.info(" EDS size {}".format(len(ldap_members)))
 
             # Grouper query
