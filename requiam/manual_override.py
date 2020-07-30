@@ -70,14 +70,18 @@ class ManualOverride:
         add_ldap_set = set(ldap_set)
         if len(add_df) > 0:
             # Add to ldap_set
-            add_ldap_set = update_entries(ldap_set, add_df['netid'],
-                                          add_df['uaid'], 'add', self.log)
+            add_netid = add_df['netid'].to_list()
+            add_uaid = set(add_df['uaid'].to_list())
+            add_ldap_set = update_entries(ldap_set, add_netid, add_uaid,
+                                          'add', self.log)
 
         # Identify those that needs to be excluded in [group]
         outside_df = manual_df.loc[manual_df[group_type] != group]
         if len(outside_df) > 0:
-            new_ldap_set = update_entries(add_ldap_set, outside_df['netid'],
-                                          outside_df['uaid'], 'remove', self.log)
+            out_netid = outside_df['netid'].to_list()
+            out_uaid = set(outside_df['uaid'].to_list())
+            new_ldap_set = update_entries(add_ldap_set, out_netid, out_uaid,
+                                          'remove', self.log)
         else:
             new_ldap_set = add_ldap_set
 

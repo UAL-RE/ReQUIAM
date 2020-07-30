@@ -97,7 +97,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.10.2`.
+You should see that the version is `0.11.0`.
 
 ### Configuration Settings
 
@@ -189,7 +189,7 @@ Execution can be done as follows:
 Here, the script will update the specified `<username>` to be associated with
 the `123456` quota and the `testportal` portal.  Much like `script_run`,
 execution requires the `--sync` flag. Otherwise, a list of changes will be
-provided. Note that the script allow for changing just one (quota or portal).
+provided.
 
 To remove a user from its current assignment and place it on the main portal,
 use: `--portal root`.
