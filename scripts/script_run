@@ -20,13 +20,18 @@ from requiam.logger import LogClass
 from requiam import TimerClass
 from requiam import manual_override
 
-# Version info
+# Version and branch info
 from requiam import __version__
+from requiam.get_branch_name import get_active_branch_name
+from requiam import __file__ as library_path
 
 today = date.today()
 
 co_filename = __file__
 co_dir = path.dirname(co_filename)
+
+library_root_path = path.dirname(path.dirname(library_path))  # Retrieve parent directory to requiam
+
 
 if __name__ == '__main__':
     # Parse command-line arguments
@@ -54,12 +59,15 @@ if __name__ == '__main__':
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
 
+    branch_name = get_active_branch_name(library_root_path)
+
     banner_message = f"""
     This is the command-line tool that automates Grouper patron management.
     A full execution will update users' ismemberof attributes for:
      1. figshare:portal (--portal set) and
      2. figshare:quota  (--quota set)
 
+    ReQUIAM active branch: {branch_name}
     ReQUIAM version: {__version__}
     Created by Chun Ly
     Issues? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new
@@ -83,6 +91,7 @@ if __name__ == '__main__':
 
     log.info("******************************")
     log.info("Started script_run script ... ")
+    log.info(f"ReQUIAM active branch: {branch_name}")
     log.info(f"ReQUIAM version: {__version__}")
 
     cred_err = 0

@@ -15,13 +15,17 @@ from requiam import TimerClass
 from requiam.manual_override import ManualOverride, get_current_groups
 from requiam.grouper_admin import GrouperAPI
 
-# Version info
+# Version and branch info
 from requiam import __version__
+from requiam.get_branch_name import get_active_branch_name
+from requiam import __file__ as library_path
 
 today = date.today()
 
 co_filename = __file__
 co_dir = path.dirname(co_filename)
+
+library_root_path = path.dirname(path.dirname(library_path))  # Retrieve parent directory to requiam
 
 
 if __name__ == '__main__':
@@ -49,9 +53,12 @@ if __name__ == '__main__':
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
 
+    branch_name = get_active_branch_name(library_root_path)
+
     banner_message = f"""
     This is the command-line tool that enable manual updates to Grouper membership.
 
+    ReQUIAM active branch: {branch_name}
     ReQUIAM version: {__version__}
     Created by Chun Ly
     Issues? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new
@@ -74,6 +81,7 @@ if __name__ == '__main__':
 
     log.info("*******************************")
     log.info("Started user_update script ... ")
+    log.info(f"ReQUIAM active branch: {branch_name}")
     log.info(f"ReQUIAM version: {__version__}")
 
     cred_err = 0
