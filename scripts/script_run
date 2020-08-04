@@ -27,9 +27,6 @@ from requiam import __file__ as library_path
 
 today = date.today()
 
-co_filename = __file__
-co_dir = path.dirname(co_filename)
-
 library_root_path = path.dirname(path.dirname(library_path))  # Retrieve parent directory to requiam
 
 
