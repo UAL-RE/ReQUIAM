@@ -15,6 +15,9 @@ from requiam import TimerClass
 from requiam.manual_override import ManualOverride, get_current_groups
 from requiam.grouper_admin import GrouperAPI
 
+# Version info
+from requiam import __version__
+
 today = date.today()
 
 co_filename = __file__
@@ -46,6 +49,15 @@ if __name__ == '__main__':
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
 
+    banner_message = f"""
+    This is the command-line tool that enable manual updates to Grouper membership.
+
+    ReQUIAM version: {__version__}
+    Created by Chun Ly
+    Issues? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new
+    """
+    print(banner_message)
+
     main_timer = TimerClass()
     main_timer._start()
 
@@ -60,7 +72,9 @@ if __name__ == '__main__':
 
     log = LogClass(log_dir, logfile).get_logger()
 
-    log.info("Started user_update")
+    log.info("*******************************")
+    log.info("Started user_update script ... ")
+    log.info(f"ReQUIAM version: {__version__}")
 
     cred_err = 0
     vargs = vars(args)
@@ -230,3 +244,9 @@ if __name__ == '__main__':
             else:
                 log.info('dry run, not performing synchronization')
                 log.info('dry run, not updating quota dataframe')
+
+    main_timer._stop()
+    log.info(main_timer.format)
+
+    log.info("*******************************")
+    log.info("Exit 0")

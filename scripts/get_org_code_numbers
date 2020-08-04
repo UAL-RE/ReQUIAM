@@ -11,6 +11,9 @@ from requiam.org_code_numbers import get_numbers
 from requiam.logger import LogClass
 from requiam import TimerClass
 
+# Version info
+from requiam import __version__
+
 from datetime import date
 
 import configparser
@@ -30,6 +33,16 @@ if __name__ == '__main__':
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
 
+    banner_message = f"""
+    This is the command-line tool that queries EDS to retrieve UAL patron
+    membership based on organization codes.
+
+    ReQUIAM version: {__version__}
+    Created by Chun Ly
+    Issues? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new
+    """
+    print(banner_message)
+
     main_timer = TimerClass()
     main_timer._start()
 
@@ -44,7 +57,9 @@ if __name__ == '__main__':
 
     log = LogClass(log_dir, logfile).get_logger()
 
-    log.info("Started get_org_code_numbers script")
+    log.info("****************************************")
+    log.info("Started get_org_code_numbers script ... ")
+    log.info(f"ReQUIAM version: {__version__}")
 
     cred_err = 0
     vargs = vars(args)
@@ -91,4 +106,5 @@ if __name__ == '__main__':
     main_timer._stop()
     log.info(main_timer.format)
 
-    log.info("Completed get_ord_code_numbers successfully!")
+    log.info("***********************")
+    log.info("Exit 0")

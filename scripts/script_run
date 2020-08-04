@@ -20,6 +20,9 @@ from requiam.logger import LogClass
 from requiam import TimerClass
 from requiam import manual_override
 
+# Version info
+from requiam import __version__
+
 today = date.today()
 
 co_filename = __file__
@@ -51,6 +54,18 @@ if __name__ == '__main__':
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
 
+    banner_message = f"""
+    This is the command-line tool that automates Grouper patron management.
+    A full execution will update users' ismemberof attributes for:
+     1. figshare:portal (--portal set) and
+     2. figshare:quota  (--quota set)
+
+    ReQUIAM version: {__version__}
+    Created by Chun Ly
+    Issues? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new
+    """
+    print(banner_message)
+
     main_timer = TimerClass()
     main_timer._start()
 
@@ -66,7 +81,9 @@ if __name__ == '__main__':
 
     log = LogClass(log_dir, logfile).get_logger()
 
-    log.info("Started script_run")
+    log.info("******************************")
+    log.info("Started script_run script ... ")
+    log.info(f"ReQUIAM version: {__version__}")
 
     cred_err = 0
     vargs = vars(args)
@@ -274,7 +291,8 @@ if __name__ == '__main__':
         test_timer._stop()
         log.info("TEST_SYNC : "+test_timer.format)
 
-    log.info("Completed script_run successfully!")
-
     main_timer._stop()
     log.info(main_timer.format)
+
+    log.info("******************************")
+    log.info("Exit 0")
