@@ -7,16 +7,9 @@ import numpy as np
 from urllib.error import URLError
 
 # For LDAP query
-from .ldap_query import ual_grouper_base, ual_ldap_query, ldap_search, LDAPConnection
-
-# Logging
-from .logger import LogClass
-from . import TimerClass
+from .ldap_query import ual_grouper_base, ual_ldap_query, ldap_search
 
 from datetime import date
-
-import configparser
-import argparse
 
 today = date.today()
 
@@ -95,78 +88,3 @@ def get_numbers(lc, org_url, log_func):
         log_func.info("Please check your internet connection !")
         log_func.info("create_csv terminating !")
         raise URLError("Unable to retrieve Google Sheet")
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Command-line driver for Organization Code summary information.')
-    parser.add_argument('--config', required=True, help='path to configuration file')
-    parser.add_argument('--ldap_host', help='LDAP host')
-    parser.add_argument('--ldap_base_dn', help='base DN for LDAP bind and query')
-    parser.add_argument('--ldap_user', help='user name for LDAP login')
-    parser.add_argument('--ldap_password', help='password for LDAP login')
-    parser.add_argument('--org_url', help='URL that exports CSV file with organizational code ')
-    parser.add_argument('--debug', action='store_true', help='turn on debug logging')
-    args = parser.parse_args()
-
-    main_timer = TimerClass()
-    main_timer._start()
-
-    config = configparser.ConfigParser()
-    config.read(args.config)
-
-    # Define logfile
-    log_dir = config.get('global', 'log_dir')
-    if not path.exists(log_dir):
-        mkdir(log_dir)
-    logfile = "org_code_numbers.{}.log".format(today.strftime("%Y-%m-%d"))
-
-    log = LogClass(log_dir, logfile).get_logger()
-
-    log.info("Started org_code_numbers script")
-
-    cred_err = 0
-    vargs = vars(args)
-    for p in ['ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password']:
-
-        if (p in vargs) and (vargs[p] is not None):
-            vargs[p] = vargs[p]
-        elif (p in config['global']) and (config['global'][p] is not None) and \
-                (config['global'][p] != "***override***"):
-            vargs[p] = config['global'][p]
-        else:
-            vargs[p] = '(unset)'
-
-        if p in ['ldap_user', 'ldap_password']:
-            if vargs[p] is '(unset)':
-                log.info('   {0: >17} = (unset)'.format(p))
-                cred_err += 1
-            else:
-                log.info('   {0: >17} = (set)'.format(p))
-        else:
-            log.info('   {0: >17} = {1:}'. format(p, vargs[p]))
-
-    if cred_err:
-        log.warning("Not all credentials available!")
-        log.warning("Exiting")
-        raise ValueError
-
-    for p in ['org_url']:
-        if (p in vargs) and (vargs[p] is not None):
-            vargs[p] = vargs[p]
-        elif (p in config['org_code']) and (config['org_code'][p] is not None) and \
-                (config['org_code'][p] != "***override***"):
-            vargs[p] = config['org_code'][p]
-        else:
-            vargs[p] = '(unset)'
-
-    ldc = LDAPConnection(ldap_host=vargs['ldap_host'],
-                         ldap_base_dn=vargs['ldap_base_dn'],
-                         ldap_user=vargs['ldap_user'],
-                         ldap_password=vargs['ldap_password'])
-
-    get_numbers(ldc, vargs['org_url'], log)
-
-    main_timer._stop()
-    log.info(main_timer.format)
-
-    log.info("Completed org_code_numbers successfully!")

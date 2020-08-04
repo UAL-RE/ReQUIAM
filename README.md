@@ -97,7 +97,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.11.0`.
+You should see that the version is `0.11.1`.
 
 ### Configuration Settings
 
@@ -119,7 +119,8 @@ execute the following command:
 
 ```
 (figshare_patrons) $ export password="insert_password"
-(figshare_patrons) $ python ReQUIAM/script_run --config config/figshare.ini \
+(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run \
+                       --config config/figshare.ini \
                        --ldap_password $password --grouper_password $password
 ```
 
@@ -127,7 +128,7 @@ Test command-line flags (`test` and `test_reverse`) are available to test EDS
 query and Grouper synchronization (with the `sync` flag) by executing the following :
 
 ```
-(figshare_patrons) $ python ReQUIAM/script_run --test \
+(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run --test \
                        --sync --config config/figshare.ini \
                        --ldap_password $password --grouper_password $password
 ```
@@ -141,8 +142,8 @@ Without the `sync` flag, the above command line will perform a
 To undo this change, use the `test_reverse` flag:
 
 ```
-(figshare_patrons) $ python ReQUIAM/script_run --test_reverse \
-                       --sync --config config/figshare.ini \
+(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run \
+                       --test_reverse --sync --config config/figshare.ini \
                        --ldap_password $password --grouper_password $password
 ```
 
@@ -152,8 +153,9 @@ To execute the script and update Grouper and EDS, include the `portal`, `quota`,
 and `sync` command-line flags:
 
 ```
-(figshare_patrons) $ python ReQUIAM/script_run --quota --portal --sync \
-                       --config config/figshare.ini --ldap_password $password --grouper_password $password
+(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run \
+                       --quota --portal --sync --config config/figshare.ini \
+                       --ldap_password $password --grouper_password $password
 ```
 
 Note: Without the `sync` flag, the above command line will perform a
@@ -181,9 +183,10 @@ To this end, the `user_update` script should be used. It has several features:
 Execution can be done as follows:
 
 ```
-(figshare_patrons) $ python ReQUIAM/user_update --netid <username> --config config/figshare.ini \
-                        --quota 123456 --portal testportal \
-                        --ldap_password $password --grouper_password $password --sync
+(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/user_update \
+                       --netid <username> --config config/figshare.ini \
+                       --quota 123456 --portal testportal \
+                       --ldap_password $password --grouper_password $password --sync
 ```
 
 Here, the script will update the specified `<username>` to be associated with
