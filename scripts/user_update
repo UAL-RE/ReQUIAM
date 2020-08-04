@@ -15,10 +15,14 @@ from requiam import TimerClass
 from requiam.manual_override import ManualOverride, get_current_groups
 from requiam.grouper_admin import GrouperAPI
 
+# Version and branch info
+from requiam import __version__
+from requiam.get_branch_name import get_active_branch_name
+from requiam import __file__ as library_path
+
 today = date.today()
 
-co_filename = __file__
-co_dir = path.dirname(co_filename)
+library_root_path = path.dirname(path.dirname(library_path))  # Retrieve parent directory to requiam
 
 
 if __name__ == '__main__':
@@ -46,6 +50,18 @@ if __name__ == '__main__':
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
 
+    branch_name = get_active_branch_name(library_root_path)
+
+    banner_message = f"""
+    This is the command-line tool that enable manual updates to Grouper membership.
+
+    ReQUIAM active branch: {branch_name}
+    ReQUIAM version: {__version__}
+    Created by Chun Ly
+    Issues? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new
+    """
+    print(banner_message)
+
     main_timer = TimerClass()
     main_timer._start()
 
@@ -60,7 +76,10 @@ if __name__ == '__main__':
 
     log = LogClass(log_dir, logfile).get_logger()
 
-    log.info("Started user_update")
+    log.info("*******************************")
+    log.info("Started user_update script ... ")
+    log.info(f"ReQUIAM active branch: {branch_name}")
+    log.info(f"ReQUIAM version: {__version__}")
 
     cred_err = 0
     vargs = vars(args)
@@ -128,18 +147,20 @@ if __name__ == '__main__':
     ga = GrouperAPI(**grouper_dict)
 
     # Check to see if portal exists on Grouper before proceeding
+    portal_check = True
     if vargs['portal'] != '(unset)':
         portal_check = ga.check_group_exists(vargs['portal'], 'portal')
 
-    if not portal_check:
-        log.warning("portal not found on Grouper!")
+        if not portal_check:
+            log.warning("portal not found on Grouper!")
 
     # Check to see if quota exists on Grouper before proceeding
+    quota_check = True
     if vargs['quota'] != '(unset)':
         quota_check = ga.check_group_exists(vargs['quota'], 'quota')
 
-    if not quota_check:
-        log.warning("quota not found on Grouper!")
+        if not quota_check:
+            log.warning("quota not found on Grouper!")
 
     # Raise error if either Grouper checks fails
     if not portal_check or not quota_check:
@@ -230,3 +251,9 @@ if __name__ == '__main__':
             else:
                 log.info('dry run, not performing synchronization')
                 log.info('dry run, not updating quota dataframe')
+
+    main_timer._stop()
+    log.info(main_timer.format)
+
+    log.info("*******************************")
+    log.info("Exit 0")
