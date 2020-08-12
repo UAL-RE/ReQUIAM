@@ -238,7 +238,16 @@ def get_current_groups(uid, ldap_dict, log):
 
         figshare_dict['portal'] = ''
         figshare_dict['quota'] = ''
+        figshare_dict['active'] = False
         return figshare_dict
+
+    # Check for active group
+    active_stem = figshare_stem('active')
+    if active_stem in membership:
+        figshare_dict['active'] = True
+    else:
+        log.warning("No member of figshare:active group")
+        figshare_dict['active'] = False
 
     # Extract portal
     portal_stem = figshare_stem('portal')

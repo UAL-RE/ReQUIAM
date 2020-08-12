@@ -169,6 +169,22 @@ if __name__ == '__main__':
     # Retrieve ismemberof figshare information
     current_dict = get_current_groups(vargs['netid'], ldap_dict, log)
 
+    # Active update:
+    if not current_dict['active']:
+        log.info(f"Adding to figshare:active group")
+
+        d = grouper_delta_user('active', '',
+                               vargs['netid'], user_uaid, 'add',
+                               grouper_dict, delta_dict, log)
+
+        if args.sync:
+            log.info('synchronizing ...')
+            d.synchronize()
+        else:
+            log.info('dry run, not performing synchronization')
+    else:
+        log.info("Member of figshare:active group. No update needed.")
+
     # Portal update
     if vargs['portal'] != '(unset)':
         if current_dict['portal'] == vargs['portal']:
