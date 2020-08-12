@@ -253,7 +253,7 @@ def get_current_groups(uid, ldap_dict, log):
     portal_stem = figshare_stem('portal')
     portal = [s for s in membership if ((portal_stem in s) and ('grouper' not in s))]
     if len(portal) == 0:
-        log.info("No Grouper group found!")
+        log.info("No portal Grouper group found!")
         figshare_dict['portal'] = ''  # Initialize to use later
     else:
         if len(portal) != 1:
@@ -267,7 +267,7 @@ def get_current_groups(uid, ldap_dict, log):
     quota_stem = figshare_stem('quota')
     quota = [s for s in membership if ((quota_stem in s) and ('grouper' not in s))]
     if len(quota) == 0:
-        log.info("No Grouper group found!")
+        log.info("No quota Grouper group found!")
         figshare_dict['quota'] = ''  # Initialize to use later
     else:
         if len(quota) != 1:
