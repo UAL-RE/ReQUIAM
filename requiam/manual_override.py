@@ -246,7 +246,7 @@ def get_current_groups(uid, ldap_dict, log):
     if active_stem in membership:
         figshare_dict['active'] = True
     else:
-        log.warning("No member of figshare:active group")
+        log.warning("Not member of figshare:active group")
         figshare_dict['active'] = False
 
     # Extract portal
