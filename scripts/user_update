@@ -47,6 +47,7 @@ if __name__ == '__main__':
     parser.add_argument('--quota_file', help='filename for manual-override quota file')
     parser.add_argument('--sync', action='store_true', help='perform synchronization')
     parser.add_argument('--sync_max', help='maximum membership delta to allow when synchronizing')
+    parser.add_argument('--active_remove', action='store_true', help='Remove membership in figshare:active group')
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
 
@@ -86,7 +87,7 @@ if __name__ == '__main__':
     for p in ['netid', 'ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
               'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
               'batch_size', 'batch_timeout', 'batch_delay', 'portal', 'quota',
-              'portal_file', 'quota_file', 'sync_max']:
+              'portal_file', 'quota_file', 'sync_max', 'active_remove']:
 
         if (p in vargs) and (vargs[p] is not None):
             vargs[p] = vargs[p]
@@ -148,7 +149,7 @@ if __name__ == '__main__':
 
     # Check to see if portal exists on Grouper before proceeding
     portal_check = True
-    if vargs['portal'] != '(unset)':
+    if vargs['portal'] != '(unset)' and vargs['portal'] != 'root':
         portal_check = ga.check_group_exists(vargs['portal'], 'portal')
 
         if not portal_check:
@@ -168,6 +169,37 @@ if __name__ == '__main__':
 
     # Retrieve ismemberof figshare information
     current_dict = get_current_groups(vargs['netid'], ldap_dict, log)
+
+    # figshare:active update:
+    if not current_dict['active']:
+        if not vargs['active_remove']:
+            log.info(f"Adding to figshare:active group")
+
+            d = grouper_delta_user('active', '',
+                                   vargs['netid'], user_uaid, 'add',
+                                   grouper_dict, delta_dict, log)
+
+            if args.sync:
+                log.info('synchronizing ...')
+                d.synchronize()
+            else:
+                log.info('dry run, not performing synchronization')
+        else:
+            log.info("Not a member of figshare:active. No need to remove")
+    else:
+        log.info("Member of figshare:active group.")
+        if vargs['active_remove']:
+            log.info(f"Removing from figshare:active group")
+
+            d = grouper_delta_user('active', '',
+                                   vargs['netid'], user_uaid, 'remove',
+                                   grouper_dict, delta_dict, log)
+
+            if args.sync:
+                log.info('synchronizing ...')
+                d.synchronize()
+            else:
+                log.info('dry run, not performing synchronization')
 
     # Portal update
     if vargs['portal'] != '(unset)':
