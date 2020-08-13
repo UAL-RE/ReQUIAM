@@ -238,13 +238,22 @@ def get_current_groups(uid, ldap_dict, log):
 
         figshare_dict['portal'] = ''
         figshare_dict['quota'] = ''
+        figshare_dict['active'] = False
         return figshare_dict
+
+    # Check for active group
+    active_stem = figshare_stem('active')
+    if active_stem in membership:
+        figshare_dict['active'] = True
+    else:
+        log.warning("Not member of figshare:active group")
+        figshare_dict['active'] = False
 
     # Extract portal
     portal_stem = figshare_stem('portal')
     portal = [s for s in membership if ((portal_stem in s) and ('grouper' not in s))]
     if len(portal) == 0:
-        log.info("No Grouper group found!")
+        log.info("No portal Grouper group found!")
         figshare_dict['portal'] = ''  # Initialize to use later
     else:
         if len(portal) != 1:
@@ -258,7 +267,7 @@ def get_current_groups(uid, ldap_dict, log):
     quota_stem = figshare_stem('quota')
     quota = [s for s in membership if ((quota_stem in s) and ('grouper' not in s))]
     if len(quota) == 0:
-        log.info("No Grouper group found!")
+        log.info("No quota Grouper group found!")
         figshare_dict['quota'] = ''  # Initialize to use later
     else:
         if len(quota) != 1:

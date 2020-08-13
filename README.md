@@ -9,6 +9,7 @@
 - [Execution](#execution)
     - [Manual Changes](#manual-changes)
 - [Versioning](#versioning)
+- [Changelog](#changelog)
 - [Authors](#authors)
 - [License](#license)
 
@@ -97,7 +98,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.11.1`.
+You should see that the version is `0.11.2`.
 
 ### Configuration Settings
 
@@ -218,6 +219,53 @@ Note that working templates are provided in the config folder for
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the
 [tags on this repository](https://github.com/ualibraries/ReQUIAM/tags).
+
+
+## Changelog
+
+A list of released features and their issue number(s).
+List is sorted from moderate to minor revisions for reach release.
+
+v0.11.0 - 0.11.2:
+ * Include `manual_override` tool #31, #47
+ * Ability to add and remove users from the `figshare:active` group #43
+ * Minor: Packaging/re-organization of scripts into `scripts/` #44
+ * Minor: Updates to scripts #44, #49, #50
+
+v0.10.0 - 0.10.2:
+ * Illustration of software architecture workflow diagram #29
+ * Documentation update for configuration settings
+ * Bug fix: incorrect URL for `ReQUIAM_csv` #40
+
+v0.9.0 - 0.9.1:
+ * Script to determine membership in an organization ("org code") #32
+ * Minor: package rename for PEP8
+
+v0.8.0 - 0.8.3:
+ * Software renaming #23
+ * Minor fixes
+
+v0.7.0:
+ * Testing option for `script_run` #18
+
+v0.6.0 - 0.6.1:
+ * Primary script for automated patron management #16
+
+v0.5.0 - 0.5.1:
+ * Grouper and EDS comparison tool, `Delta` #10, #15
+
+v0.4.0:
+ * LDAP quota-based query #4
+ * Primary `GrouperQuery` tool #7
+
+v0.3.0:
+ * Multi-organization query and LDAP results merge #2
+
+v0.2.0:
+ * UA-specific EDS queries
+
+v0.1.0:
+ * Initial LDAP query tool and testing
 
 
 ## Authors
