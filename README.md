@@ -226,10 +226,11 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
-v0.11.0 - 0.11.1:
+v0.11.0 - 0.11.2:
  * Include `manual_override` tool #31, #47
+ * Ability to add and remove users from the `figshare:active` group #43
  * Minor: Packaging/re-organization of scripts into `scripts/` #44
- * Minor: Update to scripts
+ * Minor: Updates to scripts #44, #49, #50
 
 v0.10.0 - 0.10.2:
  * Illustration of software architecture workflow diagram #29
