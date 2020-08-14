@@ -1,11 +1,11 @@
-def figshare_stem(stem):
+def figshare_stem(stem, production=True):
     """
     Purpose:
       Construct Grouper figshare stems
 
     :param stem: string corresponding to the sub-stem
        Options are: 'quota', 'portal'
-
+    :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
     :return stem_query: str
 
     Usage:
@@ -16,5 +16,9 @@ def figshare_stem(stem):
         > 'arizona.edu:dept:LBRY:figshare:portal'
     """
 
-    stem_query = 'arizona.edu:dept:LBRY:figshare:{}'.format(stem)
+    if production:
+        stem_query = f'arizona.edu:dept:LBRY:figshare:{stem}'
+    else:
+        stem_query = f'arizona.edu:dept:LBRY:devtest:chun{stem}'
+
     return stem_query

@@ -13,12 +13,14 @@ class GrouperAPI:
     Additional documentation forthcoming
     """
 
-    def __init__(self, grouper_host, grouper_base_path, grouper_user, grouper_password):
+    def __init__(self, grouper_host, grouper_base_path, grouper_user,
+                 grouper_password, grouper_production=False):
 
         self.grouper_host = grouper_host
         self.grouper_base_dn = grouper_base_path
         self.grouper_user = grouper_user
         self.grouper_password = grouper_password
+        self.grouper_production = grouper_production
 
         self.endpoint = f'https://{grouper_host}/{grouper_base_path}'
         self.headers = {'Content-Type': 'text/x-json'}
@@ -34,12 +36,12 @@ class GrouperAPI:
         if group_type not in ['portal', 'quota', '']:
             raise ValueError("Incorrect [group_type] input")
 
-        grouper_group = figshare_stem(group_type)
+        grouper_stem = figshare_stem(group_type, production=self.grouper_production)
 
         params = dict()
         params['WsRestFindGroupsRequest'] = {'wsQueryFilter':
                                                  {'queryFilterType': 'FIND_BY_STEM_NAME',
-                                                  'stemName': grouper_group}}
+                                                  'stemName': grouper_stem}}
 
         rsp = requests.post(self.endpoint, auth=(self.grouper_user, self.grouper_password),
                             json=params, headers=self.headers)
@@ -68,7 +70,8 @@ class GrouperAPI:
         if group_type not in ['portal', 'quota']:
             raise ValueError("Incorrect [group_type] input")
 
-        grouper_name = figshare_group(group, group_type)
+        grouper_name = figshare_group(group, group_type,
+                                      production=self.grouper_production)
 
         params = dict()
         params['WsRestGroupSaveRequest'] = {

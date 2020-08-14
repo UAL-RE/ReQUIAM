@@ -51,13 +51,15 @@ class GrouperQuery(object):
         return set(self._members)
 
 
-def figshare_group(group, root_stem):
+def figshare_group(group, root_stem, production=True):
     """
     Purpose:
       Construct Grouper figshare groups
 
     :param group: str or int of group name
     :param root_stem: str of associated stem folder for [group]
+    :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
+
     :return grouper_group: str containing full Grouper path
 
     Usage:
@@ -72,7 +74,7 @@ def figshare_group(group, root_stem):
         > 'arizona.edu:dept:LBRY:figshare:portal:sci_math'
     """
 
-    stem_query = figshare_stem(root_stem)
+    stem_query = figshare_stem(root_stem, production=production)
 
     if root_stem == '':
         grouper_group = stem_query + group
