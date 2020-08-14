@@ -52,9 +52,6 @@ class GrouperAPI:
         if group_type not in ['portal', 'quota']:
             raise ValueError("Incorrect [group_type] input")
 
-        if group_type:
-            grouper_group = figshare_stem('portal')
-
         result = self.get_group_list(group_type)
 
         group_df = pd.DataFrame(result['WsFindGroupsResults']['groupResults'])
