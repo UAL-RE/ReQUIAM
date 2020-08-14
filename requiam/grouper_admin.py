@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 
 from .commons import figshare_stem
+from .grouper_query import figshare_group
 
 
 class GrouperAPI:
@@ -19,8 +20,13 @@ class GrouperAPI:
         self.grouper_user = grouper_user
         self.grouper_password = grouper_password
 
-        self.endpoint = 'https://{}/{}'.format(grouper_host, grouper_base_path)
+        self.endpoint = f'https://{grouper_host}/{grouper_base_path}'
         self.headers = {'Content-Type': 'text/x-json'}
+
+    def url(self, endpoint):
+        """Return URL endpoint"""
+
+        return f"{self.endpoint}/{endpoint}"
 
     def get_group_list(self, group_type):
         """Retrieve list of groups in a Grouper stem"""
@@ -57,5 +63,36 @@ class GrouperAPI:
         status = True if not df_query.empty else False
         return status
 
+    def add_group(self, group, group_type, display_name, description):
+        """Create Grouper group within a Grouper stem"""
 
+        endpoint = self.url("groups")
 
+        if group_type not in ['portal', 'quota']:
+            raise ValueError("Incorrect [group_type] input")
+
+        grouper_name = figshare_group(group, group_type)
+
+        params = dict()
+        params['WsRestGroupSaveRequest'] = {
+            'wsGroupToSaves': [
+                {'wsGroup': {'description': description,
+                             'displayExtension': display_name,
+                             'name': grouper_name},
+                 'wsGroupLookup': {'groupName': grouper_name}}
+            ]
+        }
+
+        try:
+            result = requests.post(endpoint, auth=(self.grouper_user, self.grouper_password),
+                                   json=params, headers=self.headers)
+
+            metadata = result['WsGroupSaveResults']['resultMetadata']
+
+            if metadata['resultCode'] == 'SUCCESS':
+                return True
+            else:
+                errmsg = f"add_group - Error: {metadata['resultCode']}"
+                raise errmsg
+        except requests.exceptions.HTTPError:
+            raise requests.exceptions.HTTPError
