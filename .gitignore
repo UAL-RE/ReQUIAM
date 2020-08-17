@@ -3,6 +3,7 @@ logs/
 
 # private csv files (templates not included)
 config/*_manual.csv
+config/grouper_groups.csv
 
 # PyCharm
 .idea/
