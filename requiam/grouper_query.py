@@ -56,7 +56,7 @@ def figshare_group(group, root_stem, production=True):
     Purpose:
       Construct Grouper figshare groups
 
-    :param group: str or int of group name
+    :param group: str or int of group name. Cannot be empty
     :param root_stem: str of associated stem folder for [group]
     :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
 
@@ -74,12 +74,12 @@ def figshare_group(group, root_stem, production=True):
         > 'arizona.edu:dept:LBRY:figshare:portal:sci_math'
     """
 
-    stem_query = figshare_stem(root_stem, production=production)
+    if not group:
+        raise ValueError("WARNING: Empty [group]")
 
-    if root_stem == '':
-        grouper_group = stem_query + group
-    else:
-        grouper_group = '{}:{}'.format(stem_query, group)
+    stem_query = figshare_stem(stem=root_stem, production=production)
+
+    grouper_group = '{}:{}'.format(stem_query, group)
 
     return grouper_group
 
