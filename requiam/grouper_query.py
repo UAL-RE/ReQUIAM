@@ -85,7 +85,7 @@ def figshare_group(group, root_stem, production=True):
 
 
 def grouper_delta_user(group, stem, netid, uaid, action,
-                       grouper_dict, delta_dict, log):
+                       grouper_dict, delta_dict, log, production=True):
     """
     Purpose:
       Construct a Delta object for addition/deletion based for a specified
@@ -107,10 +107,13 @@ def grouper_delta_user(group, stem, netid, uaid, action,
       Dictionary containing delta settings
     :param log: LogClass object
       For logging
+    :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
+
+
     :return d: Delta object class
     """
 
-    grouper_query = figshare_group(group, stem)
+    grouper_query = figshare_group(group, stem, production=production)
     gq = GrouperQuery(**grouper_dict, grouper_group=grouper_query)
 
     member_set = gq.members
