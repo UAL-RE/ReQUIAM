@@ -248,18 +248,18 @@ def get_current_groups(uid, ldap_dict, log, verbose=True):
     if active_stem in membership:
         figshare_dict['active'] = True
     else:
-        log.warning("Not member of figshare:active group")
+        log.warning(f"{uid} not member of figshare:active group")
         figshare_dict['active'] = False
 
     # Extract portal
     portal_stem = figshare_stem('portal')
     portal = [s for s in membership if ((portal_stem in s) and ('grouper' not in s))]
     if len(portal) == 0:
-        log.info("No portal Grouper group found!")
+        log.info(f"No portal Grouper group found for {uid}!")
         figshare_dict['portal'] = 'root'  # Initialize to use later
     else:
         if len(portal) != 1:
-            log.warning("ERROR! Multiple Grouper portal found")
+            log.warning(f"ERROR! Multiple Grouper portal found for {uid}")
             raise ValueError
         else:
             figshare_dict['portal'] = portal[0].replace(portal_stem + ':', '')
@@ -270,11 +270,11 @@ def get_current_groups(uid, ldap_dict, log, verbose=True):
     quota_stem = figshare_stem('quota')
     quota = [s for s in membership if ((quota_stem in s) and ('grouper' not in s))]
     if len(quota) == 0:
-        log.info("No quota Grouper group found!")
+        log.info(f"No quota Grouper group found for {uid}!")
         figshare_dict['quota'] = ''  # Initialize to use later
     else:
         if len(quota) != 1:
-            log.warning("ERROR! Multiple Grouper quota found")
+            log.warning(f"ERROR! Multiple Grouper quota found {uid}")
             raise ValueError
         else:
             figshare_dict['quota'] = quota[0].replace(quota_stem + ':', '')
