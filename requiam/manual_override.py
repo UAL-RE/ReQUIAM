@@ -98,17 +98,18 @@ class ManualOverride:
         if group_type == 'quota':
             revised_df = self.quota_df
 
-        loc0 = revised_df.loc[revised_df['netid'] == netid].index
-        if len(loc0) == 0:
-            self.log.info(f"Adding entry for {netid}")
-            revised_df.loc[len(revised_df)] = [netid, list(uaid)[0], group]
-        else:
-            if group != 'root':
-                self.log.info(f"Updating entry for {netid}")
-                revised_df.loc[loc0[0]] = [netid, list(uaid)[0], group]
+        for i in range(len(netid)):
+            loc0 = revised_df.loc[revised_df['netid'] == netid[i]].index
+            if len(loc0) == 0:
+                self.log.info(f"Adding entry for {netid[i]}")
+                revised_df.loc[len(revised_df)] = [netid[i], list(uaid)[i], group]
             else:
-                self.log.info(f"Removing entry for {netid}")
-                revised_df = revised_df.drop(loc0)
+                if group != 'root':
+                    self.log.info(f"Updating entry for {netid[i]}")
+                    revised_df.loc[loc0[0]] = [netid, list(uaid)[i], group]
+                else:
+                    self.log.info(f"Removing entry for {netid[i]}")
+                    revised_df = revised_df.drop(loc0)
 
         self.log.info(f"Updating {group_type} csv")
         if group_type == 'portal':
@@ -211,7 +212,7 @@ def update_entries(ldap_set, netid, uaid, action, log):
     return new_ldap_set
 
 
-def get_current_groups(uid, ldap_dict, log):
+def get_current_groups(uid, ldap_dict, log, verbose=True):
     """
     Purpose:
       Retrieve current Figshare ismemberof association
@@ -219,6 +220,7 @@ def get_current_groups(uid, ldap_dict, log):
     :param uid: str containing User NetID
     :param ldap_dict: dict containing ldap settings
     :param log: LogClass object for logging
+    :param verbose: bool flag to provide information about each user
     :return figshare_dict: dict containing current Figshare portal and quota
     """
 
@@ -261,7 +263,8 @@ def get_current_groups(uid, ldap_dict, log):
             raise ValueError
         else:
             figshare_dict['portal'] = portal[0].replace(portal_stem + ':', '')
-            log.info(f"Current portal is : {figshare_dict['portal']}")
+            if verbose:
+                log.info(f"Current portal is : {figshare_dict['portal']}")
 
     # Extract quota
     quota_stem = figshare_stem('quota')
@@ -275,6 +278,7 @@ def get_current_groups(uid, ldap_dict, log):
             raise ValueError
         else:
             figshare_dict['quota'] = quota[0].replace(quota_stem + ':', '')
-            log.info(f"Current quota is : {figshare_dict['quota']} bytes")
+            if verbose:
+                log.info(f"Current quota is : {figshare_dict['quota']} bytes")
 
     return figshare_dict
