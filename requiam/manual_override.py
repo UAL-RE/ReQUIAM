@@ -256,7 +256,7 @@ def get_current_groups(uid, ldap_dict, log, verbose=True):
     portal = [s for s in membership if ((portal_stem in s) and ('grouper' not in s))]
     if len(portal) == 0:
         log.info("No portal Grouper group found!")
-        figshare_dict['portal'] = ''  # Initialize to use later
+        figshare_dict['portal'] = 'root'  # Initialize to use later
     else:
         if len(portal) != 1:
             log.warning("ERROR! Multiple Grouper portal found")
