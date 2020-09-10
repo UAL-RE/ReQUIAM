@@ -242,6 +242,8 @@ def get_current_groups(uid, ldap_dict, log, verbose=True):
         figshare_dict['active'] = False
         return figshare_dict
 
+    revert_command = f'--netid {uid} '
+
     # Check for active group
     active_stem = figshare_stem('active')
     if active_stem in membership:
@@ -249,6 +251,8 @@ def get_current_groups(uid, ldap_dict, log, verbose=True):
     else:
         log.warning(f"{uid} not member of figshare:active group")
         figshare_dict['active'] = False
+
+        revert_command += f'--active_remove '
 
     # Extract portal
     portal_stem = figshare_stem('portal')
@@ -265,6 +269,8 @@ def get_current_groups(uid, ldap_dict, log, verbose=True):
             if verbose:
                 log.info(f"Current portal is : {figshare_dict['portal']}")
 
+    revert_command += f"--portal {figshare_dict['portal']} "
+
     # Extract quota
     quota_stem = figshare_stem('quota')
     quota = [s for s in membership if ((quota_stem in s) and ('grouper' not in s))]
@@ -280,4 +286,8 @@ def get_current_groups(uid, ldap_dict, log, verbose=True):
             if verbose:
                 log.info(f"Current quota is : {figshare_dict['quota']} bytes")
 
+    if len(quota) != 0:
+        revert_command += f"--quota {figshare_dict['quota']} "
+
+    log.info(f"To revert, use: {revert_command}")
     return figshare_dict
