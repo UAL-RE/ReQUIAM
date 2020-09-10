@@ -170,7 +170,7 @@ if __name__ == '__main__':
 
     # Check to see if quota exists on Grouper before proceeding
     quota_check = True
-    if vargs['quota'] != '(unset)':
+    if vargs['quota'] != '(unset)' and vargs['quota'] != 'root':
         quota_check = ga.check_group_exists(vargs['quota'], 'quota')
 
         if not quota_check:
@@ -289,18 +289,17 @@ if __name__ == '__main__':
                 if current_portal == 'root':
                     log.info(f"{not_portal_netid[i]} not assigned to a portal. Skipping removal")
                 else:
-                    if current_portal != 'root':
-                        log.info(f"Removing {not_portal_netid[i]} from current {current_portal} portal")
+                    log.info(f"Removing {not_portal_netid[i]} from current {current_portal} portal")
 
-                        d = grouper_delta_user(current_portal, 'portal',
-                                               not_portal_netid[i], {not_portal_uaid[i]},
-                                               'remove', grouper_dict, delta_dict, log)
+                    d = grouper_delta_user(current_portal, 'portal',
+                                           not_portal_netid[i], {not_portal_uaid[i]},
+                                           'remove', grouper_dict, delta_dict, log)
 
-                        if args.sync:
-                            log.info('synchronizing ...')
-                            d.synchronize()
-                        else:
-                            log.info('dry run, not performing synchronization')
+                    if args.sync:
+                        log.info('synchronizing ...')
+                        d.synchronize()
+                    else:
+                        log.info('dry run, not performing synchronization')
 
             # Add to new portal group
             if vargs['portal'] != 'root':
@@ -326,8 +325,8 @@ if __name__ == '__main__':
                 # Remove entry from manual CSV file for 'root' case
                 if args.sync:
                     # Update of df only needed since there's not root portal to add too
-                    mo.update_dataframe(current_dict['portal']['netid'],
-                                        current_dict['portal']['uaid'],
+                    mo.update_dataframe(current_dict['not_portal']['netid'],
+                                        current_dict['not_portal']['uaid'],
                                         vargs['portal'], 'portal')
                 else:
                     log.info('dry run, not updating portal dataframe')
@@ -343,7 +342,7 @@ if __name__ == '__main__':
 
             for i in range(len(not_quota_netid)):
                 current_quota = current_dict[not_quota_netid[i]]['quota']
-                if current_quota == '':
+                if current_quota == 'root':
                     log.info(f"{not_quota_netid[i]} not assigned to a quota. Skipping removal")
                 else:
                     log.info(f"Removing {not_quota_netid[i]} from current {current_quota} quota")
@@ -359,24 +358,34 @@ if __name__ == '__main__':
                         log.info('dry run, not performing synchronization')
 
             # Add to new quota group
-            log.info(f"Adding to {vargs['quota']} quota")
+            if vargs['quota'] != 'root':
+                log.info(f"Adding to {vargs['quota']} quota")
 
-            d = grouper_delta_user(vargs['quota'], 'quota',
-                                   current_dict['not_quota']['netid'],
-                                   current_dict['not_quota']['uaid'],
-                                   'add', grouper_dict, delta_dict, log)
+                d = grouper_delta_user(vargs['quota'], 'quota',
+                                       current_dict['not_quota']['netid'],
+                                       current_dict['not_quota']['uaid'],
+                                       'add', grouper_dict, delta_dict, log)
 
-            if args.sync:
-                log.info('synchronizing ...')
-                d.synchronize()
+                if args.sync:
+                    log.info('synchronizing ...')
+                    d.synchronize()
 
-                # Update manual CSV file
-                mo.update_dataframe(current_dict['not_quota']['netid'],
-                                    current_dict['not_quota']['uaid'],
-                                    vargs['quota'], 'quota')
+                    # Update manual CSV file
+                    mo.update_dataframe(current_dict['not_quota']['netid'],
+                                        current_dict['not_quota']['uaid'],
+                                        vargs['quota'], 'quota')
+                else:
+                    log.info('dry run, not performing synchronization')
+                    log.info('dry run, not updating quota dataframe')
             else:
-                log.info('dry run, not performing synchronization')
-                log.info('dry run, not updating quota dataframe')
+                # Remove entry from manual CSV file for 'root' case
+                if args.sync:
+                    # Update of df only needed since there's not root portal to add too
+                    mo.update_dataframe(current_dict['not_quota']['netid'],
+                                        current_dict['not_quota']['uaid'],
+                                        vargs['quota'], 'quota')
+                else:
+                    log.info('dry run, not updating portal dataframe')
 
     main_timer._stop()
     log.info(main_timer.format)
