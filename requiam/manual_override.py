@@ -105,7 +105,7 @@ class ManualOverride:
             else:
                 if group != 'root':
                     self.log.info(f"Updating entry for {netid[i]}")
-                    revised_df.loc[loc0[0]] = [netid, list(uaid)[i], group]
+                    revised_df.loc[loc0[0]] = [netid[i], list(uaid)[i], group]
                 else:
                     self.log.info(f"Removing entry for {netid[i]}")
                     revised_df = revised_df.drop(loc0)
@@ -234,15 +234,18 @@ def get_current_groups(uid, ldap_dict, log, verbose=True):
 
     figshare_dict = dict()
 
+    revert_command = f'--netid {uid} '
+
     if isinstance(membership, type(None)):
         log.warning("No ismembersof attributes")
 
-        figshare_dict['portal'] = ''
-        figshare_dict['quota'] = ''
+        figshare_dict['portal'] = 'root'
+        figshare_dict['quota'] = 'root'
         figshare_dict['active'] = False
-        return figshare_dict
 
-    revert_command = f'--netid {uid} '
+        revert_command += f'--active_remove --portal root --quota root '
+        log.info(revert_command)
+        return figshare_dict
 
     # Check for active group
     active_stem = figshare_stem('active')
@@ -276,7 +279,7 @@ def get_current_groups(uid, ldap_dict, log, verbose=True):
     quota = [s for s in membership if ((quota_stem in s) and ('grouper' not in s))]
     if len(quota) == 0:
         log.info(f"No quota Grouper group found for {uid}!")
-        figshare_dict['quota'] = ''  # Initialize to use later
+        figshare_dict['quota'] = 'root'  # Initialize to use later
     else:
         if len(quota) != 1:
             log.warning(f"ERROR! Multiple Grouper quota found {uid}")
@@ -286,8 +289,7 @@ def get_current_groups(uid, ldap_dict, log, verbose=True):
             if verbose:
                 log.info(f"Current quota is : {figshare_dict['quota']} bytes")
 
-    if len(quota) != 0:
-        revert_command += f"--quota {figshare_dict['quota']} "
+    revert_command += f"--quota {figshare_dict['quota']} "
 
     log.info(f"To revert, use: {revert_command}")
     return figshare_dict
