@@ -27,13 +27,12 @@ class ManualOverride:
       pandas DataFrame of [quota_csv]
 
     portal_header : list containing portal header (commented out text) of [portal_csv]
-    quota_header : list containing portal header (commented out text) of [portal_csv]
+    quota_header : list containing quota header (commented out text) of [quota_csv]
 
     Methods
     -------
-    update_entries(ldap_set, netid, uaid, action)
-      Add/remove (action="add"/"remove") entries from set (ldap_set) based on
-      uaid input
+    identify_changes(ldap_set, group, group_type):
+      Identify changes to call update_entries accordingly
 
     update_dataframe(netid, uaid, group, group_type):
       Update pandas DataFrame with necessary changes
