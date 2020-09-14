@@ -28,7 +28,9 @@ library_root_path = path.dirname(path.dirname(library_path))  # Retrieve parent 
 if __name__ == '__main__':
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description='Command-line driver for simple user EDS updates.')
-    parser.add_argument('--netid', required=True, help='NetID for user')
+    parser.add_argument('--netid', required=True,
+                        help='''NetIDs for user. Comma separated for multiple users.
+                                Alternatively path to .txt file that contains users (single entry per line).''')
     parser.add_argument('--config', required=True, help='path to configuration file')
     parser.add_argument('--ldap_host', help='LDAP host')
     parser.add_argument('--ldap_base_dn', help='base DN for LDAP bind and query')
@@ -135,8 +137,17 @@ if __name__ == '__main__':
     # Initiate LDAP connection
     ldc = ldap_query.LDAPConnection(**ldap_dict)
 
-    # Separate comma-separated list of articles
-    netid_list = vargs['netid'].split(',')
+    if '.txt' in vargs['netid'][-4:]:
+        # Read in text file with list of users
+        log.info(f"Reading : {vargs['netid']}")
+        with open(vargs['netid']) as f:
+            netid_list = f.read().splitlines()
+        f.close()
+        log.info(f"List of input users: {netid_list}")
+    else:
+        # Separate comma-separated list of users
+        netid_list = vargs['netid'].split(',')
+
     netid_set = sorted(set(netid_list), key=netid_list.index)
     num_netid = len(netid_set)
 
