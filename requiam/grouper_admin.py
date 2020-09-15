@@ -56,11 +56,15 @@ class GrouperAPI:
 
         result = self.get_group_list(group_type)
 
-        group_df = pd.DataFrame(result['WsFindGroupsResults']['groupResults'])
+        try:
+            group_df = pd.DataFrame(result['WsFindGroupsResults']['groupResults'])
 
-        df_query = group_df.loc[group_df['displayExtension'] == group]
-        status = True if not df_query.empty else False
-        return status
+            df_query = group_df.loc[group_df['displayExtension'] == group]
+
+            status = True if not df_query.empty else False
+            return status
+        except KeyError:
+            raise KeyError("Stem is empty")
 
     def add_group(self, group, group_type, display_name, description):
         """Create Grouper group within a Grouper stem"""
