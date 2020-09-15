@@ -66,10 +66,10 @@ class GrouperAPI:
         except KeyError:
             raise KeyError("Stem is empty")
 
-    def add_group(self, group, group_type, display_name, description):
+    def add_group(self, group, group_type, description):
         """Create Grouper group within a Grouper stem"""
 
-        endpoint = self.url("groups")
+        endpoint = self.url("")
 
         if group_type not in ['portal', 'quota']:
             raise ValueError("Incorrect [group_type] input")
@@ -81,7 +81,7 @@ class GrouperAPI:
         params['WsRestGroupSaveRequest'] = {
             'wsGroupToSaves': [
                 {'wsGroup': {'description': description,
-                             'displayExtension': display_name,
+                             'displayExtension': group,
                              'name': grouper_name},
                  'wsGroupLookup': {'groupName': grouper_name}}
             ]
@@ -91,7 +91,7 @@ class GrouperAPI:
             result = requests.post(endpoint, auth=(self.grouper_user, self.grouper_password),
                                    json=params, headers=self.headers)
 
-            metadata = result['WsGroupSaveResults']['resultMetadata']
+            metadata = result.json()['WsGroupSaveResults']['resultMetadata']
 
             if metadata['resultCode'] == 'SUCCESS':
                 return True
