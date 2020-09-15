@@ -39,12 +39,14 @@ class GrouperAPI:
         grouper_stem = figshare_stem(group_type, production=self.grouper_production)
 
         params = dict()
-        params['WsRestFindGroupsRequest'] = {'wsQueryFilter':
-                                                 {'queryFilterType': 'FIND_BY_STEM_NAME',
-                                                  'stemName': grouper_stem}}
+        params['WsRestFindGroupsRequest'] = {
+            'wsQueryFilter':
+                {'queryFilterType': 'FIND_BY_STEM_NAME',
+                 'stemName': grouper_stem}
+        }
 
-        rsp = requests.post(self.endpoint, auth=(self.grouper_user, self.grouper_password),
-                            json=params, headers=self.headers)
+        rsp = requests.post(self.endpoint, json=params, headers=self.headers,
+                            auth=(self.grouper_user, self.grouper_password))
 
         return rsp.json()
 
@@ -88,8 +90,8 @@ class GrouperAPI:
         }
 
         try:
-            result = requests.post(endpoint, auth=(self.grouper_user, self.grouper_password),
-                                   json=params, headers=self.headers)
+            result = requests.post(endpoint, json=params, headers=self.headers,
+                                   auth=(self.grouper_user, self.grouper_password))
 
             metadata = result.json()['WsGroupSaveResults']['resultMetadata']
 
