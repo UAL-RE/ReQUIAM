@@ -21,17 +21,26 @@ from requiam import __file__ as library_path
 
 today = date.today()
 
-library_root_path = path.dirname(path.dirname(library_path))  # Retrieve parent directory to requiam
+# Retrieve parent directory to requiam
+library_root_path = path.dirname(path.dirname(library_path))
 
 
-def add_groups(groups, group_type, input_dict, grouper_api, add=False):
+def add_groups(groups, group_type, group_descriptions, grouper_api, add=False):
+    """
+    Purpose:
+      Process through a list of Grouper groups and add them if they don't exist
 
-    for group in groups:
-        group_dict = input_dict[group]
+    :param groups: list of str containing group names
+    :param group_type: str. Either 'portal', 'quota', or 'test'
+    :param group_descriptions: list of str containing description
+    :param grouper_api: GrouperAPI object
+    :param add: boolean.  Indicate whether to perform update or dry run
+    """
 
+    for group, description in zip(groups, group_descriptions):
         add_dict = {'group': group,
                     'group_type': group_type,
-                    'description': group_dict['Grouper Description']}
+                    'description': description}
 
         # Check if group exists
         try:
@@ -163,12 +172,13 @@ if __name__ == '__main__':
         mainTheme_dict = mainTheme_df.set_index('Main-portal').T.to_dict()
 
         main_groups = list(mainTheme_dict.keys())
+        main_descriptions = mainTheme_df['Grouper Description'].to_list()
 
         n_mainThemes = len(main_groups)
         log.info(f"Total number of main themes: {n_mainThemes}")
         log.info(f"List of main themes: {', '.join(main_groups)}")
 
-        add_groups(main_groups, 'portal', mainTheme_dict, ga, add=args.add)
+        add_groups(main_groups, 'portal', main_descriptions, ga, add=args.add)
 
         mainTheme_timer._stop()
         log.info(f"MAIN PORTAL : {mainTheme_timer.format}")
@@ -187,12 +197,13 @@ if __name__ == '__main__':
         subPortal_dict = subPortal_df.set_index('Sub-portal').T.to_dict()
 
         sub_groups = list(subPortal_dict.keys())
+        sub_descriptions = subPortal_df['Grouper Description'].to_list()
 
         n_subPortals = len(sub_groups)
         log.info(f"Total number of sub-portals: {n_subPortals}")
         log.info(f"List of sub-portals: {', '.join(sub_groups)}")
 
-        add_groups(sub_groups, 'portal', subPortal_dict, ga, add=args.add)
+        add_groups(sub_groups, 'portal', sub_descriptions, ga, add=args.add)
 
         subPortal_timer._stop()
         log.info(f"SUB-PORTAL : {subPortal_timer.format}")
