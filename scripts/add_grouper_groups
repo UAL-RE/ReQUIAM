@@ -44,7 +44,7 @@ def add_groups(groups, group_type, group_descriptions, grouper_api, add=False):
 
         # Check if group exists
         try:
-            group_exists = ga.check_group_exists(**add_dict)
+            group_exists = ga.check_group_exists(group, group_type)
         except KeyError:
             log.info("Stem is empty")
             group_exists = False
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     branch_name = get_active_branch_name(library_root_path)
 
     banner_message = f"""
-    This is the command-line tool to create a Grouper group.
+    This is the command-line tool to create Grouper groups for main themes, sub-portals, and quotas.
     A full execution will:
      1. Check whether the group exists
      2. Create the group
@@ -117,8 +117,7 @@ if __name__ == '__main__':
     cred_err = 0
     vargs = vars(args)
     for p in ['grouper_host', 'grouper_base_path', 'grouper_user',
-              'grouper_password', 'main_themes', 'sub_portals', 'quota',
-              'production']:
+              'grouper_password']:
 
         if (p in vargs) and (vargs[p] is not None):
             vargs[p] = vargs[p]
@@ -142,9 +141,12 @@ if __name__ == '__main__':
         log.warning("Exiting")
         raise ValueError
 
-    log.info('production = %s', args.production)
-    log.info('       add = %s', args.add)
-    log.info('     debug = %s', args.debug)
+    log.info(f'main_themes = {args.main_themes}')
+    log.info(f'sub_portals = {args.sub_portals}')
+    log.info(f'      quota = {args.quota}')
+    log.info(f' production = {args.production}')
+    log.info(f'        add = {args.add}')
+    log.info(f'      debug = {args.debug}')
 
     grouper_dict = dict(grouper_host=vargs['grouper_host'],
                         grouper_base_path=vargs['grouper_base_path'],
