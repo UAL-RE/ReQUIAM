@@ -33,7 +33,7 @@ class GrouperAPI:
     def get_group_list(self, group_type):
         """Retrieve list of groups in a Grouper stem"""
 
-        if group_type not in ['portal', 'quota', '']:
+        if group_type not in ['portal', 'quota', 'test', '']:
             raise ValueError("Incorrect [group_type] input")
 
         grouper_stem = figshare_stem(group_type, production=self.grouper_production)
@@ -51,7 +51,7 @@ class GrouperAPI:
     def check_group_exists(self, group, group_type):
         """Check whether a Grouper group exists within a Grouper stem"""
 
-        if group_type not in ['portal', 'quota']:
+        if group_type not in ['portal', 'quota', 'test']:
             raise ValueError("Incorrect [group_type] input")
 
         result = self.get_group_list(group_type)
@@ -71,7 +71,7 @@ class GrouperAPI:
 
         endpoint = self.url("")
 
-        if group_type not in ['portal', 'quota']:
+        if group_type not in ['portal', 'quota', 'test']:
             raise ValueError("Incorrect [group_type] input")
 
         grouper_name = figshare_group(group, group_type,
