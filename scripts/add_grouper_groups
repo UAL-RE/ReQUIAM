@@ -211,18 +211,27 @@ if __name__ == '__main__':
         log.info(f"SUB-PORTAL : {subPortal_timer.format}")
 
     # Quotas
-    '''
     if vargs['quota']:
         quota_timer = TimerClass()
         quota_timer._start()
 
-        # Read in list of quotas
+        # Read in Google Sheet CSV with sub-portals
+        quota_url = config.get('google', 'quota_url')
+        log.info("Reading Quotas CSV into DataFrame ...")
+        quota_df = pd.read_csv(quota_url)
 
-        # Construction dict with quota names
+        # Read in list of quotas
+        quota_groups = quota_df['Quota'].astype(str).to_list()
+        quota_descriptions = quota_df['Grouper Description'].to_list()
+
+        n_quotas = len(quota_groups)
+        log.info(f"Total number of quotas: {n_quotas}")
+        log.info(f"List of quotas: {', '.join(quota_groups)}")
+
+        add_groups(quota_groups, 'quota', quota_descriptions, ga, add=args.add)
 
         quota_timer._stop()
         log.info(f"QUOTA : {quota_timer.format}")
-    '''
 
     main_timer._stop()
     log.info(main_timer.format)
