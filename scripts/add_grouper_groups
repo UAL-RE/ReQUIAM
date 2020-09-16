@@ -105,7 +105,7 @@ if __name__ == '__main__':
     if not path.exists(log_dir):
         mkdir(log_dir)
     logfile_prefix = config.get('global', 'logfile_prefix')
-    logfile = f"add_groups.{today.strftime('%Y-%m-%d')}.log""{}.{}.log"
+    logfile = f"add_groups.{today.strftime('%Y-%m-%d')}.log"
 
     log = LogClass(log_dir, logfile).get_logger()
 
