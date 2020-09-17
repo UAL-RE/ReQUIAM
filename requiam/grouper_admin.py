@@ -50,6 +50,27 @@ class GrouperAPI:
 
         return rsp.json()
 
+    def get_group_details(self, group, group_type):
+        """Retrieve group details"""
+
+        if group_type not in ['portal', 'quota', 'test', '']:
+            raise ValueError("Incorrect [group_type] input")
+
+        grouper_name = figshare_group(group, group_type,
+                                      production=self.grouper_production)
+
+        params = dict()
+        params['WsRestFindGroupsRequest'] = {
+            'wsQueryFilter':
+                {'queryFilterType': 'FIND_BY_GROUP_NAME_APPROXIMATE',
+                 'groupName': grouper_name}
+        }
+
+        rsp = requests.post(self.endpoint, json=params, headers=self.headers,
+                            auth=(self.grouper_user, self.grouper_password))
+
+        return rsp.json()
+
     def check_group_exists(self, group, group_type):
         """Check whether a Grouper group exists within a Grouper stem"""
 
@@ -102,3 +123,4 @@ class GrouperAPI:
                 raise errmsg
         except requests.exceptions.HTTPError:
             raise requests.exceptions.HTTPError
+
