@@ -1,6 +1,6 @@
 #!/user/bin/env python
 
-from os import path
+from os import path, chmod
 from os import mkdir
 
 from datetime import date
@@ -30,6 +30,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Command-line driver for simple user EDS updates.')
     parser.add_argument('--netid', required=True, help='NetID for user')
     parser.add_argument('--config', required=True, help='path to configuration file')
+    parser.add_argument('--persistent_path', required=True, help='full parent path for logs')
     parser.add_argument('--ldap_host', help='LDAP host')
     parser.add_argument('--ldap_base_dn', help='base DN for LDAP bind and query')
     parser.add_argument('--ldap_user', help='user name for LDAP login')
@@ -70,7 +71,8 @@ if __name__ == '__main__':
     config.read(args.config)
 
     # Define logfile
-    log_dir = config.get('global', 'log_dir')
+    log_dir = path.join(args.persistent_path, config.get('global', 'log_dir'))
+
     if not path.exists(log_dir):
         mkdir(log_dir)
     logfile = f"user_update.{today.strftime('%Y-%m-%d')}.log"
@@ -84,7 +86,7 @@ if __name__ == '__main__':
 
     cred_err = 0
     vargs = vars(args)
-    for p in ['netid', 'ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
+    for p in ['netid', 'persistent_path', 'ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
               'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
               'batch_size', 'batch_timeout', 'batch_delay', 'portal', 'quota',
               'portal_file', 'quota_file', 'sync_max', 'active_remove']:
@@ -289,3 +291,5 @@ if __name__ == '__main__':
 
     log.info("*******************************")
     log.info("Exit 0")
+
+    chmod(path.join(log_dir, logfile), mode=0o666)
