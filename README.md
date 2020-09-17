@@ -120,8 +120,9 @@ execute the following command:
 
 ```
 (figshare_patrons) $ export password="insert_password"
+(figshare_patrons) $ export persist_path="/path/to/persistent/storage"
 (figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run \
-                       --config config/figshare.ini \
+                       --config config/figshare.ini --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password
 ```
 
@@ -130,12 +131,12 @@ query and Grouper synchronization (with the `sync` flag) by executing the follow
 
 ```
 (figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run --test \
-                       --sync --config config/figshare.ini \
-                       --ldap_password $password --grouper_password $password
+                       --config config/figshare.ini --persistent_path $persist_path \
+                       --ldap_password $password --grouper_password $password --sync
 ```
 
 Note that the above will add a test NetID account to the following Grouper
-group: `arizona.edu:LBRY:figshare:test`
+group: `arizona.edu:dept:LBRY:figshare:test`
 
 Without the `sync` flag, the above command line will perform a
 "dry run". It will indicate what Grouper updates will occur.
@@ -143,9 +144,9 @@ Without the `sync` flag, the above command line will perform a
 To undo this change, use the `test_reverse` flag:
 
 ```
-(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run \
-                       --test_reverse --sync --config config/figshare.ini \
-                       --ldap_password $password --grouper_password $password
+(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run --test_reverse \
+                       --config config/figshare.ini --persistent_path $persist_path \
+                       --ldap_password $password --grouper_password $password --sync
 ```
 
 ## Execution
@@ -155,8 +156,9 @@ and `sync` command-line flags:
 
 ```
 (figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run \
-                       --quota --portal --sync --config config/figshare.ini \
-                       --ldap_password $password --grouper_password $password
+                       --config config/figshare.ini --persistent_path $persist_path \
+                       --ldap_password $password --grouper_password $password \
+                       --quota --portal --sync
 ```
 
 Note: Without the `sync` flag, the above command line will perform a
@@ -186,7 +188,7 @@ Execution can be done as follows:
 ```
 (figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/user_update \
                        --netid <username> --config config/figshare.ini \
-                       --quota 123456 --portal testportal \
+                       --persistent_path $persist_path --quota 123456 --portal testportal \
                        --ldap_password $password --grouper_password $password --sync
 ```
 
