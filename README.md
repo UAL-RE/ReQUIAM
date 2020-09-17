@@ -98,7 +98,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.11.2`.
+You should see that the version is `0.11.3`.
 
 ### Configuration Settings
 
@@ -226,12 +226,13 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
-v0.11.0 - 0.11.2:
+v0.11.0 - 0.11.3:
  * Include `manual_override` tool #31, #47
  * Ability to add and remove users from the `figshare:active` group #43
  * Minor: Packaging/re-organization of scripts into `scripts/` #44
  * Minor: Updates to scripts #44, #49, #50
-
+ * Minor: Add option for persistent storage of logs
+ 
 v0.10.0 - 0.10.2:
  * Illustration of software architecture workflow diagram #29
  * Documentation update for configuration settings
