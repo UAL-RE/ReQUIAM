@@ -160,14 +160,13 @@ class GrouperAPI:
                 raise Exception(f"Could NOT find access_group: {access_group}")
 
             # initialize
-            params = {
-                'WsRestAssignGrouperPrivilegesLiteRequest': {
-                    'allowed': 'T',
-                    'subjectId': access_group_detail['uuid'],
-                    'privilegeName': '',
-                    'groupName': target_groupname,
-                    'privilegeType': 'access'
-                }
+            params = dict()
+            params['WsRestAssignGrouperPrivilegesLiteRequest'] = {
+                'allowed': 'T',
+                'subjectId': access_group_detail['uuid'],
+                'privilegeName': '',
+                'groupName': target_groupname,
+                'privilegeType': 'access'
             }
 
             for privilege in privileges:
@@ -178,3 +177,5 @@ class GrouperAPI:
 
                 if metadata['resultCode'] not in ['SUCCESS_ALLOWED', 'SUCCESS_ALLOWED_ALREADY_EXISTED']:
                     raise ValueError(f"Unexpected result received: {metadata['resultCode']}")
+
+        return True
