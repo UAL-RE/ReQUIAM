@@ -59,9 +59,7 @@ def add_groups(groups, group_type, group_descriptions, grouper_api, log=None, ad
             log.info("Stem is empty")
             group_exists = False
 
-        if group_exists:
-            log.info(f"Group exists : {group}")
-        else:
+        if not group_exists:
             log.info(f"Group does not exist : {group}")
 
             if add:
@@ -72,16 +70,22 @@ def add_groups(groups, group_type, group_descriptions, grouper_api, log=None, ad
                         log.info("SUCCESS")
                 except HTTPError:
                     raise HTTPError
-
-                log.info(f'Adding privileges for superadmins ...')
-                try:
-                    add_privilege = grouper_api.add_privilege(superadmins, group, group_type, 'admin')
-                    if add_privilege:
-                        log.info("SUCCESS")
-                except HTTPError:
-                    raise HTTPError
             else:
-                log.info('dry run, not performing add')
+                log.info('dry run, not performing group add')
+        else:
+            log.info(f"Group exists : {group}")
+
+        if add:
+            log.info(f'Adding admin privileges for superadmins ...')
+            try:
+                add_privilege = grouper_api.add_privilege(superadmins, group, group_type, 'admin')
+                if add_privilege:
+                    log.info("SUCCESS")
+            except HTTPError:
+                raise HTTPError
+        else:
+            log.info('dry run, not performing privilege add')
+
 
 
 if __name__ == '__main__':
