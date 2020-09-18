@@ -3,6 +3,8 @@
 from os import path
 from os import mkdir
 
+from requests.exceptions import HTTPError
+
 import pandas as pd
 
 from datetime import date
@@ -11,6 +13,7 @@ import configparser
 import argparse
 
 from requiam.grouper_admin import GrouperAPI
+from requiam.grouper_query import figshare_group
 from requiam.logger import LogClass
 from requiam import TimerClass
 
@@ -24,16 +27,23 @@ today = date.today()
 # Retrieve parent directory to requiam
 library_root_path = path.dirname(path.dirname(library_path))
 
+# Administrative groups
+superadmins = figshare_group('GrouperSuperAdmins', '', production=True)
+admins = figshare_group('GrouperAdmins', '', production=True)
+managers = figshare_group('GrouperManagers', '', production=True)
 
-def add_groups(groups, group_type, group_descriptions, grouper_api, add=False):
+
+def add_groups(groups, group_type, group_descriptions, grouper_api, log=None, add=False):
     """
     Purpose:
       Process through a list of Grouper groups and add them if they don't exist
+      and set permissions
 
     :param groups: list of str containing group names
     :param group_type: str. Either 'portal', 'quota', or 'test'
     :param group_descriptions: list of str containing description
     :param grouper_api: GrouperAPI object
+    :param log: logging.getLogger() object
     :param add: boolean.  Indicate whether to perform update or dry run
     """
 
@@ -55,8 +65,21 @@ def add_groups(groups, group_type, group_descriptions, grouper_api, add=False):
             log.info(f"Group does not exist : {group}")
 
             if add:
-                log.info('Adding ...')
-                grouper_api.add_group(**add_dict)
+                log.info(f'Adding {group} ...')
+                try:
+                    add_result = grouper_api.add_group(**add_dict)
+                    if add_result:
+                        log.info("SUCCESS")
+                except HTTPError:
+                    raise HTTPError
+
+                log.info(f'Adding privileges for superadmins ...')
+                try:
+                    add_privilege = grouper_api.add_privilege(superadmins, group, group_type, 'admin')
+                    if add_privilege:
+                        log.info("SUCCESS")
+                except HTTPError:
+                    raise HTTPError
             else:
                 log.info('dry run, not performing add')
 
@@ -180,7 +203,7 @@ if __name__ == '__main__':
         log.info(f"Total number of main themes: {n_mainThemes}")
         log.info(f"List of main themes: {', '.join(main_groups)}")
 
-        add_groups(main_groups, 'portal', main_descriptions, ga, add=args.add)
+        add_groups(main_groups, 'portal', main_descriptions, ga, log=log, add=args.add)
 
         mainTheme_timer._stop()
         log.info(f"MAIN PORTAL : {mainTheme_timer.format}")
@@ -205,7 +228,7 @@ if __name__ == '__main__':
         log.info(f"Total number of sub-portals: {n_subPortals}")
         log.info(f"List of sub-portals: {', '.join(sub_groups)}")
 
-        add_groups(sub_groups, 'portal', sub_descriptions, ga, add=args.add)
+        add_groups(sub_groups, 'portal', sub_descriptions, ga, log=log, add=args.add)
 
         subPortal_timer._stop()
         log.info(f"SUB-PORTAL : {subPortal_timer.format}")
@@ -228,7 +251,7 @@ if __name__ == '__main__':
         log.info(f"Total number of quotas: {n_quotas}")
         log.info(f"List of quotas: {', '.join(quota_groups)}")
 
-        add_groups(quota_groups, 'quota', quota_descriptions, ga, add=args.add)
+        add_groups(quota_groups, 'quota', quota_descriptions, ga, log=log, add=args.add)
 
         quota_timer._stop()
         log.info(f"QUOTA : {quota_timer.format}")
