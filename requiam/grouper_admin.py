@@ -17,11 +17,24 @@ class GrouperAPI:
                               (e.g., grouper-ws/servicesRest/json/v2_2_001)
     :param grouper_user: grouper username
     :param grouper_password: password credential
+    :param grouper_production: bool to indicate whether to use production (figshare)
+                               or stage (figtest) stem
 
-    Attributes:
+    Attributes
+    ----------
+    grouper_host: str
+    grouper_base_dn: str
+    grouper_user: str
+    grouper_password: str
+    grouper_production: bool
 
+    endpoint: str
+      Grouper endpoint
+    headers: dict
+      HTTP header information
 
-    Methods:
+    Methods
+    -------
     url(endpoint)
       Return full Grouper URL endpoint
 
