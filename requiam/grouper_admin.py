@@ -9,9 +9,41 @@ from .grouper_query import figshare_group
 class GrouperAPI:
     """
     Purpose:
-      This class uses the Grouper API to retrieve a variety of content
+      This class uses the Grouper API to retrieve and post a variety of
+      Grouper content
 
-    Additional documentation forthcoming
+    :param grouper_host: The grouper hostname (e.g., grouper.iam.arizona.edu)
+    :param grouper_base_path: The grouper base path that includes the API version
+                              (e.g., grouper-ws/servicesRest/json/v2_2_001)
+    :param grouper_user: grouper username
+    :param grouper_password: password credential
+
+    Attributes:
+
+
+    Methods:
+    url(endpoint)
+      Return full Grouper URL endpoint
+
+    get_group_list(group_type)
+      Retrieve list of groups in a Grouper stem
+      group_type must be 'portal', 'quota', 'test' or ''
+
+    get_group_details(group)
+      Retrieve group details
+      group must be the full Grouper path
+
+    check_group_exists(group, group_type)
+      Check whether a Grouper group exists within a Grouper stem
+      group_type must be 'portal', 'quota', 'test' or ''
+      group is simply the group name
+
+    add_group(group, group_type, description)
+      Create Grouper group within a Grouper stem
+      group_type must be 'portal', 'quota', or 'test'
+
+    add_privilege(access_group, target_group, target_group_type, privileges)
+      Add privilege(s) for a Grouper group to access target
     """
 
     def __init__(self, grouper_host, grouper_base_path, grouper_user,
@@ -27,7 +59,7 @@ class GrouperAPI:
         self.headers = {'Content-Type': 'text/x-json'}
 
     def url(self, endpoint):
-        """Return URL endpoint"""
+        """Return full Grouper URL endpoint"""
 
         return join(self.endpoint, endpoint)
 
@@ -73,7 +105,7 @@ class GrouperAPI:
     def check_group_exists(self, group, group_type):
         """Check whether a Grouper group exists within a Grouper stem"""
 
-        if group_type not in ['portal', 'quota', 'test']:
+        if group_type not in ['portal', 'quota', 'test', '']:
             raise ValueError("Incorrect [group_type] input")
 
         result = self.get_group_list(group_type)
@@ -128,14 +160,15 @@ class GrouperAPI:
         Purpose:
           Add privilege(s) for a Grouper group to access target
 
-        :param access_group: name of group to give access to, ex: arizona.edu:Dept:LBRY:figshare:GrouperSuperAdmins
+        :param access_group: name of group to give access to,
+                             ex: arizona.edu:Dept:LBRY:figshare:GrouperSuperAdmins
         :param target_group: name of group to add privilege on, ex: "apitest"
         :param target_group_type: name of stem associated with the group to add privilege on,
                             ex: use 'test' for arizona.edu:Dept:LBRY:figtest:test
         :param privileges: single string, or list of strings of allowed values:
                            'read', 'view', 'update', 'admin', 'optin', 'optout'
 
-        :return: True on success, otherwise raises GrouperAPIException
+        :return: True on success, otherwise raises an Exception
         """
 
         endpoint = self.url('grouperPrivileges')
