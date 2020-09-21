@@ -12,6 +12,9 @@ class GrouperAPI:
       This class uses the Grouper API to retrieve and post a variety of
       Grouper content
 
+      Main Grouper API doc:
+        https://spaces.at.internet2.edu/display/Grouper/Grouper+Web+Services
+
     :param grouper_host: The grouper hostname (e.g., grouper.iam.arizona.edu)
     :param grouper_base_path: The grouper base path that includes the API version
                               (e.g., grouper-ws/servicesRest/json/v2_2_001)
@@ -42,21 +45,33 @@ class GrouperAPI:
       Retrieve list of groups in a Grouper stem
       group_type must be 'portal', 'quota', 'test' or ''
 
+      See: https://spaces.at.internet2.edu/display/Grouper/Get+Groups
+        but with a different implementation using the stem find
+
     get_group_details(group)
       Retrieve group details
       group must be the full Grouper path
+
+      See: https://spaces.at.internet2.edu/display/Grouper/Get+Groups
+        but using WsRestFindGroupsRequest
 
     check_group_exists(group, group_type)
       Check whether a Grouper group exists within a Grouper stem
       group_type must be 'portal', 'quota', 'test' or ''
       group is simply the group name
 
+      See: https://spaces.at.internet2.edu/display/Grouper/Find+Groups
+
     add_group(group, group_type, description)
       Create Grouper group within a Grouper stem
       group_type must be 'portal', 'quota', or 'test'
 
+      See: https://spaces.at.internet2.edu/display/Grouper/Group+Save
+
     add_privilege(access_group, target_group, target_group_type, privileges)
       Add privilege(s) for a Grouper group to access target
+
+      See: https://spaces.at.internet2.edu/display/Grouper/Add+or+remove+grouper+privileges
     """
 
     def __init__(self, grouper_host, grouper_base_path, grouper_user,
