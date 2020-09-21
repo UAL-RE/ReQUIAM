@@ -29,13 +29,15 @@ class GrouperAPI:
     def url(self, endpoint):
         """Return URL endpoint"""
 
-        return f"{self.endpoint}/{endpoint}"
+        return join(self.endpoint, endpoint)
 
     def get_group_list(self, group_type):
         """Retrieve list of groups in a Grouper stem"""
 
         if group_type not in ['portal', 'quota', 'test', '']:
             raise ValueError("Incorrect [group_type] input")
+
+        endpoint = self.url('groups')
 
         grouper_stem = figshare_stem(group_type, production=self.grouper_production)
 
@@ -46,13 +48,15 @@ class GrouperAPI:
                  'stemName': grouper_stem}
         }
 
-        rsp = requests.post(self.endpoint, json=params, headers=self.headers,
+        rsp = requests.post(endpoint, json=params, headers=self.headers,
                             auth=(self.grouper_user, self.grouper_password))
 
         return rsp.json()
 
     def get_group_details(self, group):
         """Retrieve group details. The full path is needed"""
+
+        endpoint = self.url('groups')
 
         params = dict()
         params['WsRestFindGroupsRequest'] = {
@@ -61,7 +65,7 @@ class GrouperAPI:
                  'groupName': group}
         }
 
-        rsp = requests.post(self.endpoint, json=params, headers=self.headers,
+        rsp = requests.post(endpoint, json=params, headers=self.headers,
                             auth=(self.grouper_user, self.grouper_password))
 
         return rsp.json()['WsFindGroupsResults']['groupResults']
@@ -87,7 +91,7 @@ class GrouperAPI:
     def add_group(self, group, group_type, description):
         """Create Grouper group within a Grouper stem"""
 
-        endpoint = self.url("")
+        endpoint = self.url("groups")
 
         if group_type not in ['portal', 'quota', 'test']:
             raise ValueError("Incorrect [group_type] input")
@@ -134,8 +138,7 @@ class GrouperAPI:
         :return: True on success, otherwise raises GrouperAPIException
         """
 
-        # This is a hack.  The endpoint needs to change so "groups" is not hardcoded.
-        endpoint = join(dirname(self.endpoint), 'grouperPrivileges')
+        endpoint = self.url('grouperPrivileges')
 
         # Check privileges
         if isinstance(privileges, str):

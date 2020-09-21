@@ -1,5 +1,6 @@
 import requests
 
+from os.path import join
 from .delta import Delta
 from .manual_override import update_entries
 from .commons import figshare_stem
@@ -33,9 +34,10 @@ class GrouperQuery(object):
         self.grouper_password = grouper_password
         self.grouper_group = grouper_group
 
-        self.grouper_group_members_url = 'https://{}/{}/{}/members'.format(grouper_host,
-                                                                           grouper_base_path,
-                                                                           grouper_group)
+        self.endpoint = f'https://{grouper_host}/{grouper_base_path}'
+
+        self.grouper_group_members_url = join(self.endpoint,
+                                              f'groups/{grouper_group}/members')
 
         rsp = requests.get(self.grouper_group_members_url, auth=(grouper_user, grouper_password))
 
