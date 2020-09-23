@@ -206,7 +206,7 @@ use: `--portal root`. For quota, the `root` option will remove any quota
 association (this is equivalent to a zero quota)
 
 The manual CSV files are specified in the config file:
-```python
+```
 # Manual override files
 portal_file = config/portal_manual.csv
 quota_file = config/quota_manual.csv
@@ -214,7 +214,7 @@ quota_file = config/quota_manual.csv
 
 These settings, much like other settings (see `python requiam/user_update --help`),
 can be overwritten on the command line:
-  ```python
+  ```
   --portal_file /path/to/portal_manual.csv
   --quota_file /path/to/quota_manual.csv
   ```
