@@ -170,16 +170,16 @@ While the primary use of this software is automated updates through Grouper,
 there are additional scripts for handling.  One of those pertains to overriding
 default changes (e.g., a user's quota, involvement with a specific portal).
 To this end, the `user_update` script should be used. It has several features:
- 1. It can add a given user to a specific group and also remove it from its
-    previous group assignment
+ 1. It can add a number of users to a specific group and also remove them from
+    its previous group assignment(s)
  2. It will update the appropriate CSV files. This ensures that the changes
     stay when the automated script `script_run` is executed.
  3. It has the ability to move a user to the "main" or "root" portal
  4. It has a number of built-in error handling to identify possible input error.
     This includes:
-      a. A username that is not valid
-      b. A Grouper group that does not exist
-      c. Prevent any action if the user belongs to the specified group
+       - A username that is not valid
+       - A Grouper group that does not exist
+       - Prevent any action if the user belongs to the specified group
 
 Execution can be done as follows:
 
@@ -193,7 +193,7 @@ Execution can be done as follows:
 Here, the script will update the specified `<username>` to be associated with
 the `123456` quota and the `testportal` portal.  Much like `script_run`,
 execution requires the `--sync` flag. Otherwise, a list of changes will be
-provided. Note that `<username>` can be a list of comma-separated users
+provided. Note: `<username>` can be a list of comma-separated users
 (e.g., `user1,user2,user3`) or a .txt file with each username on a new line.
 ```
 user1
