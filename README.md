@@ -185,18 +185,25 @@ Execution can be done as follows:
 
 ```
 (figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/user_update \
-                       --netid <username> --config config/figshare.ini \
-                       --quota 123456 --portal testportal \
-                       --ldap_password $password --grouper_password $password --sync
+                       --config config/figshare.ini --ldap_password $password \
+                       --grouper_password $password --quota 123456 --portal testportal \
+                       --netid <username> --sync
 ```
 
 Here, the script will update the specified `<username>` to be associated with
 the `123456` quota and the `testportal` portal.  Much like `script_run`,
 execution requires the `--sync` flag. Otherwise, a list of changes will be
-provided.
+provided. Note that `<username>` can be a list of comma-separated users
+(e.g., `user1,user2,user3`) or a .txt file with each username on a new line.
+```
+user1
+user2
+user3
+```
 
 To remove a user from its current assignment and place it on the main portal,
-use: `--portal root`.
+use: `--portal root`. For quota, the `root` option will remove any quota
+association (this is equivalent to a zero quota)
 
 The manual CSV files are specified in the config file:
 ```python
