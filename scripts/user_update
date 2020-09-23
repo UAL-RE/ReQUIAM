@@ -28,7 +28,9 @@ library_root_path = path.dirname(path.dirname(library_path))  # Retrieve parent 
 if __name__ == '__main__':
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description='Command-line driver for simple user EDS updates.')
-    parser.add_argument('--netid', required=True, help='NetID for user')
+    parser.add_argument('--netid', required=True,
+                        help='''NetIDs for user. Comma separated for multiple users.
+                                Alternatively path to .txt file that contains users (single entry per line).''')
     parser.add_argument('--config', required=True, help='path to configuration file')
     parser.add_argument('--persistent_path', required=True, help='full parent path for logs')
     parser.add_argument('--ldap_host', help='LDAP host')
@@ -137,14 +139,36 @@ if __name__ == '__main__':
     # Initiate LDAP connection
     ldc = ldap_query.LDAPConnection(**ldap_dict)
 
-    # Get uaid based on NetID (uid)
-    uid_query = ldap_query.uid_query(vargs['netid'])
-    user_uaid = ldap_query.ldap_search(ldc, uid_query)
-    if len(user_uaid) == 0:
-        log.warning("netid not found!")
-        raise ValueError
+    if '.txt' in vargs['netid'][-4:]:
+        # Read in text file with list of users
+        log.info(f"Reading : {vargs['netid']}")
+        with open(vargs['netid']) as f:
+            netid_list = f.read().splitlines()
+        f.close()
+        log.info(f"List of input users: {netid_list}")
+    else:
+        # Separate comma-separated list of users
+        netid_list = vargs['netid'].split(',')
 
-    log.info(f" uaid for {vargs['netid']} : {list(user_uaid)[0]}")
+    netid_set = sorted(set(netid_list), key=netid_list.index)
+    num_netid = len(netid_set)
+
+    # Get uaid based on NetID (uid)
+    clean_uaid_list  = []
+    clean_netid_list = []
+    for netid in netid_set:
+        uid_query = ldap_query.uid_query(netid)
+        user_uaid = ldap_query.ldap_search(ldc, uid_query)
+        if len(user_uaid) == 0:
+            log.warning(f"netid not found! {netid}")
+        else:
+            log.info(f" uaid for {netid} : {list(user_uaid)[0]}")
+            clean_uaid_list.append(list(user_uaid)[0])
+            clean_netid_list.append(netid)
+
+    if len(clean_uaid_list) == 0:
+        log.warning(f"No netid's to work with")
+        raise ValueError
 
     # Grouper API tool
     ga = GrouperAPI(**grouper_dict)
@@ -159,7 +183,7 @@ if __name__ == '__main__':
 
     # Check to see if quota exists on Grouper before proceeding
     quota_check = True
-    if vargs['quota'] != '(unset)':
+    if vargs['quota'] != '(unset)' and vargs['quota'] != 'root':
         quota_check = ga.check_group_exists(vargs['quota'], 'quota')
 
         if not quota_check:
@@ -169,17 +193,76 @@ if __name__ == '__main__':
     if not portal_check or not quota_check:
         raise SystemError
 
-    # Retrieve ismemberof figshare information
-    current_dict = get_current_groups(vargs['netid'], ldap_dict, log)
+    # Initialized nested dictionary
+    current_dict = dict()
+    current_dict['active'] = {'uaid': [], 'netid': []}
+    current_dict['not_active'] = {'uaid': [], 'netid': []}
 
-    # figshare:active update:
-    if not current_dict['active']:
-        if not vargs['active_remove']:
-            log.info(f"Adding to figshare:active group")
+    current_dict['summary'] = {'active': 0}
+    if vargs['portal'] != '(unset)':
+        current_dict['summary']['portal'] = 0
+
+        current_dict['portal'] = {'uaid': [], 'netid': []}
+        current_dict['not_portal'] = {'uaid': [], 'netid': []}
+    if vargs['quota'] != '(unset)':
+        current_dict['summary']['quota'] = 0
+
+        current_dict['quota'] = {'uaid': [], 'netid': []}
+        current_dict['not_quota'] = {'uaid': [], 'netid': []}
+
+    # Retrieve ismemberof figshare information
+    # Populate current_dict
+    for netid, uaid in zip(clean_netid_list, clean_uaid_list):
+        current_dict[netid] = get_current_groups(netid, ldap_dict, log,
+                                                 verbose=False)
+        if current_dict[netid]['active']:
+            current_dict['summary']['active'] += 1
+            current_dict['active']['uaid'] += [uaid]
+            current_dict['active']['netid'] += [netid]
+        else:
+            current_dict['not_active']['uaid'] += [uaid]
+            current_dict['not_active']['netid'] += [netid]
+
+        if vargs['portal'] != '(unset)':
+            if current_dict[netid]['portal'] == vargs['portal']:
+                current_dict['summary']['portal'] += 1
+
+                current_dict['portal']['uaid'] += [uaid]
+                current_dict['portal']['netid'] += [netid]
+            else:
+                current_dict['not_portal']['uaid'] += [uaid]
+                current_dict['not_portal']['netid'] += [netid]
+
+        if vargs['quota'] != '(unset)':
+            if current_dict[netid]['quota'] == vargs['quota']:
+                current_dict['summary']['quota'] += 1
+
+                current_dict['quota']['uaid'] += [uaid]
+                current_dict['quota']['netid'] += [netid]
+            else:
+                current_dict['not_quota']['uaid'] += [uaid]
+                current_dict['not_quota']['netid'] += [netid]
+
+    # Provide general information about active status
+    if len(current_dict['active']['netid']) == 0:
+        log.info("None of the supplied users are active")
+    if len(current_dict['not_active']['netid']) == 0:
+        log.info("All users are active")
+
+    if len(current_dict['active']['netid']) > 0:
+        log.info(f"List of users that are active : {current_dict['active']['netid']}")
+    if len(current_dict['not_active']['netid']) > 0:
+        log.info(f"List of users that are NOT active : {current_dict['not_active']['netid']}")
+
+    # figshare:active update
+    if not vargs['active_remove']:
+        if len(current_dict['not_active']['netid']) > 0:
+            log.info("Adding to figshare:active group")
 
             d = grouper_delta_user('active', '',
-                                   vargs['netid'], user_uaid, 'add',
-                                   grouper_dict, delta_dict, log)
+                                   current_dict['not_active']['netid'],
+                                   set(current_dict['not_active']['uaid']),
+                                   'add', grouper_dict, delta_dict, log)
 
             if args.sync:
                 log.info('synchronizing ...')
@@ -187,104 +270,135 @@ if __name__ == '__main__':
             else:
                 log.info('dry run, not performing synchronization')
         else:
-            log.info("Not a member of figshare:active. No need to remove")
+            log.info("All users are member of figshare:active. No need to add")
     else:
-        log.info("Member of figshare:active group.")
-        if vargs['active_remove']:
-            log.info(f"Removing from figshare:active group")
+        if len(current_dict['active']['netid']) > 0:
+            log.info("Removing from figshare:active group")
 
             d = grouper_delta_user('active', '',
-                                   vargs['netid'], user_uaid, 'remove',
-                                   grouper_dict, delta_dict, log)
+                                   current_dict['active']['netid'],
+                                   set(current_dict['active']['uaid']),
+                                   'remove', grouper_dict, delta_dict, log)
 
             if args.sync:
                 log.info('synchronizing ...')
                 d.synchronize()
             else:
                 log.info('dry run, not performing synchronization')
+        else:
+            log.info("All users not a member of figshare:active. No need to remove")
 
     # Portal update
     if vargs['portal'] != '(unset)':
-        if current_dict['portal'] == vargs['portal']:
-            log.warning("Specified portal identical to current portal. Skipping!")
+        if len(current_dict['not_portal']['netid']) == 0:
+            log.warning(f"All users are member of portal:{vargs['portal']}. No need to add")
         else:
             # First remove from current portal group
-            if current_dict['portal'] == '':
-                log.info("Currently not assigned to a portal. Skipping removal")
-            else:
-                log.info(f"Removing from current {current_dict['portal']} portal")
+            not_portal_netid = current_dict['not_portal']['netid']
+            not_portal_uaid = current_dict['not_portal']['uaid']
 
-                d = grouper_delta_user(current_dict['portal'], 'portal',
-                                       vargs['netid'], user_uaid, 'remove',
-                                       grouper_dict, delta_dict, log)
-
-                if args.sync:
-                    log.info('synchronizing ...')
-                    d.synchronize()
+            for i in range(len(not_portal_netid)):  # Loop over each case
+                current_portal = current_dict[not_portal_netid[i]]['portal']
+                if current_portal == 'root':
+                    log.info(f"{not_portal_netid[i]} not assigned to a portal. Skipping removal")
                 else:
-                    log.info('dry run, not performing synchronization')
+                    log.info(f"Removing {not_portal_netid[i]} from current {current_portal} portal")
+
+                    d = grouper_delta_user(current_portal, 'portal',
+                                           not_portal_netid[i], {not_portal_uaid[i]},
+                                           'remove', grouper_dict, delta_dict, log)
+
+                    if args.sync:
+                        log.info('synchronizing ...')
+                        d.synchronize()
+                    else:
+                        log.info('dry run, not performing synchronization')
 
             # Add to new portal group
             if vargs['portal'] != 'root':
                 log.info(f"Adding to {vargs['portal']} portal")
 
                 d = grouper_delta_user(vargs['portal'], 'portal',
-                                       vargs['netid'], user_uaid, 'add',
-                                       grouper_dict, delta_dict, log)
+                                       current_dict['not_portal']['netid'],
+                                       current_dict['not_portal']['uaid'],
+                                       'add', grouper_dict, delta_dict, log)
 
                 if args.sync:
                     log.info('synchronizing ...')
                     d.synchronize()
 
                     # Update manual CSV file
-                    mo.update_dataframe(vargs['netid'], user_uaid, vargs['portal'], 'portal')
+                    mo.update_dataframe(current_dict['not_portal']['netid'],
+                                        current_dict['not_portal']['uaid'],
+                                        vargs['portal'], 'portal')
                 else:
                     log.info('dry run, not performing synchronization')
                     log.info('dry run, not updating portal dataframe')
             else:
                 # Remove entry from manual CSV file for 'root' case
                 if args.sync:
-                    mo.update_dataframe(vargs['netid'], user_uaid, vargs['portal'], 'portal')
+                    # Update of df only needed since there's not root portal to add too
+                    mo.update_dataframe(current_dict['not_portal']['netid'],
+                                        current_dict['not_portal']['uaid'],
+                                        vargs['portal'], 'portal')
                 else:
                     log.info('dry run, not updating portal dataframe')
 
     # Quota update
     if vargs['quota'] != '(unset)':
-        if current_dict['quota'] == vargs['quota']:
-            log.warning("Specified quota identical to current quota. Skipping!")
+        if len(current_dict['not_quota']['netid']) == 0:
+            log.warning(f"All users are member of quota:{vargs['quota']}. No need to add")
         else:
             # First remove from current quota group
-            if current_dict['quota'] == '':
-                log.info("Currently not assigned to a quota. Skipping removal")
-            else:
-                log.info(f"Removing from current {current_dict['quota']} quota")
+            not_quota_netid = current_dict['not_quota']['netid']
+            not_quota_uaid = current_dict['not_quota']['uaid']
 
-                d = grouper_delta_user(current_dict['quota'], 'quota',
-                                       vargs['netid'], user_uaid, 'remove',
-                                       grouper_dict, delta_dict, log)
+            for i in range(len(not_quota_netid)):
+                current_quota = current_dict[not_quota_netid[i]]['quota']
+                if current_quota == 'root':
+                    log.info(f"{not_quota_netid[i]} not assigned to a quota. Skipping removal")
+                else:
+                    log.info(f"Removing {not_quota_netid[i]} from current {current_quota} quota")
+
+                    d = grouper_delta_user(current_quota, 'quota',
+                                           not_quota_netid[i], {not_quota_uaid[i]},
+                                           'remove', grouper_dict, delta_dict, log)
+
+                    if args.sync:
+                        log.info('synchronizing ...')
+                        d.synchronize()
+                    else:
+                        log.info('dry run, not performing synchronization')
+
+            # Add to new quota group
+            if vargs['quota'] != 'root':
+                log.info(f"Adding to {vargs['quota']} quota")
+
+                d = grouper_delta_user(vargs['quota'], 'quota',
+                                       current_dict['not_quota']['netid'],
+                                       current_dict['not_quota']['uaid'],
+                                       'add', grouper_dict, delta_dict, log)
 
                 if args.sync:
                     log.info('synchronizing ...')
                     d.synchronize()
+
+                    # Update manual CSV file
+                    mo.update_dataframe(current_dict['not_quota']['netid'],
+                                        current_dict['not_quota']['uaid'],
+                                        vargs['quota'], 'quota')
                 else:
                     log.info('dry run, not performing synchronization')
-
-            # Add to new quota group
-            log.info(f"Updating {vargs['quota']} quota")
-
-            d = grouper_delta_user(vargs['quota'], 'quota',
-                                   vargs['netid'], user_uaid, 'add',
-                                   grouper_dict, delta_dict, log)
-
-            if args.sync:
-                log.info('synchronizing ...')
-                d.synchronize()
-
-                # Update manual CSV file
-                mo.update_dataframe(vargs['netid'], user_uaid, vargs['quota'], 'quota')
+                    log.info('dry run, not updating quota dataframe')
             else:
-                log.info('dry run, not performing synchronization')
-                log.info('dry run, not updating quota dataframe')
+                # Remove entry from manual CSV file for 'root' case
+                if args.sync:
+                    # Update of df only needed since there's not root portal to add too
+                    mo.update_dataframe(current_dict['not_quota']['netid'],
+                                        current_dict['not_quota']['uaid'],
+                                        vargs['quota'], 'quota')
+                else:
+                    log.info('dry run, not updating portal dataframe')
 
     main_timer._stop()
     log.info(main_timer.format)

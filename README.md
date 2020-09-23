@@ -172,36 +172,42 @@ While the primary use of this software is automated updates through Grouper,
 there are additional scripts for handling.  One of those pertains to overriding
 default changes (e.g., a user's quota, involvement with a specific portal).
 To this end, the `user_update` script should be used. It has several features:
- 1. It can add a given user to a specific group and also remove it from its
-    previous group assignment
+ 1. It can add a number of users to a specific group and also remove them from
+    its previous group assignment(s)
  2. It will update the appropriate CSV files. This ensures that the changes
     stay when the automated script `script_run` is executed.
  3. It has the ability to move a user to the "main" or "root" portal
  4. It has a number of built-in error handling to identify possible input error.
     This includes:
-      a. A username that is not valid
-      b. A Grouper group that does not exist
-      c. Prevent any action if the user belongs to the specified group
+       - A username that is not valid
+       - A Grouper group that does not exist
+       - Prevent any action if the user belongs to the specified group
 
 Execution can be done as follows:
 
 ```
 (figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/user_update \
-                       --netid <username> --config config/figshare.ini \
-                       --persistent_path $persist_path --quota 123456 --portal testportal \
-                       --ldap_password $password --grouper_password $password --sync
-```
+                       --config config/figshare.ini --persistent_path $persist_path \
+                       --ldap_password $password --grouper_password $password \
+                       --quota 123456 --portal testportal --netid <username> --sync
 
 Here, the script will update the specified `<username>` to be associated with
 the `123456` quota and the `testportal` portal.  Much like `script_run`,
 execution requires the `--sync` flag. Otherwise, a list of changes will be
-provided.
+provided. Note: `<username>` can be a list of comma-separated users
+(e.g., `user1,user2,user3`) or a .txt file with each username on a new line.
+```
+user1
+user2
+user3
+```
 
 To remove a user from its current assignment and place it on the main portal,
-use: `--portal root`.
+use: `--portal root`. For quota, the `root` option will remove any quota
+association (this is equivalent to a zero quota)
 
 The manual CSV files are specified in the config file:
-```python
+```
 # Manual override files
 portal_file = config/portal_manual.csv
 quota_file = config/quota_manual.csv
@@ -209,7 +215,7 @@ quota_file = config/quota_manual.csv
 
 These settings, much like other settings (see `python requiam/user_update --help`),
 can be overwritten on the command line:
-  ```python
+  ```
   --portal_file /path/to/portal_manual.csv
   --quota_file /path/to/quota_manual.csv
   ```
