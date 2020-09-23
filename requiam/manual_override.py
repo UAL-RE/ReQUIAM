@@ -100,8 +100,11 @@ class ManualOverride:
         for i in range(len(netid)):
             loc0 = revised_df.loc[revised_df['netid'] == netid[i]].index
             if len(loc0) == 0:
-                self.log.info(f"Adding entry for {netid[i]}")
-                revised_df.loc[len(revised_df)] = [netid[i], list(uaid)[i], group]
+                if group != 'root':
+                    self.log.info(f"Adding entry for {netid[i]}")
+                    revised_df.loc[len(revised_df)] = [netid[i], list(uaid)[i], group]
+                else:
+                    self.log.info(f"No update needed - root setting and {netid[i]} is not in list")
             else:
                 if group != 'root':
                     self.log.info(f"Updating entry for {netid[i]}")
