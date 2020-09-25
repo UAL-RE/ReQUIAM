@@ -76,13 +76,23 @@ def add_groups(groups, group_type, group_descriptions, grouper_api, log=None, ad
             log.info(f"Group exists : {group}")
 
         if add:
-            log.info(f'Adding admin privileges for superadmins ...')
+            log.info(f'Adding admin privileges for groupersuperadmins ...')
             try:
                 add_privilege = grouper_api.add_privilege(superadmins, group, group_type, 'admin')
                 if add_privilege:
                     log.info("SUCCESS")
             except HTTPError:
                 raise HTTPError
+
+            log.info(f'Adding privileges for grouperadmins ...')
+            try:
+                add_privilege = grouper_api.add_privilege(admins, group, group_type,
+                                                          ['read', 'view', 'optout', 'attrread'])
+                if add_privilege:
+                    log.info("SUCCESS")
+            except HTTPError:
+                raise HTTPError
+
         else:
             log.info('dry run, not performing privilege add')
 
