@@ -145,8 +145,8 @@ if __name__ == '__main__':
 
     log = LogClass(log_dir, logfile).get_logger()
 
-    log.info("*****************************")
-    log.info("Started add_group script ... ")
+    log.info("*************************************")
+    log.info("Started add_grouper_group script ... ")
     log.info(f"ReQUIAM active branch: {branch_name}")
     log.info(f"ReQUIAM version: {__version__}")
 
@@ -302,5 +302,5 @@ if __name__ == '__main__':
     main_timer._stop()
     log.info(main_timer.format)
 
-    log.info("*****************************")
+    log.info("*************************************")
     log.info("Exit 0")
