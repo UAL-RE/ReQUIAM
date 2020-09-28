@@ -121,7 +121,7 @@ if __name__ == '__main__':
     A full execution will:
      1. Check whether the group exists
      2. Create the group
-     3. Update the CSV file that contains the groups
+     3. Set permissions for GrouperSuperAdmins and GrouperAdmins
 
     ReQUIAM active branch: {branch_name}
     ReQUIAM version: {__version__}
