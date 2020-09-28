@@ -206,6 +206,16 @@ if __name__ == '__main__':
         log.info("Reading Main Theme CSV into DataFrame ...")
         mainTheme_df = pd.read_csv(mainTheme_url)
 
+        # Drop empty rows
+        mainTheme_df = mainTheme_df.dropna(axis=0, how='all')
+
+        # Limit to those with Create set
+        mainTheme_df_excluded = mainTheme_df.loc[mainTheme_df['Create?'] != 'Yes']
+        mainTheme_excluded_dict = mainTheme_df_excluded.set_index('Main-portal').T.to_dict()
+        log.info(f"Excluded main themes: {', '.join(list(mainTheme_excluded_dict.keys()))}")
+
+        mainTheme_df = mainTheme_df.loc[mainTheme_df['Create?'] == 'Yes']
+
         # Construction dict with main portal names
         mainTheme_dict = mainTheme_df.set_index('Main-portal').T.to_dict()
 
@@ -231,6 +241,16 @@ if __name__ == '__main__':
         log.info("Reading Sub-portals CSV into DataFrame ...")
         subPortal_df = pd.read_csv(subPortal_url)
 
+        # Drop empty rows
+        subPortal_df = subPortal_df.dropna(axis=0, how='all')
+
+        # Limit to those with Create set
+        subPortal_df_excluded = subPortal_df.loc[subPortal_df['Create?'] != 'Yes']
+        subPortal_excluded_dict = subPortal_df_excluded.set_index('Sub-portal').T.to_dict()
+        log.info(f"Excluded sub-portals: {', '.join(list(subPortal_excluded_dict.keys()))}")
+
+        subPortal_df = subPortal_df.loc[subPortal_df['Create?'] == 'Yes']
+
         # Construction dict with sub-portal names
         subPortal_dict = subPortal_df.set_index('Sub-portal').T.to_dict()
 
@@ -255,6 +275,16 @@ if __name__ == '__main__':
         quota_url = config.get('google', 'quota_url')
         log.info("Reading Quotas CSV into DataFrame ...")
         quota_df = pd.read_csv(quota_url)
+
+        # Drop empty rows
+        quota_df = quota_df.dropna(axis=0, how='all')
+
+        # Limit to those with Create set
+        quota_df_excluded = quota_df.loc[quota_df['Create?'] != 'Yes']
+        quota_excluded_groups = quota_df_excluded['Quota'].astype(str).to_list()
+        log.info(f"Excluded quotas: {', '.join(quota_excluded_groups)}")
+
+        quota_df = quota_df.loc[quota_df['Create?'] == 'Yes']
 
         # Read in list of quotas
         quota_groups = quota_df['Quota'].astype(str).to_list()
