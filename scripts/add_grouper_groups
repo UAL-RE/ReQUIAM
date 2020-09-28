@@ -101,6 +101,7 @@ if __name__ == '__main__':
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description='Command-line driver to add a Grouper group.')
     parser.add_argument('--config', required=True, help='path to configuration file')
+    parser.add_argument('--persistent_path', required=True, help='full parent path for logs')
     parser.add_argument('--grouper_host', help='Grouper host')
     parser.add_argument('--grouper_base_path', help='base path for Grouper API')
     parser.add_argument('--grouper_user', help='user name for Grouper login')
@@ -137,11 +138,11 @@ if __name__ == '__main__':
     config.read(args.config)
 
     # Define logfile
-    log_dir = config.get('global', 'log_dir')
+    log_dir = path.join(args.persistent_path, config.get('global', 'log_dir'))
+
     if not path.exists(log_dir):
         mkdir(log_dir)
-    logfile_prefix = config.get('global', 'logfile_prefix')
-    logfile = f"add_groups.{today.strftime('%Y-%m-%d')}.log"
+    logfile = f"add_grouper_groups.{today.strftime('%Y-%m-%d')}.log"
 
     log = LogClass(log_dir, logfile).get_logger()
 
