@@ -5,6 +5,8 @@ import pandas as pd
 from .commons import figshare_stem
 from .grouper_query import figshare_group
 
+from .logger import log_stdout
+
 
 class GrouperAPI:
     """
@@ -75,7 +77,12 @@ class GrouperAPI:
     """
 
     def __init__(self, grouper_host, grouper_base_path, grouper_user,
-                 grouper_password, grouper_production=False):
+                 grouper_password, grouper_production=False, log=None):
+
+        if isinstance(log, type(None)):
+            self.log = log_stdout()
+        else:
+            self.log = log
 
         self.grouper_host = grouper_host
         self.grouper_base_dn = grouper_base_path
