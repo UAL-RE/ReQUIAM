@@ -4,6 +4,9 @@ from os.path import join
 import logging
 formatter = logging.Formatter('%(asctime)s - %(levelname)8s: %(message)s', "%H:%M:%S")
 
+file_formatter = logging.Formatter('%(asctime)s %(levelname)8s - %(module)20s %(funcName)30s : %(message)s',
+                                   "%H:%M:%S")
+
 
 class LogClass:
     """
@@ -25,19 +28,35 @@ class LogClass:
         self.LOG_FILENAME = join(log_dir, logfile)
 
     def get_logger(self):
-        log_level = logging.INFO
-        log = logging.getLogger(self.LOG_FILENAME)
-        if not getattr(log, 'handler_set', None):
-            log.setLevel(logging.INFO)
+        file_log_level = logging.DEBUG  # This is for file logging
+        log = logging.getLogger("main_logger")
+        if not log.handlers:
+            log.setLevel(file_log_level)
+
             sh = logging.StreamHandler(sys.stdout)
+            sh.setLevel(logging.INFO)  # Only at INFO level
             sh.setFormatter(formatter)
             log.addHandler(sh)
 
             fh = logging.FileHandler(self.LOG_FILENAME)
-            fh.setLevel(logging.INFO)
-            fh.setFormatter(formatter)
+            fh.setLevel(file_log_level)
+            fh.setFormatter(file_formatter)
             log.addHandler(fh)
 
-            log.setLevel(log_level)
             log.handler_set = True
+            log.propagate = False
         return log
+
+
+def log_stdout():
+    log_level = logging.INFO
+    log = logging.getLogger("stdout_logger")
+    if not log.handlers:
+        log.setLevel(log_level)
+        sh = logging.StreamHandler(sys.stdout)
+        sh.setFormatter(formatter)
+        log.addHandler(sh)
+
+        log.handler_set = True
+        log.propagate = False
+    return log
