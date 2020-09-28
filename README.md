@@ -8,6 +8,7 @@
     - [Testing Installation](#testing-installation)
 - [Execution](#execution)
     - [Manual Changes](#manual-changes)
+    - [API Management of Grouper Groups](#api-management-of-grouper-groups)
 - [Versioning](#versioning)
 - [Changelog](#changelog)
 - [Authors](#authors)
@@ -222,6 +223,27 @@ can be overwritten on the command line:
 Note that working templates are provided in the config folder for
 [quota](config/quota_manual_template.csv) and [portal](config/portal_manual_template.csv).
 
+### API Management of Grouper Groups
+
+The `add_grouper_groups` currently create and assign privileges to groups
+through the Grouper API.  It uses the above existing Google Sheet for research
+themes and sub-portals. In addition, another
+[Google Sheet](https://docs.google.com/spreadsheets/d/12Rhfpz4aWIcOGOOu0Ev4sZNMiXvLr3FSl_83yRd3h4k/edit?usp=sharing)
+exists for the quotas. The script will check whether a group exists.  If the
+`add` flag is provided, it will create the group and assign privileges for
+GrouperSuperAdmins and GrouperAdmins. If a group already exists, it will
+skip to the privilege assignments.  To execute the script:
+
+```
+(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/add_grouper_groups \
+                       --config config/figshare.ini --grouper_password $password \
+                       --main_themes --sub_portals --quota --add
+```
+
+The `main_themes`, `sub_portals` and `quota` flags will conduct checks and
+create those sets of groups.  Without the `add` flag, it is a dry run.  By
+default this adjusts a testing Grouper stem `figtest`.  Set the `production`
+flag to implement on the production stem, `figshare`.
 
 ## Versioning
 

@@ -1,5 +1,6 @@
 import requests
 
+from os.path import join
 from .delta import Delta
 from .manual_override import update_entries
 from .commons import figshare_stem
@@ -33,9 +34,10 @@ class GrouperQuery(object):
         self.grouper_password = grouper_password
         self.grouper_group = grouper_group
 
-        self.grouper_group_members_url = 'https://{}/{}/{}/members'.format(grouper_host,
-                                                                           grouper_base_path,
-                                                                           grouper_group)
+        self.endpoint = f'https://{grouper_host}/{grouper_base_path}'
+
+        self.grouper_group_members_url = join(self.endpoint,
+                                              f'groups/{grouper_group}/members')
 
         rsp = requests.get(self.grouper_group_members_url, auth=(grouper_user, grouper_password))
 
@@ -51,13 +53,15 @@ class GrouperQuery(object):
         return set(self._members)
 
 
-def figshare_group(group, root_stem):
+def figshare_group(group, root_stem, production=True):
     """
     Purpose:
       Construct Grouper figshare groups
 
-    :param group: str or int of group name
+    :param group: str or int of group name. Cannot be empty
     :param root_stem: str of associated stem folder for [group]
+    :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
+
     :return grouper_group: str containing full Grouper path
 
     Usage:
@@ -72,18 +76,18 @@ def figshare_group(group, root_stem):
         > 'arizona.edu:dept:LBRY:figshare:portal:sci_math'
     """
 
-    stem_query = figshare_stem(root_stem)
+    if not group:
+        raise ValueError("WARNING: Empty [group]")
 
-    if root_stem == '':
-        grouper_group = stem_query + group
-    else:
-        grouper_group = '{}:{}'.format(stem_query, group)
+    stem_query = figshare_stem(stem=root_stem, production=production)
+
+    grouper_group = f'{stem_query}:{group}'
 
     return grouper_group
 
 
 def grouper_delta_user(group, stem, netid, uaid, action,
-                       grouper_dict, delta_dict, log):
+                       grouper_dict, delta_dict, log, production=True):
     """
     Purpose:
       Construct a Delta object for addition/deletion based for a specified
@@ -105,10 +109,13 @@ def grouper_delta_user(group, stem, netid, uaid, action,
       Dictionary containing delta settings
     :param log: LogClass object
       For logging
+    :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
+
+
     :return d: Delta object class
     """
 
-    grouper_query = figshare_group(group, stem)
+    grouper_query = figshare_group(group, stem, production=production)
     gq = GrouperQuery(**grouper_dict, grouper_group=grouper_query)
 
     member_set = gq.members

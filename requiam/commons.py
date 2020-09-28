@@ -1,11 +1,11 @@
-def figshare_stem(stem):
+def figshare_stem(stem='', production=True):
     """
     Purpose:
       Construct Grouper figshare stems
 
     :param stem: string corresponding to the sub-stem
-       Options are: 'quota', 'portal'
-
+       Some options are: 'quota', 'portal'. Default: root stem
+    :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
     :return stem_query: str
 
     Usage:
@@ -14,7 +14,18 @@ def figshare_stem(stem):
 
       For portal stem, call as: figshare_stem('portal')
         > 'arizona.edu:dept:LBRY:figshare:portal'
+
+      For main stem, call as: figshare_stem()
+        > 'arizona.edu:dept:LBRY:figshare'
     """
 
-    stem_query = 'arizona.edu:dept:LBRY:figshare:{}'.format(stem)
+    if production:
+        stem_query = 'arizona.edu:dept:LBRY:figshare'
+    else:
+        stem_query = 'arizona.edu:dept:LBRY:figtest'
+
+    # If [stem] is not an empty string
+    if stem:
+        stem_query += f':{stem}'
+
     return stem_query

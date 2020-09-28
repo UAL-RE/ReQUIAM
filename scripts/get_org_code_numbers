@@ -98,9 +98,9 @@ if __name__ == '__main__':
     for p in ['org_url']:
         if (p in vargs) and (vargs[p] is not None):
             vargs[p] = vargs[p]
-        elif (p in config['org_code']) and (config['org_code'][p] is not None) and \
-                (config['org_code'][p] != "***override***"):
-            vargs[p] = config['org_code'][p]
+        elif (p in config['google']) and (config['google'][p] is not None) and \
+                (config['google'][p] != "***override***"):
+            vargs[p] = config['google'][p]
         else:
             vargs[p] = '(unset)'
 
