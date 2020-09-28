@@ -87,7 +87,7 @@ def add_groups(groups, group_type, group_descriptions, grouper_api, log=None, ad
             log.info(f'Adding privileges for grouperadmins ...')
             try:
                 add_privilege = grouper_api.add_privilege(admins, group, group_type,
-                                                          ['read', 'view', 'optout', 'attrread'])
+                                                          ['read', 'view', 'optout'])
                 if add_privilege:
                     log.info("SUCCESS")
             except HTTPError:
@@ -95,7 +95,6 @@ def add_groups(groups, group_type, group_descriptions, grouper_api, log=None, ad
 
         else:
             log.info('dry run, not performing privilege add')
-
 
 
 if __name__ == '__main__':
