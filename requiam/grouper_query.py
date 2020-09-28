@@ -81,7 +81,7 @@ def figshare_group(group, root_stem, production=True):
 
     stem_query = figshare_stem(stem=root_stem, production=production)
 
-    grouper_group = '{}:{}'.format(stem_query, group)
+    grouper_group = f'{stem_query}:{group}'
 
     return grouper_group
 
