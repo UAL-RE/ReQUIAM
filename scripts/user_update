@@ -137,7 +137,7 @@ if __name__ == '__main__':
     mo = ManualOverride(vargs['portal_file'], vargs['quota_file'], log)
 
     # Initiate LDAP connection
-    ldc = ldap_query.LDAPConnection(**ldap_dict)
+    ldc = ldap_query.LDAPConnection(**ldap_dict, log=log)
 
     if '.txt' in vargs['netid'][-4:]:
         # Read in text file with list of users

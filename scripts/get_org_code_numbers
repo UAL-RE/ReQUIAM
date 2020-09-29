@@ -109,7 +109,7 @@ if __name__ == '__main__':
     ldc = LDAPConnection(ldap_host=vargs['ldap_host'],
                          ldap_base_dn=vargs['ldap_base_dn'],
                          ldap_user=vargs['ldap_user'],
-                         ldap_password=vargs['ldap_password'])
+                         ldap_password=vargs['ldap_password'], log=log)
 
     get_numbers(ldc, vargs['org_url'], log)
 

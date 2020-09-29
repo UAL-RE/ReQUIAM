@@ -142,7 +142,8 @@ if __name__ == '__main__':
     ldc = ldap_query.LDAPConnection(ldap_host=vargs['ldap_host'],
                                     ldap_base_dn=vargs['ldap_base_dn'],
                                     ldap_user=vargs['ldap_user'],
-                                    ldap_password=vargs['ldap_password'])
+                                    ldap_password=vargs['ldap_password'],
+                                    log=log)
 
     grouper_dict = dict(grouper_host=vargs['grouper_host'],
                         grouper_base_path=vargs['grouper_base_path'],
@@ -192,7 +193,7 @@ if __name__ == '__main__':
             # Grouper query
             grouper_portal = grouper_query.figshare_group(portal, 'portal')
             gq = grouper_query.GrouperQuery(**grouper_dict,
-                                            grouper_group=grouper_portal)
+                                            grouper_group=grouper_portal, log=log)
             log.info(" Grouper size {}".format(len(gq.members)))
 
             d = delta.Delta(ldap_members=ldap_members,
