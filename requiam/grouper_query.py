@@ -27,7 +27,13 @@ class GrouperQuery(object):
         members = gq.members
     """
 
-    def __init__(self, grouper_host, grouper_base_path, grouper_user, grouper_password, grouper_group):
+    def __init__(self, grouper_host, grouper_base_path, grouper_user,
+                 grouper_password, grouper_group, log=None):
+
+        if isinstance(log, type(None)):
+            self.log = log_stdout()
+        else:
+            self.log = log
 
         self.grouper_host = grouper_host
         self.grouper_base_dn = grouper_base_path

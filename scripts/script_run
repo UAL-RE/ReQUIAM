@@ -280,7 +280,7 @@ if __name__ == '__main__':
             log.info(" Providing empty member list")
 
         grouper_test = grouper_query.figshare_group('test', '')
-        gq = grouper_query.GrouperQuery(**grouper_dict, grouper_group=grouper_test)
+        gq = grouper_query.GrouperQuery(**grouper_dict, grouper_group=grouper_test, log=None)
         log.info(" Grouper size {}".format(len(gq.members)))
 
         # Delta between LDAP and Grouper
