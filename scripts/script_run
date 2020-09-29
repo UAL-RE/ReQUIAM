@@ -22,7 +22,7 @@ from requiam import manual_override
 
 # Version and branch info
 from requiam import __version__
-from requiam.get_branch_name import get_active_branch_name
+from requiam.git_info import get_active_branch_name, get_latest_commit
 from requiam import __file__ as library_path
 
 today = date.today()
@@ -58,6 +58,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     branch_name = get_active_branch_name(library_root_path)
+    git_commit, git_short_commit = get_latest_commit(library_root_path)
 
     banner_message = f"""
     This is the command-line tool that automates Grouper patron management.
@@ -67,6 +68,7 @@ if __name__ == '__main__':
 
     ReQUIAM active branch: {branch_name}
     ReQUIAM version: {__version__}
+    ReQUIAM commit hash: {git_short_commit}
     Created by Chun Ly
     Issues? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new
     """
@@ -90,8 +92,9 @@ if __name__ == '__main__':
 
     log.info("******************************")
     log.info("Started script_run script ... ")
-    log.info(f"ReQUIAM active branch: {branch_name}")
-    log.info(f"ReQUIAM version: {__version__}")
+    log.debug(f"ReQUIAM active branch: {branch_name}")
+    log.debug(f"ReQUIAM version: {__version__} ({git_short_commit})")
+    log.debug(f"ReQUIAM commit hash: {git_commit}")
 
     cred_err = 0
     vargs = vars(args)
