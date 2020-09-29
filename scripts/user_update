@@ -181,7 +181,7 @@ if __name__ == '__main__':
         raise ValueError
 
     # Grouper API tool
-    ga = GrouperAPI(**grouper_dict)
+    ga = GrouperAPI(**grouper_dict, log=log)
 
     # Check to see if portal exists on Grouper before proceeding
     portal_check = True

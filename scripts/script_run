@@ -141,7 +141,8 @@ if __name__ == '__main__':
     log.info('    debug = %s', args.debug)
 
     try:
-        mo = manual_override.ManualOverride(vargs['portal_file'], vargs['quota_file'], log)
+        mo = manual_override.ManualOverride(vargs['portal_file'], vargs['quota_file'],
+                                            log=log)
         mo_status = True
     except ValueError:
         log.warning("Unable to find manual CSV configuration files")
