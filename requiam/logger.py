@@ -1,5 +1,11 @@
 import sys
 from os.path import join
+from os import uname
+
+# User and hostname
+from getpass import getuser
+from socket import gethostname
+from requests import get
 
 import logging
 formatter = logging.Formatter('%(asctime)s - %(levelname)8s: %(message)s', "%H:%M:%S")
@@ -60,3 +66,22 @@ def log_stdout():
         log.handler_set = True
         log.propagate = False
     return log
+
+
+def get_user_hostname():
+    """
+    Purpose:
+      Retrieve user, hostname, IP, and OS configuration
+    :return sys_info: dictionary with 'user' 'hostname' and 'ip' dictionary
+    """
+
+    sys_info = dict()
+
+    sys_info['user'] = getuser()
+    sys_info['hostname'] = gethostname()
+    sys_info['ip'] = get('https://api.ipify.org').text
+
+    os_name = uname()
+    sys_info['os'] = f"{os_name[0]} {os_name[2]} {os_name[3]}"
+
+    return sys_info

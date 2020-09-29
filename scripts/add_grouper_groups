@@ -14,7 +14,7 @@ import argparse
 
 from requiam.grouper_admin import GrouperAPI
 from requiam.grouper_query import figshare_group
-from requiam.logger import LogClass, log_stdout
+from requiam.logger import LogClass, log_stdout, get_user_hostname
 from requiam import TimerClass
 
 # Version and branch info
@@ -156,6 +156,13 @@ if __name__ == '__main__':
     log.debug(f"ReQUIAM active branch: {branch_name}")
     log.debug(f"ReQUIAM version: {__version__} ({git_short_commit})")
     log.debug(f"ReQUIAM commit hash: {git_commit}")
+
+    # Retrieve username, hostname, IP
+    sys_info = get_user_hostname()
+    log.debug(f"username : {sys_info['user']}")
+    log.debug(f"hostname : {sys_info['hostname']}")
+    log.debug(f"IP Addr  : {sys_info['ip']}")
+    log.debug(f"Op. Sys. : {sys_info['os']}")
 
     cred_err = 0
     vargs = vars(args)
