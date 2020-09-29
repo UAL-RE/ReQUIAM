@@ -262,7 +262,7 @@ if __name__ == '__main__':
             d = grouper_delta_user('active', '',
                                    current_dict['not_active']['netid'],
                                    set(current_dict['not_active']['uaid']),
-                                   'add', grouper_dict, delta_dict, log)
+                                   'add', grouper_dict, delta_dict, log=None)
 
             if args.sync:
                 log.info('synchronizing ...')
@@ -278,7 +278,7 @@ if __name__ == '__main__':
             d = grouper_delta_user('active', '',
                                    current_dict['active']['netid'],
                                    set(current_dict['active']['uaid']),
-                                   'remove', grouper_dict, delta_dict, log)
+                                   'remove', grouper_dict, delta_dict, log=None)
 
             if args.sync:
                 log.info('synchronizing ...')
@@ -306,7 +306,7 @@ if __name__ == '__main__':
 
                     d = grouper_delta_user(current_portal, 'portal',
                                            not_portal_netid[i], {not_portal_uaid[i]},
-                                           'remove', grouper_dict, delta_dict, log)
+                                           'remove', grouper_dict, delta_dict, log=None)
 
                     if args.sync:
                         log.info('synchronizing ...')
@@ -321,7 +321,7 @@ if __name__ == '__main__':
                 d = grouper_delta_user(vargs['portal'], 'portal',
                                        current_dict['not_portal']['netid'],
                                        current_dict['not_portal']['uaid'],
-                                       'add', grouper_dict, delta_dict, log)
+                                       'add', grouper_dict, delta_dict, log=None)
 
                 if args.sync:
                     log.info('synchronizing ...')
@@ -362,7 +362,7 @@ if __name__ == '__main__':
 
                     d = grouper_delta_user(current_quota, 'quota',
                                            not_quota_netid[i], {not_quota_uaid[i]},
-                                           'remove', grouper_dict, delta_dict, log)
+                                           'remove', grouper_dict, delta_dict, log=None)
 
                     if args.sync:
                         log.info('synchronizing ...')
@@ -377,7 +377,7 @@ if __name__ == '__main__':
                 d = grouper_delta_user(vargs['quota'], 'quota',
                                        current_dict['not_quota']['netid'],
                                        current_dict['not_quota']['uaid'],
-                                       'add', grouper_dict, delta_dict, log)
+                                       'add', grouper_dict, delta_dict, log=None)
 
                 if args.sync:
                     log.info('synchronizing ...')

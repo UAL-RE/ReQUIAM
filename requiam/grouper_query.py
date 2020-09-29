@@ -4,6 +4,7 @@ from os.path import join
 from .delta import Delta
 from .manual_override import update_entries
 from .commons import figshare_stem
+from .logger import log_stdout
 
 
 class GrouperQuery(object):
@@ -87,7 +88,7 @@ def figshare_group(group, root_stem, production=True):
 
 
 def grouper_delta_user(group, stem, netid, uaid, action,
-                       grouper_dict, delta_dict, log, production=True):
+                       grouper_dict, delta_dict, log=None, production=True):
     """
     Purpose:
       Construct a Delta object for addition/deletion based for a specified
@@ -111,15 +112,17 @@ def grouper_delta_user(group, stem, netid, uaid, action,
       For logging
     :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
 
-
     :return d: Delta object class
     """
+
+    if isinstance(log, type(None)):
+        log = log_stdout()
 
     grouper_query = figshare_group(group, stem, production=production)
     gq = GrouperQuery(**grouper_dict, grouper_group=grouper_query)
 
     member_set = gq.members
-    member_set = update_entries(member_set, netid, uaid, action, log)
+    member_set = update_entries(member_set, netid, uaid, action, log=log)
 
     d = Delta(ldap_members=member_set,
               grouper_query_instance=gq,
