@@ -134,7 +134,7 @@ if __name__ == '__main__':
                       sync_max=int(vargs['sync_max']))
 
     # Manual override class
-    mo = ManualOverride(vargs['portal_file'], vargs['quota_file'], log)
+    mo = ManualOverride(vargs['portal_file'], vargs['quota_file'], log=log)
 
     # Initiate LDAP connection
     ldc = ldap_query.LDAPConnection(**ldap_dict, log=log)
@@ -213,7 +213,7 @@ if __name__ == '__main__':
     # Retrieve ismemberof figshare information
     # Populate current_dict
     for netid, uaid in zip(clean_netid_list, clean_uaid_list):
-        current_dict[netid] = get_current_groups(netid, ldap_dict, log,
+        current_dict[netid] = get_current_groups(netid, ldap_dict, log=log,
                                                  verbose=False)
         if current_dict[netid]['active']:
             current_dict['summary']['active'] += 1

@@ -2,6 +2,7 @@ import pandas as pd
 
 from .ldap_query import LDAPConnection
 from .commons import figshare_stem
+from .logger import log_stdout
 
 
 class ManualOverride:
@@ -37,14 +38,18 @@ class ManualOverride:
     update_dataframe(netid, uaid, group, group_type):
       Update pandas DataFrame with necessary changes
     """
-    def __init__(self, portal_file, quota_file, log):
+    def __init__(self, portal_file, quota_file, log=None):
         self.portal_file = portal_file
         self.quota_file = quota_file
-        self.log = log
+
+        if isinstance(log, type(None)):
+            self.log = log_stdout()
+        else:
+            self.log = log
 
         # Read in CSV as pandas DataFrame
-        self.portal_df = read_manual_file(self.portal_file, 'portal', log)
-        self.quota_df = read_manual_file(self.quota_file, 'quota', log)
+        self.portal_df = read_manual_file(self.portal_file, 'portal', log=self.log)
+        self.quota_df = read_manual_file(self.quota_file, 'quota', log=self.log)
 
         # Read in CSV headers
         self.portal_header = csv_commented_header(self.portal_file)
@@ -72,7 +77,7 @@ class ManualOverride:
             add_netid = add_df['netid'].to_list()
             add_uaid = set(add_df['uaid'].to_list())
             add_ldap_set = update_entries(ldap_set, add_netid, add_uaid,
-                                          'add', self.log)
+                                          'add', log=self.log)
 
         # Identify those that needs to be excluded in [group]
         outside_df = manual_df.loc[manual_df[group_type] != group]
@@ -80,7 +85,7 @@ class ManualOverride:
             out_netid = outside_df['netid'].to_list()
             out_uaid = set(outside_df['uaid'].to_list())
             new_ldap_set = update_entries(add_ldap_set, out_netid, out_uaid,
-                                          'remove', self.log)
+                                          'remove', log=self.log)
         else:
             new_ldap_set = add_ldap_set
 
@@ -149,7 +154,7 @@ def csv_commented_header(input_file):
     return header
 
 
-def read_manual_file(input_file, group_type, log):
+def read_manual_file(input_file, group_type, log=None):
     """
     Purpose:
       Read in manual override file as pandas DataFrame
@@ -162,6 +167,9 @@ def read_manual_file(input_file, group_type, log):
 
     if group_type not in ['portal', 'quota']:
         raise ValueError("Incorrect [group_type] input")
+
+    if isinstance(log, type(None)):
+        log = log_stdout()
 
     dtype_dict = {'netid': str, 'uaid': str}
 
@@ -178,7 +186,7 @@ def read_manual_file(input_file, group_type, log):
         log.info(f"File not found! : {input_file}")
 
 
-def update_entries(ldap_set, netid, uaid, action, log):
+def update_entries(ldap_set, netid, uaid, action, log=None):
     """
     Purpose:
       Add/remove entries from a set
@@ -191,6 +199,9 @@ def update_entries(ldap_set, netid, uaid, action, log):
     :param log: LogClass object
     :return new_ldap_set: Updated set of uaid values
     """
+
+    if isinstance(log, type(None)):
+        log = log_stdout()
 
     if action not in ['remove', 'add']:
         raise ValueError("Incorrect [action] input")
@@ -214,7 +225,7 @@ def update_entries(ldap_set, netid, uaid, action, log):
     return new_ldap_set
 
 
-def get_current_groups(uid, ldap_dict, log, verbose=True):
+def get_current_groups(uid, ldap_dict, log=None, verbose=True):
     """
     Purpose:
       Retrieve current Figshare ismemberof association
@@ -225,6 +236,9 @@ def get_current_groups(uid, ldap_dict, log, verbose=True):
     :param verbose: bool flag to provide information about each user
     :return figshare_dict: dict containing current Figshare portal and quota
     """
+
+    if isinstance(log, type(None)):
+        log = log_stdout()
 
     mo_ldc = LDAPConnection(**ldap_dict)
     mo_ldc.ldap_attribs = ['ismemberof']
