@@ -93,8 +93,8 @@ def figshare_group(group, root_stem, production=True):
     return grouper_group
 
 
-def grouper_delta_user(group, stem, netid, uaid, action,
-                       grouper_dict, delta_dict, log=None, production=True):
+def grouper_delta_user(group, stem, netid, uaid, action, grouper_dict,
+                       delta_dict, mo=None, sync=False, log=None, production=True):
     """
     Purpose:
       Construct a Delta object for addition/deletion based for a specified
@@ -114,6 +114,10 @@ def grouper_delta_user(group, stem, netid, uaid, action,
       Dictionary containing grouper settings
     :param delta_dict:
       Dictionary containing delta settings
+    :param mo: ManualOverride object
+      For implementing change to CSV files. Default: None
+    :param sync: bool
+      Indicate whether to sync. Default: False
     :param log: LogClass object
       For logging
     :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
@@ -138,5 +142,16 @@ def grouper_delta_user(group, stem, netid, uaid, action,
     log.info(f"ldap and grouper have {len(d.common)} members in common")
     log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {group} group")
     log.info(f"synchronization will add {len(d.adds)} entries to Grouper {group} group")
+
+    if sync:
+        log.info('synchronizing ...')
+        d.synchronize()
+
+        # Update manual CSV file
+        if not isinstance(mo, type(None)):
+            mo.update_dataframe(netid, uaid, group, stem)
+    else:
+        log.info('dry run, not performing synchronization')
+        log.info('dry run, not updating portal dataframe')
 
     return d

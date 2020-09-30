@@ -272,13 +272,8 @@ if __name__ == '__main__':
             d = grouper_delta_user('active', '',
                                    current_dict['not_active']['netid'],
                                    set(current_dict['not_active']['uaid']),
-                                   'add', grouper_dict, delta_dict, log=None)
-
-            if args.sync:
-                log.info('synchronizing ...')
-                d.synchronize()
-            else:
-                log.info('dry run, not performing synchronization')
+                                   'add', grouper_dict, delta_dict,
+                                   sync=args.sync, log=None)
         else:
             log.info("All users are member of figshare:active. No need to add")
     else:
@@ -288,13 +283,8 @@ if __name__ == '__main__':
             d = grouper_delta_user('active', '',
                                    current_dict['active']['netid'],
                                    set(current_dict['active']['uaid']),
-                                   'remove', grouper_dict, delta_dict, log=None)
-
-            if args.sync:
-                log.info('synchronizing ...')
-                d.synchronize()
-            else:
-                log.info('dry run, not performing synchronization')
+                                   'remove', grouper_dict, delta_dict,
+                                   sync=args.sync, log=None)
         else:
             log.info("All users not a member of figshare:active. No need to remove")
 
@@ -316,13 +306,8 @@ if __name__ == '__main__':
 
                     d = grouper_delta_user(current_portal, 'portal',
                                            not_portal_netid[i], {not_portal_uaid[i]},
-                                           'remove', grouper_dict, delta_dict, log=None)
-
-                    if args.sync:
-                        log.info('synchronizing ...')
-                        d.synchronize()
-                    else:
-                        log.info('dry run, not performing synchronization')
+                                           'remove', grouper_dict, delta_dict,
+                                           sync=args.sync, log=None)
 
             # Add to new portal group
             if vargs['portal'] != 'root':
@@ -331,19 +316,8 @@ if __name__ == '__main__':
                 d = grouper_delta_user(vargs['portal'], 'portal',
                                        current_dict['not_portal']['netid'],
                                        current_dict['not_portal']['uaid'],
-                                       'add', grouper_dict, delta_dict, log=None)
-
-                if args.sync:
-                    log.info('synchronizing ...')
-                    d.synchronize()
-
-                    # Update manual CSV file
-                    mo.update_dataframe(current_dict['not_portal']['netid'],
-                                        current_dict['not_portal']['uaid'],
-                                        vargs['portal'], 'portal')
-                else:
-                    log.info('dry run, not performing synchronization')
-                    log.info('dry run, not updating portal dataframe')
+                                       'add', grouper_dict, delta_dict, mo=mo,
+                                       sync=args.sync, log=None)
             else:
                 # Remove entry from manual CSV file for 'root' case
                 if args.sync:
@@ -372,13 +346,8 @@ if __name__ == '__main__':
 
                     d = grouper_delta_user(current_quota, 'quota',
                                            not_quota_netid[i], {not_quota_uaid[i]},
-                                           'remove', grouper_dict, delta_dict, log=None)
-
-                    if args.sync:
-                        log.info('synchronizing ...')
-                        d.synchronize()
-                    else:
-                        log.info('dry run, not performing synchronization')
+                                           'remove', grouper_dict, delta_dict,
+                                           sync=args.sync, log=None)
 
             # Add to new quota group
             if vargs['quota'] != 'root':
@@ -387,19 +356,8 @@ if __name__ == '__main__':
                 d = grouper_delta_user(vargs['quota'], 'quota',
                                        current_dict['not_quota']['netid'],
                                        current_dict['not_quota']['uaid'],
-                                       'add', grouper_dict, delta_dict, log=None)
-
-                if args.sync:
-                    log.info('synchronizing ...')
-                    d.synchronize()
-
-                    # Update manual CSV file
-                    mo.update_dataframe(current_dict['not_quota']['netid'],
-                                        current_dict['not_quota']['uaid'],
-                                        vargs['quota'], 'quota')
-                else:
-                    log.info('dry run, not performing synchronization')
-                    log.info('dry run, not updating quota dataframe')
+                                       'add', grouper_dict, delta_dict,
+                                       mo=mo, sync=args.sync, log=None)
             else:
                 # Remove entry from manual CSV file for 'root' case
                 if args.sync:
