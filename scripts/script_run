@@ -16,7 +16,7 @@ from requiam import ldap_query
 from requiam import grouper_query
 from requiam import delta
 from requiam import quota
-from requiam.logger import LogClass, get_user_hostname
+from requiam.logger import LogClass, get_user_hostname, pandas_write_buffer
 from requiam import TimerClass
 from requiam import manual_override
 
@@ -88,6 +88,7 @@ if __name__ == '__main__':
     logfile_prefix = config.get('global', 'logfile_prefix')
     logfile = f'{logfile_prefix}.{today.strftime("%Y-%m-%d")}.log'
 
+    log_filename = path.join(log_dir, logfile)  # Full log filename path
     log = LogClass(log_dir, logfile).get_logger()
 
     log.info("******************************")
@@ -182,14 +183,13 @@ if __name__ == '__main__':
         for portal, portal_name in zip(unique_portals, unique_portals_name):
             log.info("Working on {} ({}) portal".format(portal_name, portal))
             df_sub = df.loc[df['Sub-portals'] == portal]
-            print(df_sub)
+
+            pandas_write_buffer(df_sub, log_filename)
 
             # Get list of org codes for [portal]
             org_code_list = df_sub['Org Code']
-            log.info("Org codes: {}".format(", ".join(org_code_list)))
 
             org_name_list = df_sub['Departments/Colleges/Labs/Centers']
-            log.info("Org names: {}".format(", ".join(org_name_list)))
 
             # LDAP query to retrieve members
             ldap_queries = ldap_query.ual_ldap_queries(org_code_list)

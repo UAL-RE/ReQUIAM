@@ -1,4 +1,5 @@
 import sys
+import io
 from os.path import join
 from os import uname
 
@@ -85,3 +86,21 @@ def get_user_hostname():
     sys_info['os'] = f"{os_name[0]} {os_name[2]} {os_name[3]}"
 
     return sys_info
+
+
+def pandas_write_buffer(df, log_filename):
+    """
+    Purpose:
+      Write pandas content via to_markdown() to logfile
+
+    :param df: pandas DataFrame
+    :param log_filename: Full path for log file
+    """
+
+    buffer = io.StringIO()
+    df.to_markdown(buffer)
+    print(buffer.getvalue())
+
+    with open(log_filename, mode='a') as f:
+        print(buffer.getvalue(), file=f)
+    buffer.close()
