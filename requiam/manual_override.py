@@ -32,6 +32,9 @@ class ManualOverride:
 
     Methods
     -------
+    read_manual_file(group_type):
+      Return a pandas DataFrame containing the manual override file
+
     identify_changes(ldap_set, group, group_type):
       Identify changes to call update_entries accordingly
 
@@ -48,12 +51,37 @@ class ManualOverride:
             self.log = log
 
         # Read in CSV as pandas DataFrame
-        self.portal_df = read_manual_file(self.portal_file, 'portal', log=self.log)
-        self.quota_df = read_manual_file(self.quota_file, 'quota', log=self.log)
+        self.portal_df = self.read_manual_file('portal')
+        self.quota_df = self.read_manual_file('quota')
 
         # Read in CSV headers
         self.portal_header = csv_commented_header(self.portal_file)
         self.quota_header = csv_commented_header(self.quota_file)
+
+    def read_manual_file(self, group_type):
+        """Return a pandas DataFrame containing the manual override file"""
+
+        if group_type not in ['portal', 'quota']:
+            raise ValueError("Incorrect [group_type] input")
+
+        if group_type == 'portal':
+            input_file = self.portal_file
+        if group_type == 'quota':
+            input_file = self.quota_file
+
+        dtype_dict = {'netid': str, 'uaid': str}
+
+        if group_type == 'portal':
+            dtype_dict[group_type] = str
+        if group_type == 'quota':
+            dtype_dict[group_type] = int
+
+        try:
+            df = pd.read_csv(input_file, comment='#', dtype=dtype_dict)
+
+            return df
+        except FileNotFoundError:
+            self.log.info(f"File not found! : {input_file}")
 
     def identify_changes(self, ldap_set, group, group_type):
         """Identify changes to call update_entries accordingly"""
@@ -152,38 +180,6 @@ def csv_commented_header(input_file):
 
     f.close()
     return header
-
-
-def read_manual_file(input_file, group_type, log=None):
-    """
-    Purpose:
-      Read in manual override file as pandas DataFrame
-
-    :param input_file: full filename
-    :param group_type: str containing group_type. Either 'portal' or 'quota'
-    :param log: LogClass object
-    :return df: pandas DataFrame
-    """
-
-    if group_type not in ['portal', 'quota']:
-        raise ValueError("Incorrect [group_type] input")
-
-    if isinstance(log, type(None)):
-        log = log_stdout()
-
-    dtype_dict = {'netid': str, 'uaid': str}
-
-    if group_type == 'portal':
-        dtype_dict[group_type] = str
-    if group_type == 'quota':
-        dtype_dict[group_type] = int
-
-    try:
-        df = pd.read_csv(input_file, comment='#', dtype=dtype_dict)
-
-        return df
-    except FileNotFoundError:
-        log.info(f"File not found! : {input_file}")
 
 
 def update_entries(ldap_set, netid, uaid, action, log=None):
