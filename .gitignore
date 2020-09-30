@@ -1,8 +1,12 @@
-# log_dir path
+# log_dir path (symlink, actual dir)
+logs
 logs/
 
 # private csv files (templates not included)
 config/*_manual.csv
+config/old
+
+users*
 
 # PyCharm
 .idea/

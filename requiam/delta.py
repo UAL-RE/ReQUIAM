@@ -3,6 +3,8 @@ import json
 import requests
 import time
 
+from .logger import log_stdout
+
 
 class Delta(object):
     """
@@ -21,8 +23,12 @@ class Delta(object):
     """
 
     def __init__(self, ldap_members, grouper_query_instance, batch_size,
-                 batch_timeout, batch_delay, sync_max, log):
-        self.log = log
+                 batch_timeout, batch_delay, sync_max, log=None):
+
+        if isinstance(log, type(None)):
+            self.log = log_stdout()
+        else:
+            self.log = log
 
         self.log.debug('entered')
 

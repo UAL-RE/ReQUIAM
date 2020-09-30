@@ -1,8 +1,10 @@
 import requests
 
+from os.path import join
 from .delta import Delta
 from .manual_override import update_entries
 from .commons import figshare_stem
+from .logger import log_stdout
 
 
 class GrouperQuery(object):
@@ -25,7 +27,13 @@ class GrouperQuery(object):
         members = gq.members
     """
 
-    def __init__(self, grouper_host, grouper_base_path, grouper_user, grouper_password, grouper_group):
+    def __init__(self, grouper_host, grouper_base_path, grouper_user,
+                 grouper_password, grouper_group, log=None):
+
+        if isinstance(log, type(None)):
+            self.log = log_stdout()
+        else:
+            self.log = log
 
         self.grouper_host = grouper_host
         self.grouper_base_dn = grouper_base_path
@@ -33,9 +41,10 @@ class GrouperQuery(object):
         self.grouper_password = grouper_password
         self.grouper_group = grouper_group
 
-        self.grouper_group_members_url = 'https://{}/{}/{}/members'.format(grouper_host,
-                                                                           grouper_base_path,
-                                                                           grouper_group)
+        self.endpoint = f'https://{grouper_host}/{grouper_base_path}'
+
+        self.grouper_group_members_url = join(self.endpoint,
+                                              f'groups/{grouper_group}/members')
 
         rsp = requests.get(self.grouper_group_members_url, auth=(grouper_user, grouper_password))
 
@@ -51,13 +60,15 @@ class GrouperQuery(object):
         return set(self._members)
 
 
-def figshare_group(group, root_stem):
+def figshare_group(group, root_stem, production=True):
     """
     Purpose:
       Construct Grouper figshare groups
 
-    :param group: str or int of group name
+    :param group: str or int of group name. Cannot be empty
     :param root_stem: str of associated stem folder for [group]
+    :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
+
     :return grouper_group: str containing full Grouper path
 
     Usage:
@@ -72,18 +83,18 @@ def figshare_group(group, root_stem):
         > 'arizona.edu:dept:LBRY:figshare:portal:sci_math'
     """
 
-    stem_query = figshare_stem(root_stem)
+    if not group:
+        raise ValueError("WARNING: Empty [group]")
 
-    if root_stem == '':
-        grouper_group = stem_query + group
-    else:
-        grouper_group = '{}:{}'.format(stem_query, group)
+    stem_query = figshare_stem(stem=root_stem, production=production)
+
+    grouper_group = f'{stem_query}:{group}'
 
     return grouper_group
 
 
-def grouper_delta_user(group, stem, netid, uaid, action,
-                       grouper_dict, delta_dict, log):
+def grouper_delta_user(group, stem, netid, uaid, action, grouper_dict,
+                       delta_dict, mo=None, sync=False, log=None, production=True):
     """
     Purpose:
       Construct a Delta object for addition/deletion based for a specified
@@ -103,16 +114,25 @@ def grouper_delta_user(group, stem, netid, uaid, action,
       Dictionary containing grouper settings
     :param delta_dict:
       Dictionary containing delta settings
+    :param mo: ManualOverride object
+      For implementing change to CSV files. Default: None
+    :param sync: bool
+      Indicate whether to sync. Default: False
     :param log: LogClass object
       For logging
+    :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
+
     :return d: Delta object class
     """
 
-    grouper_query = figshare_group(group, stem)
+    if isinstance(log, type(None)):
+        log = log_stdout()
+
+    grouper_query = figshare_group(group, stem, production=production)
     gq = GrouperQuery(**grouper_dict, grouper_group=grouper_query)
 
     member_set = gq.members
-    member_set = update_entries(member_set, netid, uaid, action, log)
+    member_set = update_entries(member_set, netid, uaid, action, log=log)
 
     d = Delta(ldap_members=member_set,
               grouper_query_instance=gq,
@@ -122,5 +142,16 @@ def grouper_delta_user(group, stem, netid, uaid, action,
     log.info(f"ldap and grouper have {len(d.common)} members in common")
     log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {group} group")
     log.info(f"synchronization will add {len(d.adds)} entries to Grouper {group} group")
+
+    if sync:
+        log.info('synchronizing ...')
+        d.synchronize()
+
+        # Update manual CSV file
+        if not isinstance(mo, type(None)):
+            mo.update_dataframe(netid, uaid, group, stem)
+    else:
+        log.info('dry run, not performing synchronization')
+        log.info('dry run, not updating portal dataframe')
 
     return d

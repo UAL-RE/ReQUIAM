@@ -1,0 +1,324 @@
+#!/user/bin/env python
+
+from os import path
+from os import mkdir
+
+from requests.exceptions import HTTPError
+
+import pandas as pd
+
+from datetime import date
+
+import configparser
+import argparse
+
+from requiam.grouper_admin import GrouperAPI
+from requiam.grouper_query import figshare_group
+from requiam.logger import LogClass, log_stdout, get_user_hostname
+from requiam import TimerClass
+
+# Version and branch info
+from requiam import __version__
+from requiam.git_info import get_active_branch_name, get_latest_commit
+from requiam import __file__ as library_path
+
+today = date.today()
+
+# Retrieve parent directory to requiam
+library_root_path = path.dirname(path.dirname(library_path))
+
+# Administrative groups
+superadmins = figshare_group('GrouperSuperAdmins', '', production=True)
+admins = figshare_group('GrouperAdmins', '', production=True)
+managers = figshare_group('GrouperManagers', '', production=True)
+
+
+def add_groups(groups, group_type, group_descriptions, grouper_api, log0=None, add=False):
+    """
+    Purpose:
+      Process through a list of Grouper groups and add them if they don't exist
+      and set permissions
+
+    :param groups: list of str containing group names
+    :param group_type: str. Either 'portal', 'quota', or 'test'
+    :param group_descriptions: list of str containing description
+    :param grouper_api: GrouperAPI object
+    :param log0: logging.getLogger() object
+    :param add: boolean.  Indicate whether to perform update or dry run
+    """
+
+    if isinstance(log0, type(None)):
+        log0 = log_stdout()
+
+    for group, description in zip(groups, group_descriptions):
+        add_dict = {'group': group,
+                    'group_type': group_type,
+                    'description': description}
+
+        # Check if group exists
+        try:
+            group_exists = ga.check_group_exists(group, group_type)
+        except KeyError:
+            log0.info("Stem is empty")
+            group_exists = False
+
+        if not group_exists:
+            log0.info(f"Group does not exist : {group}")
+
+            if add:
+                log0.info(f'Adding {group} ...')
+                try:
+                    add_result = grouper_api.add_group(**add_dict)
+                    if add_result:
+                        log0.info("SUCCESS")
+                except HTTPError:
+                    raise HTTPError
+            else:
+                log0.info('dry run, not performing group add')
+        else:
+            log0.info(f"Group exists : {group}")
+
+        if add:
+            log0.info(f'Adding admin privileges for groupersuperadmins ...')
+            try:
+                add_privilege = grouper_api.add_privilege(superadmins, group, group_type, 'admin')
+                if add_privilege:
+                    log0.info("SUCCESS")
+            except HTTPError:
+                raise HTTPError
+
+            log0.info(f'Adding privileges for grouperadmins ...')
+            try:
+                add_privilege = grouper_api.add_privilege(admins, group, group_type,
+                                                          ['read', 'view', 'optout'])
+                if add_privilege:
+                    log0.info("SUCCESS")
+            except HTTPError:
+                raise HTTPError
+
+        else:
+            log0.info('dry run, not performing privilege add')
+
+
+if __name__ == '__main__':
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description='Command-line driver to add a Grouper group.')
+    parser.add_argument('--config', required=True, help='path to configuration file')
+    parser.add_argument('--persistent_path', required=True, help='full parent path for logs')
+    parser.add_argument('--grouper_host', help='Grouper host')
+    parser.add_argument('--grouper_base_path', help='base path for Grouper API')
+    parser.add_argument('--grouper_user', help='user name for Grouper login')
+    parser.add_argument('--grouper_password', help='password for Grouper login')
+    parser.add_argument('--main_themes', action='store_true', help='Add/update main themes')
+    parser.add_argument('--sub_portals', action='store_true', help='Add/update sub-portals')
+    parser.add_argument('--quota', action='store_true', help='Add/update quotas')
+    parser.add_argument('--production', action='store_true',
+                        help='perform on Grouper production stem. Default: on stage stem')
+    parser.add_argument('--add', action='store_true', help='perform add')
+    parser.add_argument('--debug', action='store_true', help='turn on debug logging')
+    args = parser.parse_args()
+
+    branch_name = get_active_branch_name(library_root_path)
+    git_commit, git_short_commit = get_latest_commit(library_root_path)
+
+    banner_message = f"""
+    This is the command-line tool to create Grouper groups for main themes, sub-portals, and quotas.
+    A full execution will:
+     1. Check whether the group exists
+     2. Create the group
+     3. Set permissions for GrouperSuperAdmins and GrouperAdmins
+
+    ReQUIAM active branch: {branch_name}
+    ReQUIAM version: {__version__}
+    ReQUIAM commit hash: {git_short_commit}
+    Created by Chun Ly
+    Issues/Suggestions? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new/choose
+    """
+    print(banner_message)
+
+    main_timer = TimerClass()
+    main_timer._start()
+
+    config = configparser.ConfigParser()
+    config.read(args.config)
+
+    # Define logfile
+    log_dir = path.join(args.persistent_path, config.get('global', 'log_dir'))
+
+    if not path.exists(log_dir):
+        mkdir(log_dir)
+    logfile = f"add_grouper_groups.{today.strftime('%Y-%m-%d')}.log"
+
+    log = LogClass(log_dir, logfile).get_logger()
+
+    log.info("*************************************")
+    log.info("Started add_grouper_group script ... ")
+    log.debug(f"ReQUIAM active branch: {branch_name}")
+    log.debug(f"ReQUIAM version: {__version__} ({git_short_commit})")
+    log.debug(f"ReQUIAM commit hash: {git_commit}")
+
+    # Retrieve username, hostname, IP
+    sys_info = get_user_hostname()
+    log.debug(f"username : {sys_info['user']}")
+    log.debug(f"hostname : {sys_info['hostname']}")
+    log.debug(f"IP Addr  : {sys_info['ip']}")
+    log.debug(f"Op. Sys. : {sys_info['os']}")
+
+    cred_err = 0
+    vargs = vars(args)
+    for p in ['grouper_host', 'grouper_base_path', 'grouper_user',
+              'grouper_password']:
+
+        if (p in vargs) and (vargs[p] is not None):
+            vargs[p] = vargs[p]
+        elif (p in config['global']) and (config['global'][p] is not None) and \
+                (config['global'][p] != "***override***"):
+            vargs[p] = config['global'][p]
+        else:
+            vargs[p] = '(unset)'
+
+        if p in ['grouper_user', 'grouper_password']:
+            if vargs[p] is '(unset)':
+                log.info('   {0: >17} = (unset)'.format(p))
+                cred_err += 1
+            else:
+                log.info('   {0: >17} = (set)'.format(p))
+        else:
+            log.info('   {0: >17} = {1:}'. format(p, vargs[p]))
+
+    if cred_err:
+        log.warning("Not all credentials available!")
+        log.warning("Exiting")
+        raise ValueError
+
+    log.info(f'main_themes = {args.main_themes}')
+    log.info(f'sub_portals = {args.sub_portals}')
+    log.info(f'      quota = {args.quota}')
+    log.info(f' production = {args.production}')
+    log.info(f'        add = {args.add}')
+    log.info(f'      debug = {args.debug}')
+
+    grouper_dict = dict(grouper_host=vargs['grouper_host'],
+                        grouper_base_path=vargs['grouper_base_path'],
+                        grouper_user=vargs['grouper_user'],
+                        grouper_password=vargs['grouper_password'])
+
+    if vargs['production']:
+        grouper_production = True
+    else:
+        grouper_production = False
+
+    ga = GrouperAPI(**grouper_dict, grouper_production=grouper_production,
+                    log=log)
+
+    # Main portals / Overall Research Themes
+    if vargs['main_themes']:
+        mainTheme_timer = TimerClass()
+        mainTheme_timer._start()
+
+        # Read in Google Sheet CSV with main themes
+        mainTheme_url = config.get('google', 'maintheme_url')
+        log.info("Reading Main Theme CSV into DataFrame ...")
+        mainTheme_df = pd.read_csv(mainTheme_url)
+
+        # Drop empty rows
+        mainTheme_df = mainTheme_df.dropna(axis=0, how='all')
+
+        # Limit to those with Create set
+        mainTheme_df_excluded = mainTheme_df.loc[mainTheme_df['Create?'] != 'Yes']
+        mainTheme_excluded_dict = mainTheme_df_excluded.set_index('Main-portal').T.to_dict()
+        log.info(f"Excluded main themes: {', '.join(list(mainTheme_excluded_dict.keys()))}")
+
+        mainTheme_df = mainTheme_df.loc[mainTheme_df['Create?'] == 'Yes']
+
+        # Construction dict with main portal names
+        mainTheme_dict = mainTheme_df.set_index('Main-portal').T.to_dict()
+
+        main_groups = list(mainTheme_dict.keys())
+        main_descriptions = mainTheme_df['Grouper Description'].to_list()
+
+        n_mainThemes = len(main_groups)
+        log.info(f"Total number of main themes: {n_mainThemes}")
+        log.info(f"List of main themes: {', '.join(main_groups)}")
+
+        add_groups(main_groups, 'portal', main_descriptions, ga, log0=log,
+                   add=args.add)
+
+        mainTheme_timer._stop()
+        log.info(f"MAIN PORTAL : {mainTheme_timer.format}")
+
+    # Sub-portals
+    if vargs['sub_portals']:
+        subPortal_timer = TimerClass()
+        subPortal_timer._start()
+
+        # Read in Google Sheet CSV with sub-portals
+        subPortal_url = config.get('google', 'subportal_url')
+        log.info("Reading Sub-portals CSV into DataFrame ...")
+        subPortal_df = pd.read_csv(subPortal_url)
+
+        # Drop empty rows
+        subPortal_df = subPortal_df.dropna(axis=0, how='all')
+
+        # Limit to those with Create set
+        subPortal_df_excluded = subPortal_df.loc[subPortal_df['Create?'] != 'Yes']
+        subPortal_excluded_dict = subPortal_df_excluded.set_index('Sub-portal').T.to_dict()
+        log.info(f"Excluded sub-portals: {', '.join(list(subPortal_excluded_dict.keys()))}")
+
+        subPortal_df = subPortal_df.loc[subPortal_df['Create?'] == 'Yes']
+
+        # Construction dict with sub-portal names
+        subPortal_dict = subPortal_df.set_index('Sub-portal').T.to_dict()
+
+        sub_groups = list(subPortal_dict.keys())
+        sub_descriptions = subPortal_df['Grouper Description'].to_list()
+
+        n_subPortals = len(sub_groups)
+        log.info(f"Total number of sub-portals: {n_subPortals}")
+        log.info(f"List of sub-portals: {', '.join(sub_groups)}")
+
+        add_groups(sub_groups, 'portal', sub_descriptions, ga, log0=log,
+                   add=args.add)
+
+        subPortal_timer._stop()
+        log.info(f"SUB-PORTAL : {subPortal_timer.format}")
+
+    # Quotas
+    if vargs['quota']:
+        quota_timer = TimerClass()
+        quota_timer._start()
+
+        # Read in Google Sheet CSV with sub-portals
+        quota_url = config.get('google', 'quota_url')
+        log.info("Reading Quotas CSV into DataFrame ...")
+        quota_df = pd.read_csv(quota_url)
+
+        # Drop empty rows
+        quota_df = quota_df.dropna(axis=0, how='all')
+
+        # Limit to those with Create set
+        quota_df_excluded = quota_df.loc[quota_df['Create?'] != 'Yes']
+        quota_excluded_groups = quota_df_excluded['Quota'].astype(str).to_list()
+        log.info(f"Excluded quotas: {', '.join(quota_excluded_groups)}")
+
+        quota_df = quota_df.loc[quota_df['Create?'] == 'Yes']
+
+        # Read in list of quotas
+        quota_groups = quota_df['Quota'].astype(str).to_list()
+        quota_descriptions = quota_df['Grouper Description'].to_list()
+
+        n_quotas = len(quota_groups)
+        log.info(f"Total number of quotas: {n_quotas}")
+        log.info(f"List of quotas: {', '.join(quota_groups)}")
+
+        add_groups(quota_groups, 'quota', quota_descriptions, ga, log0=log,
+                   add=args.add)
+
+        quota_timer._stop()
+        log.info(f"QUOTA : {quota_timer.format}")
+
+    main_timer._stop()
+    log.info(main_timer.format)
+
+    log.info("*************************************")
+    log.info("Exit 0")

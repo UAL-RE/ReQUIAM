@@ -1,7 +1,6 @@
 import ldap3
-import logging
 
-logger = logging.getLogger(__name__)
+from .logger import log_stdout
 
 
 class LDAPConnection(object):
@@ -27,8 +26,12 @@ class LDAPConnection(object):
         members = ldap_query.ldap_search(ldc, portal_query)
     """
 
-    def __init__(self, ldap_host, ldap_base_dn, ldap_user, ldap_password):
-        logger.debug('entered')
+    def __init__(self, ldap_host, ldap_base_dn, ldap_user, ldap_password, log=None):
+
+        if isinstance(log, type(None)):
+            log = log_stdout()
+
+        log.debug('entered')
         
         #
         # set properties
@@ -49,7 +52,7 @@ class LDAPConnection(object):
         self.ldc = ldap3.Connection(self.ldap_bind_host, self.ldap_bind_dn,
                                     self.ldap_password, auto_bind=True)
 
-        logger.debug('returning')
+        log.debug('returning')
 
 
 def uid_query(uid):

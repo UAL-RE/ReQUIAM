@@ -2,6 +2,7 @@ import pandas as pd
 
 from .ldap_query import LDAPConnection
 from .commons import figshare_stem
+from .logger import log_stdout
 
 
 class ManualOverride:
@@ -27,29 +28,60 @@ class ManualOverride:
       pandas DataFrame of [quota_csv]
 
     portal_header : list containing portal header (commented out text) of [portal_csv]
-    quota_header : list containing portal header (commented out text) of [portal_csv]
+    quota_header : list containing quota header (commented out text) of [quota_csv]
 
     Methods
     -------
-    update_entries(ldap_set, netid, uaid, action)
-      Add/remove (action="add"/"remove") entries from set (ldap_set) based on
-      uaid input
+    read_manual_file(group_type):
+      Return a pandas DataFrame containing the manual override file
+
+    identify_changes(ldap_set, group, group_type):
+      Identify changes to call update_entries accordingly
 
     update_dataframe(netid, uaid, group, group_type):
       Update pandas DataFrame with necessary changes
     """
-    def __init__(self, portal_file, quota_file, log):
+    def __init__(self, portal_file, quota_file, log=None):
         self.portal_file = portal_file
         self.quota_file = quota_file
-        self.log = log
+
+        if isinstance(log, type(None)):
+            self.log = log_stdout()
+        else:
+            self.log = log
 
         # Read in CSV as pandas DataFrame
-        self.portal_df = read_manual_file(self.portal_file, 'portal', log)
-        self.quota_df = read_manual_file(self.quota_file, 'quota', log)
+        self.portal_df = self.read_manual_file('portal')
+        self.quota_df = self.read_manual_file('quota')
 
         # Read in CSV headers
         self.portal_header = csv_commented_header(self.portal_file)
         self.quota_header = csv_commented_header(self.quota_file)
+
+    def read_manual_file(self, group_type):
+        """Return a pandas DataFrame containing the manual override file"""
+
+        if group_type not in ['portal', 'quota']:
+            raise ValueError("Incorrect [group_type] input")
+
+        if group_type == 'portal':
+            input_file = self.portal_file
+        if group_type == 'quota':
+            input_file = self.quota_file
+
+        dtype_dict = {'netid': str, 'uaid': str}
+
+        if group_type == 'portal':
+            dtype_dict[group_type] = str
+        if group_type == 'quota':
+            dtype_dict[group_type] = int
+
+        try:
+            df = pd.read_csv(input_file, comment='#', dtype=dtype_dict)
+
+            return df
+        except FileNotFoundError:
+            self.log.info(f"File not found! : {input_file}")
 
     def identify_changes(self, ldap_set, group, group_type):
         """Identify changes to call update_entries accordingly"""
@@ -73,7 +105,7 @@ class ManualOverride:
             add_netid = add_df['netid'].to_list()
             add_uaid = set(add_df['uaid'].to_list())
             add_ldap_set = update_entries(ldap_set, add_netid, add_uaid,
-                                          'add', self.log)
+                                          'add', log=self.log)
 
         # Identify those that needs to be excluded in [group]
         outside_df = manual_df.loc[manual_df[group_type] != group]
@@ -81,7 +113,7 @@ class ManualOverride:
             out_netid = outside_df['netid'].to_list()
             out_uaid = set(outside_df['uaid'].to_list())
             new_ldap_set = update_entries(add_ldap_set, out_netid, out_uaid,
-                                          'remove', self.log)
+                                          'remove', log=self.log)
         else:
             new_ldap_set = add_ldap_set
 
@@ -98,17 +130,21 @@ class ManualOverride:
         if group_type == 'quota':
             revised_df = self.quota_df
 
-        loc0 = revised_df.loc[revised_df['netid'] == netid].index
-        if len(loc0) == 0:
-            self.log.info(f"Adding entry for {netid}")
-            revised_df.loc[len(revised_df)] = [netid, list(uaid)[0], group]
-        else:
-            if group != 'root':
-                self.log.info(f"Updating entry for {netid}")
-                revised_df.loc[loc0[0]] = [netid, list(uaid)[0], group]
+        for i in range(len(netid)):
+            loc0 = revised_df.loc[revised_df['netid'] == netid[i]].index
+            if len(loc0) == 0:
+                if group != 'root':
+                    self.log.info(f"Adding entry for {netid[i]}")
+                    revised_df.loc[len(revised_df)] = [netid[i], list(uaid)[i], group]
+                else:
+                    self.log.info(f"No update needed - root setting and {netid[i]} is not in list")
             else:
-                self.log.info(f"Removing entry for {netid}")
-                revised_df = revised_df.drop(loc0)
+                if group != 'root':
+                    self.log.info(f"Updating entry for {netid[i]}")
+                    revised_df.loc[loc0[0]] = [netid[i], list(uaid)[i], group]
+                else:
+                    self.log.info(f"Removing entry for {netid[i]}")
+                    revised_df = revised_df.drop(loc0)
 
         self.log.info(f"Updating {group_type} csv")
         if group_type == 'portal':
@@ -146,36 +182,7 @@ def csv_commented_header(input_file):
     return header
 
 
-def read_manual_file(input_file, group_type, log):
-    """
-    Purpose:
-      Read in manual override file as pandas DataFrame
-
-    :param input_file: full filename
-    :param group_type: str containing group_type. Either 'portal' or 'quota'
-    :param log: LogClass object
-    :return df: pandas DataFrame
-    """
-
-    if group_type not in ['portal', 'quota']:
-        raise ValueError("Incorrect [group_type] input")
-
-    dtype_dict = {'netid': str, 'uaid': str}
-
-    if group_type == 'portal':
-        dtype_dict[group_type] = str
-    if group_type == 'quota':
-        dtype_dict[group_type] = int
-
-    try:
-        df = pd.read_csv(input_file, comment='#', dtype=dtype_dict)
-
-        return df
-    except FileNotFoundError:
-        log.info(f"File not found! : {input_file}")
-
-
-def update_entries(ldap_set, netid, uaid, action, log):
+def update_entries(ldap_set, netid, uaid, action, log=None):
     """
     Purpose:
       Add/remove entries from a set
@@ -188,6 +195,9 @@ def update_entries(ldap_set, netid, uaid, action, log):
     :param log: LogClass object
     :return new_ldap_set: Updated set of uaid values
     """
+
+    if isinstance(log, type(None)):
+        log = log_stdout()
 
     if action not in ['remove', 'add']:
         raise ValueError("Incorrect [action] input")
@@ -211,7 +221,7 @@ def update_entries(ldap_set, netid, uaid, action, log):
     return new_ldap_set
 
 
-def get_current_groups(uid, ldap_dict, log):
+def get_current_groups(uid, ldap_dict, log=None, verbose=True):
     """
     Purpose:
       Retrieve current Figshare ismemberof association
@@ -219,8 +229,12 @@ def get_current_groups(uid, ldap_dict, log):
     :param uid: str containing User NetID
     :param ldap_dict: dict containing ldap settings
     :param log: LogClass object for logging
+    :param verbose: bool flag to provide information about each user
     :return figshare_dict: dict containing current Figshare portal and quota
     """
+
+    if isinstance(log, type(None)):
+        log = log_stdout()
 
     mo_ldc = LDAPConnection(**ldap_dict)
     mo_ldc.ldap_attribs = ['ismemberof']
@@ -233,12 +247,17 @@ def get_current_groups(uid, ldap_dict, log):
 
     figshare_dict = dict()
 
+    revert_command = f'--netid {uid} '
+
     if isinstance(membership, type(None)):
         log.warning("No ismembersof attributes")
 
-        figshare_dict['portal'] = ''
-        figshare_dict['quota'] = ''
+        figshare_dict['portal'] = 'root'
+        figshare_dict['quota'] = 'root'
         figshare_dict['active'] = False
+
+        revert_command += f'--active_remove --portal root --quota root '
+        log.info(revert_command)
         return figshare_dict
 
     # Check for active group
@@ -246,35 +265,44 @@ def get_current_groups(uid, ldap_dict, log):
     if active_stem in membership:
         figshare_dict['active'] = True
     else:
-        log.warning("Not member of figshare:active group")
+        log.warning(f"{uid} not member of figshare:active group")
         figshare_dict['active'] = False
+
+        revert_command += f'--active_remove '
 
     # Extract portal
     portal_stem = figshare_stem('portal')
     portal = [s for s in membership if ((portal_stem in s) and ('grouper' not in s))]
     if len(portal) == 0:
-        log.info("No portal Grouper group found!")
-        figshare_dict['portal'] = ''  # Initialize to use later
+        log.info(f"No portal Grouper group found for {uid}!")
+        figshare_dict['portal'] = 'root'  # Initialize to use later
     else:
         if len(portal) != 1:
-            log.warning("ERROR! Multiple Grouper portal found")
+            log.warning(f"ERROR! Multiple Grouper portal found for {uid}")
             raise ValueError
         else:
             figshare_dict['portal'] = portal[0].replace(portal_stem + ':', '')
-            log.info(f"Current portal is : {figshare_dict['portal']}")
+            if verbose:
+                log.info(f"Current portal is : {figshare_dict['portal']}")
+
+    revert_command += f"--portal {figshare_dict['portal']} "
 
     # Extract quota
     quota_stem = figshare_stem('quota')
     quota = [s for s in membership if ((quota_stem in s) and ('grouper' not in s))]
     if len(quota) == 0:
-        log.info("No quota Grouper group found!")
-        figshare_dict['quota'] = ''  # Initialize to use later
+        log.info(f"No quota Grouper group found for {uid}!")
+        figshare_dict['quota'] = 'root'  # Initialize to use later
     else:
         if len(quota) != 1:
-            log.warning("ERROR! Multiple Grouper quota found")
+            log.warning(f"ERROR! Multiple Grouper quota found {uid}")
             raise ValueError
         else:
             figshare_dict['quota'] = quota[0].replace(quota_stem + ':', '')
-            log.info(f"Current quota is : {figshare_dict['quota']} bytes")
+            if verbose:
+                log.info(f"Current quota is : {figshare_dict['quota']} bytes")
 
+    revert_command += f"--quota {figshare_dict['quota']} "
+
+    log.info(f"To revert, use: {revert_command}")
     return figshare_dict
