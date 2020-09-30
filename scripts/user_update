@@ -10,14 +10,14 @@ import argparse
 
 from requiam import ldap_query
 from requiam.grouper_query import grouper_delta_user
-from requiam.logger import LogClass
+from requiam.logger import LogClass, get_user_hostname
 from requiam import TimerClass
 from requiam.manual_override import ManualOverride, get_current_groups
 from requiam.grouper_admin import GrouperAPI
 
 # Version and branch info
 from requiam import __version__
-from requiam.get_branch_name import get_active_branch_name
+from requiam.git_info import get_active_branch_name, get_latest_commit
 from requiam import __file__ as library_path
 
 today = date.today()
@@ -55,12 +55,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     branch_name = get_active_branch_name(library_root_path)
+    git_commit, git_short_commit = get_latest_commit(library_root_path)
 
     banner_message = f"""
     This is the command-line tool that enable manual updates to Grouper membership.
 
     ReQUIAM active branch: {branch_name}
     ReQUIAM version: {__version__}
+    ReQUIAM commit hash: {git_short_commit}
     Created by Chun Ly
     Issues? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new
     """
@@ -83,8 +85,16 @@ if __name__ == '__main__':
 
     log.info("*******************************")
     log.info("Started user_update script ... ")
-    log.info(f"ReQUIAM active branch: {branch_name}")
-    log.info(f"ReQUIAM version: {__version__}")
+    log.debug(f"ReQUIAM active branch: {branch_name}")
+    log.debug(f"ReQUIAM version: {__version__} ({git_short_commit})")
+    log.debug(f"ReQUIAM commit hash: {git_commit}")
+
+    # Retrieve username, hostname, IP
+    sys_info = get_user_hostname()
+    log.debug(f"username : {sys_info['user']}")
+    log.debug(f"hostname : {sys_info['hostname']}")
+    log.debug(f"IP Addr  : {sys_info['ip']}")
+    log.debug(f"Op. Sys. : {sys_info['os']}")
 
     cred_err = 0
     vargs = vars(args)
@@ -134,10 +144,10 @@ if __name__ == '__main__':
                       sync_max=int(vargs['sync_max']))
 
     # Manual override class
-    mo = ManualOverride(vargs['portal_file'], vargs['quota_file'], log)
+    mo = ManualOverride(vargs['portal_file'], vargs['quota_file'], log=log)
 
     # Initiate LDAP connection
-    ldc = ldap_query.LDAPConnection(**ldap_dict)
+    ldc = ldap_query.LDAPConnection(**ldap_dict, log=log)
 
     if '.txt' in vargs['netid'][-4:]:
         # Read in text file with list of users
@@ -171,7 +181,7 @@ if __name__ == '__main__':
         raise ValueError
 
     # Grouper API tool
-    ga = GrouperAPI(**grouper_dict)
+    ga = GrouperAPI(**grouper_dict, log=log)
 
     # Check to see if portal exists on Grouper before proceeding
     portal_check = True
@@ -213,7 +223,7 @@ if __name__ == '__main__':
     # Retrieve ismemberof figshare information
     # Populate current_dict
     for netid, uaid in zip(clean_netid_list, clean_uaid_list):
-        current_dict[netid] = get_current_groups(netid, ldap_dict, log,
+        current_dict[netid] = get_current_groups(netid, ldap_dict, log=log,
                                                  verbose=False)
         if current_dict[netid]['active']:
             current_dict['summary']['active'] += 1
@@ -262,13 +272,8 @@ if __name__ == '__main__':
             d = grouper_delta_user('active', '',
                                    current_dict['not_active']['netid'],
                                    set(current_dict['not_active']['uaid']),
-                                   'add', grouper_dict, delta_dict, log)
-
-            if args.sync:
-                log.info('synchronizing ...')
-                d.synchronize()
-            else:
-                log.info('dry run, not performing synchronization')
+                                   'add', grouper_dict, delta_dict,
+                                   sync=args.sync, log=log)
         else:
             log.info("All users are member of figshare:active. No need to add")
     else:
@@ -278,13 +283,8 @@ if __name__ == '__main__':
             d = grouper_delta_user('active', '',
                                    current_dict['active']['netid'],
                                    set(current_dict['active']['uaid']),
-                                   'remove', grouper_dict, delta_dict, log)
-
-            if args.sync:
-                log.info('synchronizing ...')
-                d.synchronize()
-            else:
-                log.info('dry run, not performing synchronization')
+                                   'remove', grouper_dict, delta_dict,
+                                   sync=args.sync, log=log)
         else:
             log.info("All users not a member of figshare:active. No need to remove")
 
@@ -306,13 +306,8 @@ if __name__ == '__main__':
 
                     d = grouper_delta_user(current_portal, 'portal',
                                            not_portal_netid[i], {not_portal_uaid[i]},
-                                           'remove', grouper_dict, delta_dict, log)
-
-                    if args.sync:
-                        log.info('synchronizing ...')
-                        d.synchronize()
-                    else:
-                        log.info('dry run, not performing synchronization')
+                                           'remove', grouper_dict, delta_dict,
+                                           sync=args.sync, log=log)
 
             # Add to new portal group
             if vargs['portal'] != 'root':
@@ -321,19 +316,8 @@ if __name__ == '__main__':
                 d = grouper_delta_user(vargs['portal'], 'portal',
                                        current_dict['not_portal']['netid'],
                                        current_dict['not_portal']['uaid'],
-                                       'add', grouper_dict, delta_dict, log)
-
-                if args.sync:
-                    log.info('synchronizing ...')
-                    d.synchronize()
-
-                    # Update manual CSV file
-                    mo.update_dataframe(current_dict['not_portal']['netid'],
-                                        current_dict['not_portal']['uaid'],
-                                        vargs['portal'], 'portal')
-                else:
-                    log.info('dry run, not performing synchronization')
-                    log.info('dry run, not updating portal dataframe')
+                                       'add', grouper_dict, delta_dict, mo=mo,
+                                       sync=args.sync, log=log)
             else:
                 # Remove entry from manual CSV file for 'root' case
                 if args.sync:
@@ -362,13 +346,8 @@ if __name__ == '__main__':
 
                     d = grouper_delta_user(current_quota, 'quota',
                                            not_quota_netid[i], {not_quota_uaid[i]},
-                                           'remove', grouper_dict, delta_dict, log)
-
-                    if args.sync:
-                        log.info('synchronizing ...')
-                        d.synchronize()
-                    else:
-                        log.info('dry run, not performing synchronization')
+                                           'remove', grouper_dict, delta_dict,
+                                           sync=args.sync, log=log)
 
             # Add to new quota group
             if vargs['quota'] != 'root':
@@ -377,19 +356,8 @@ if __name__ == '__main__':
                 d = grouper_delta_user(vargs['quota'], 'quota',
                                        current_dict['not_quota']['netid'],
                                        current_dict['not_quota']['uaid'],
-                                       'add', grouper_dict, delta_dict, log)
-
-                if args.sync:
-                    log.info('synchronizing ...')
-                    d.synchronize()
-
-                    # Update manual CSV file
-                    mo.update_dataframe(current_dict['not_quota']['netid'],
-                                        current_dict['not_quota']['uaid'],
-                                        vargs['quota'], 'quota')
-                else:
-                    log.info('dry run, not performing synchronization')
-                    log.info('dry run, not updating quota dataframe')
+                                       'add', grouper_dict, delta_dict,
+                                       mo=mo, sync=args.sync, log=log)
             else:
                 # Remove entry from manual CSV file for 'root' case
                 if args.sync:

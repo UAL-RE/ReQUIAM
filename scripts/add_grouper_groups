@@ -14,12 +14,12 @@ import argparse
 
 from requiam.grouper_admin import GrouperAPI
 from requiam.grouper_query import figshare_group
-from requiam.logger import LogClass
+from requiam.logger import LogClass, log_stdout, get_user_hostname
 from requiam import TimerClass
 
 # Version and branch info
 from requiam import __version__
-from requiam.get_branch_name import get_active_branch_name
+from requiam.git_info import get_active_branch_name, get_latest_commit
 from requiam import __file__ as library_path
 
 today = date.today()
@@ -33,7 +33,7 @@ admins = figshare_group('GrouperAdmins', '', production=True)
 managers = figshare_group('GrouperManagers', '', production=True)
 
 
-def add_groups(groups, group_type, group_descriptions, grouper_api, log=None, add=False):
+def add_groups(groups, group_type, group_descriptions, grouper_api, log0=None, add=False):
     """
     Purpose:
       Process through a list of Grouper groups and add them if they don't exist
@@ -43,9 +43,12 @@ def add_groups(groups, group_type, group_descriptions, grouper_api, log=None, ad
     :param group_type: str. Either 'portal', 'quota', or 'test'
     :param group_descriptions: list of str containing description
     :param grouper_api: GrouperAPI object
-    :param log: logging.getLogger() object
+    :param log0: logging.getLogger() object
     :param add: boolean.  Indicate whether to perform update or dry run
     """
+
+    if isinstance(log0, type(None)):
+        log0 = log_stdout()
 
     for group, description in zip(groups, group_descriptions):
         add_dict = {'group': group,
@@ -56,51 +59,52 @@ def add_groups(groups, group_type, group_descriptions, grouper_api, log=None, ad
         try:
             group_exists = ga.check_group_exists(group, group_type)
         except KeyError:
-            log.info("Stem is empty")
+            log0.info("Stem is empty")
             group_exists = False
 
         if not group_exists:
-            log.info(f"Group does not exist : {group}")
+            log0.info(f"Group does not exist : {group}")
 
             if add:
-                log.info(f'Adding {group} ...')
+                log0.info(f'Adding {group} ...')
                 try:
                     add_result = grouper_api.add_group(**add_dict)
                     if add_result:
-                        log.info("SUCCESS")
+                        log0.info("SUCCESS")
                 except HTTPError:
                     raise HTTPError
             else:
-                log.info('dry run, not performing group add')
+                log0.info('dry run, not performing group add')
         else:
-            log.info(f"Group exists : {group}")
+            log0.info(f"Group exists : {group}")
 
         if add:
-            log.info(f'Adding admin privileges for groupersuperadmins ...')
+            log0.info(f'Adding admin privileges for groupersuperadmins ...')
             try:
                 add_privilege = grouper_api.add_privilege(superadmins, group, group_type, 'admin')
                 if add_privilege:
-                    log.info("SUCCESS")
+                    log0.info("SUCCESS")
             except HTTPError:
                 raise HTTPError
 
-            log.info(f'Adding privileges for grouperadmins ...')
+            log0.info(f'Adding privileges for grouperadmins ...')
             try:
                 add_privilege = grouper_api.add_privilege(admins, group, group_type,
                                                           ['read', 'view', 'optout'])
                 if add_privilege:
-                    log.info("SUCCESS")
+                    log0.info("SUCCESS")
             except HTTPError:
                 raise HTTPError
 
         else:
-            log.info('dry run, not performing privilege add')
+            log0.info('dry run, not performing privilege add')
 
 
 if __name__ == '__main__':
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description='Command-line driver to add a Grouper group.')
     parser.add_argument('--config', required=True, help='path to configuration file')
+    parser.add_argument('--persistent_path', required=True, help='full parent path for logs')
     parser.add_argument('--grouper_host', help='Grouper host')
     parser.add_argument('--grouper_base_path', help='base path for Grouper API')
     parser.add_argument('--grouper_user', help='user name for Grouper login')
@@ -115,6 +119,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     branch_name = get_active_branch_name(library_root_path)
+    git_commit, git_short_commit = get_latest_commit(library_root_path)
 
     banner_message = f"""
     This is the command-line tool to create Grouper groups for main themes, sub-portals, and quotas.
@@ -125,6 +130,7 @@ if __name__ == '__main__':
 
     ReQUIAM active branch: {branch_name}
     ReQUIAM version: {__version__}
+    ReQUIAM commit hash: {git_short_commit}
     Created by Chun Ly
     Issues/Suggestions? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new/choose
     """
@@ -137,18 +143,26 @@ if __name__ == '__main__':
     config.read(args.config)
 
     # Define logfile
-    log_dir = config.get('global', 'log_dir')
+    log_dir = path.join(args.persistent_path, config.get('global', 'log_dir'))
+
     if not path.exists(log_dir):
         mkdir(log_dir)
-    logfile_prefix = config.get('global', 'logfile_prefix')
-    logfile = f"add_groups.{today.strftime('%Y-%m-%d')}.log"
+    logfile = f"add_grouper_groups.{today.strftime('%Y-%m-%d')}.log"
 
     log = LogClass(log_dir, logfile).get_logger()
 
     log.info("*************************************")
     log.info("Started add_grouper_group script ... ")
-    log.info(f"ReQUIAM active branch: {branch_name}")
-    log.info(f"ReQUIAM version: {__version__}")
+    log.debug(f"ReQUIAM active branch: {branch_name}")
+    log.debug(f"ReQUIAM version: {__version__} ({git_short_commit})")
+    log.debug(f"ReQUIAM commit hash: {git_commit}")
+
+    # Retrieve username, hostname, IP
+    sys_info = get_user_hostname()
+    log.debug(f"username : {sys_info['user']}")
+    log.debug(f"hostname : {sys_info['hostname']}")
+    log.debug(f"IP Addr  : {sys_info['ip']}")
+    log.debug(f"Op. Sys. : {sys_info['os']}")
 
     cred_err = 0
     vargs = vars(args)
@@ -194,7 +208,8 @@ if __name__ == '__main__':
     else:
         grouper_production = False
 
-    ga = GrouperAPI(**grouper_dict, grouper_production=grouper_production)
+    ga = GrouperAPI(**grouper_dict, grouper_production=grouper_production,
+                    log=log)
 
     # Main portals / Overall Research Themes
     if vargs['main_themes']:
@@ -226,7 +241,8 @@ if __name__ == '__main__':
         log.info(f"Total number of main themes: {n_mainThemes}")
         log.info(f"List of main themes: {', '.join(main_groups)}")
 
-        add_groups(main_groups, 'portal', main_descriptions, ga, log=log, add=args.add)
+        add_groups(main_groups, 'portal', main_descriptions, ga, log0=log,
+                   add=args.add)
 
         mainTheme_timer._stop()
         log.info(f"MAIN PORTAL : {mainTheme_timer.format}")
@@ -261,7 +277,8 @@ if __name__ == '__main__':
         log.info(f"Total number of sub-portals: {n_subPortals}")
         log.info(f"List of sub-portals: {', '.join(sub_groups)}")
 
-        add_groups(sub_groups, 'portal', sub_descriptions, ga, log=log, add=args.add)
+        add_groups(sub_groups, 'portal', sub_descriptions, ga, log0=log,
+                   add=args.add)
 
         subPortal_timer._stop()
         log.info(f"SUB-PORTAL : {subPortal_timer.format}")
@@ -294,7 +311,8 @@ if __name__ == '__main__':
         log.info(f"Total number of quotas: {n_quotas}")
         log.info(f"List of quotas: {', '.join(quota_groups)}")
 
-        add_groups(quota_groups, 'quota', quota_descriptions, ga, log=log, add=args.add)
+        add_groups(quota_groups, 'quota', quota_descriptions, ga, log0=log,
+                   add=args.add)
 
         quota_timer._stop()
         log.info(f"QUOTA : {quota_timer.format}")

@@ -99,7 +99,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.11.3`.
+You should see that the version is `0.12.0`.
 
 ### Configuration Settings
 
@@ -191,7 +191,7 @@ Execution can be done as follows:
                        --config config/figshare.ini --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password \
                        --quota 123456 --portal testportal --netid <username> --sync
-
+```
 Here, the script will update the specified `<username>` to be associated with
 the `123456` quota and the `testportal` portal.  Much like `script_run`,
 execution requires the `--sync` flag. Otherwise, a list of changes will be
@@ -256,8 +256,17 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
+v0.12.0:
+ * Grouper API tool, `GrouperAPI` #42, #60
+ * Grouper group creation with `add_grouper_group` script #42, #58
+ * Include `multi-user` feature for `user_update` script #52
+ * Re-vamp of logging in all scripts and classes #57
+ * Minor: buffering of `pandas` DataFrame for `script_run` #64
+ * Minor: Code refactoring in `grouper_query`, `ManualOverride` #62, #63
+
 v0.11.0 - 0.11.3:
- * Include `manual_override` tool #31, #47
+ * Include manual override tool, `ManualOverride` #31, #47
+ * Manual user update with user_update script #31
  * Ability to add and remove users from the `figshare:active` group #43
  * Minor: Packaging/re-organization of scripts into `scripts/` #44
  * Minor: Updates to scripts #44, #49, #50
