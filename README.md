@@ -99,7 +99,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.12.0`.
+You should see that the version is `0.12.1`.
 
 ### Configuration Settings
 
@@ -256,13 +256,14 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
-v0.12.0:
+v0.12.0 - 0.12.1:
  * Grouper API tool, `GrouperAPI` #42, #60
  * Grouper group creation with `add_grouper_group` script #42, #58
  * Include `multi-user` feature for `user_update` script #52
  * Re-vamp of logging in all scripts and classes #57
  * Minor: buffering of `pandas` DataFrame for `script_run` #64
  * Minor: Code refactoring in `grouper_query`, `ManualOverride` #62, #63
+ * Minor: Perform checks to ensure that Grouper groups exist before API calls #66
 
 v0.11.0 - 0.11.3:
  * Include manual override tool, `ManualOverride` #31, #47
