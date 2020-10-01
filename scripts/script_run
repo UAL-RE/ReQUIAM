@@ -51,6 +51,12 @@ if __name__ == '__main__':
     parser.add_argument('--quota', action='store_true', help='perform quota queries')
     parser.add_argument('--test', action='store_true', help='perform test query')
     parser.add_argument('--test_reverse', action='store_true', help='reverse test query (i.e., remove from Grouper)')
+    parser.add_argument('--org_codes',
+                        help='''List of org codes (comma separated) to implement.
+                                Only set org_codes or groups. Not both''')
+    parser.add_argument('--groups',
+                        help='''List of portals/themes (comma separated) to implement.
+                                Only set org_codes or groups. Not both''')
     parser.add_argument('--portal_file', help='filename for manual-override portal file')
     parser.add_argument('--quota_file', help='filename for manual-override quota file')
     parser.add_argument('--sync', action='store_true', help='perform synchronization')
@@ -110,7 +116,8 @@ if __name__ == '__main__':
     for p in ['persistent_path', 'ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
               'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
               'batch_size', 'batch_timeout', 'batch_delay', 'portal', 'quota',
-              'portal_file', 'quota_file', 'test', 'test_reverse', 'sync_max']:
+              'portal_file', 'quota_file', 'test', 'test_reverse', 'org_codes',
+              'groups', 'sync_max']:
 
         if (p in vargs) and (vargs[p] is not None):
             vargs[p] = vargs[p]
@@ -139,8 +146,15 @@ if __name__ == '__main__':
         log.warning("Exiting")
         raise ValueError
 
+    log.info('org_codes = %s', args.org_codes)
+    log.info('   groups = %s', args.groups)
     log.info('     sync = %s', args.sync)
     log.info('    debug = %s', args.debug)
+
+    if vargs['org_codes'] and vargs['groups']:
+        log.warning("Cannot provide --org_codes and --groups")
+        log.warning("Exiting")
+        raise ValueError
 
     try:
         mo = manual_override.ManualOverride(vargs['portal_file'], vargs['quota_file'],
@@ -180,58 +194,69 @@ if __name__ == '__main__':
         csv_url = config.get('global', 'csv_url')
         df = pd.read_csv(csv_url)
 
-        unique_portals = df['Sub-portals'].unique()
-        unique_portals_name = df['Research Themes'].unique()
+        if args.org_codes:
+            log.info(f"Filtering for org codes : {args.org_codes}")
+            df = df[df['Org Code'].isin(args.org_codes.split(','))]
 
-        # Loop over sub-portals
-        for portal, portal_name in zip(unique_portals, unique_portals_name):
-            log.info("Working on {} ({}) portal".format(portal_name, portal))
+        if args.groups:
+            log.info(f"Filtering for portals/themes : {args.groups}")
+            df = df[df['Sub-portals'].isin(args.groups.split(','))]
 
-            group_check = ga.check_group_exists(portal, 'portal')
-            if not group_check:
-                log.warning(f"!!! Grouper portal NOT found : {portal} !!!")
-            else:
-                log.info(f"Grouper portal exists : {portal}")
+        if df.empty:
+            log.warning("Empty portal DataFrame. Skipping portal!")
+        else:
+            unique_portals = df['Sub-portals'].unique()
+            unique_portals_name = df['Research Themes'].unique()
 
-                df_sub = df.loc[df['Sub-portals'] == portal]
+            # Loop over sub-portals
+            for portal, portal_name in zip(unique_portals, unique_portals_name):
+                log.info("Working on {} ({}) portal".format(portal_name, portal))
 
-                pandas_write_buffer(df_sub, log_filename)
-
-                # Get list of org codes for [portal]
-                org_code_list = df_sub['Org Code']
-
-                org_name_list = df_sub['Departments/Colleges/Labs/Centers']
-
-                # LDAP query to retrieve members
-                ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
-
-                ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
-
-                # Update based on CSV manual input files
-                if mo_status:
-                    ldap_members = mo.identify_changes(ldap_members, portal, 'portal')
-                log.info(" EDS size {}".format(len(ldap_members)))
-
-                # Grouper query
-                grouper_portal = grouper_query.figshare_group(portal, 'portal')
-                gq = grouper_query.GrouperQuery(**grouper_dict,
-                                                grouper_group=grouper_portal, log=log)
-                log.info(" Grouper size {}".format(len(gq.members)))
-
-                d = delta.Delta(ldap_members=ldap_members,
-                                grouper_query_instance=gq,
-                                **delta_dict,
-                                log=log)
-
-                log.info('ldap and grouper have {} members in common'.format(len(d.common)))
-                log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
-                log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
-
-                if args.sync:
-                    log.info('synchronizing ...')
-                    d.synchronize()
+                group_check = ga.check_group_exists(portal, 'portal')
+                if not group_check:
+                    log.warning(f"!!! Grouper portal NOT found : {portal} !!!")
                 else:
-                    log.info('dry run, not performing synchronization')
+                    log.info(f"Grouper portal exists : {portal}")
+
+                    df_sub = df.loc[df['Sub-portals'] == portal]
+
+                    pandas_write_buffer(df_sub, log_filename)
+
+                    # Get list of org codes for [portal]
+                    org_code_list = df_sub['Org Code']
+
+                    org_name_list = df_sub['Departments/Colleges/Labs/Centers']
+
+                    # LDAP query to retrieve members
+                    ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
+
+                    ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+
+                    # Update based on CSV manual input files
+                    if mo_status:
+                        ldap_members = mo.identify_changes(ldap_members, portal, 'portal')
+                    log.info(" EDS size {}".format(len(ldap_members)))
+
+                    # Grouper query
+                    grouper_portal = grouper_query.figshare_group(portal, 'portal')
+                    gq = grouper_query.GrouperQuery(**grouper_dict,
+                                                    grouper_group=grouper_portal, log=log)
+                    log.info(" Grouper size {}".format(len(gq.members)))
+
+                    d = delta.Delta(ldap_members=ldap_members,
+                                    grouper_query_instance=gq,
+                                    **delta_dict,
+                                    log=log)
+
+                    log.info('ldap and grouper have {} members in common'.format(len(d.common)))
+                    log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+                    log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+
+                    if args.sync:
+                        log.info('synchronizing ...')
+                        d.synchronize()
+                    else:
+                        log.info('dry run, not performing synchronization')
 
         portal_timer._stop()
         log.info("PORTAL : " + portal_timer.format)
