@@ -14,6 +14,7 @@ import ast
 
 from requiam import ldap_query
 from requiam import grouper_query
+from requiam.grouper_admin import GrouperAPI
 from requiam import delta
 from requiam import quota
 from requiam.logger import LogClass, get_user_hostname, pandas_write_buffer
@@ -167,6 +168,9 @@ if __name__ == '__main__':
                       batch_delay=int(vargs['batch_delay']),
                       sync_max=int(vargs['sync_max']))
 
+    # This is for checking whether the group exists
+    ga = GrouperAPI(**grouper_dict, grouper_production=True, log=log)
+
     # Perform EDS-Grouper synchronization for figshare research portals
     if args.portal:
         portal_timer = TimerClass()
@@ -182,45 +186,52 @@ if __name__ == '__main__':
         # Loop over sub-portals
         for portal, portal_name in zip(unique_portals, unique_portals_name):
             log.info("Working on {} ({}) portal".format(portal_name, portal))
-            df_sub = df.loc[df['Sub-portals'] == portal]
 
-            pandas_write_buffer(df_sub, log_filename)
-
-            # Get list of org codes for [portal]
-            org_code_list = df_sub['Org Code']
-
-            org_name_list = df_sub['Departments/Colleges/Labs/Centers']
-
-            # LDAP query to retrieve members
-            ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
-
-            ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
-
-            # Update based on CSV manual input files
-            if mo_status:
-                ldap_members = mo.identify_changes(ldap_members, portal, 'portal')
-            log.info(" EDS size {}".format(len(ldap_members)))
-
-            # Grouper query
-            grouper_portal = grouper_query.figshare_group(portal, 'portal')
-            gq = grouper_query.GrouperQuery(**grouper_dict,
-                                            grouper_group=grouper_portal, log=log)
-            log.info(" Grouper size {}".format(len(gq.members)))
-
-            d = delta.Delta(ldap_members=ldap_members,
-                            grouper_query_instance=gq,
-                            **delta_dict,
-                            log=log)
-
-            log.info('ldap and grouper have {} members in common'.format(len(d.common)))
-            log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
-            log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
-
-            if args.sync:
-                log.info('synchronizing ...')
-                d.synchronize()
+            group_check = ga.check_group_exists(portal, 'portal')
+            if not group_check:
+                log.warning(f"!!! Grouper portal NOT found : {portal} !!!")
             else:
-                log.info('dry run, not performing synchronization')
+                log.info(f"Grouper portal exists : {portal}")
+
+                df_sub = df.loc[df['Sub-portals'] == portal]
+
+                pandas_write_buffer(df_sub, log_filename)
+
+                # Get list of org codes for [portal]
+                org_code_list = df_sub['Org Code']
+
+                org_name_list = df_sub['Departments/Colleges/Labs/Centers']
+
+                # LDAP query to retrieve members
+                ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
+
+                ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+
+                # Update based on CSV manual input files
+                if mo_status:
+                    ldap_members = mo.identify_changes(ldap_members, portal, 'portal')
+                log.info(" EDS size {}".format(len(ldap_members)))
+
+                # Grouper query
+                grouper_portal = grouper_query.figshare_group(portal, 'portal')
+                gq = grouper_query.GrouperQuery(**grouper_dict,
+                                                grouper_group=grouper_portal, log=log)
+                log.info(" Grouper size {}".format(len(gq.members)))
+
+                d = delta.Delta(ldap_members=ldap_members,
+                                grouper_query_instance=gq,
+                                **delta_dict,
+                                log=log)
+
+                log.info('ldap and grouper have {} members in common'.format(len(d.common)))
+                log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+                log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+
+                if args.sync:
+                    log.info('synchronizing ...')
+                    d.synchronize()
+                else:
+                    log.info('dry run, not performing synchronization')
 
         portal_timer._stop()
         log.info("PORTAL : " + portal_timer.format)
@@ -236,37 +247,43 @@ if __name__ == '__main__':
         for q, c in zip(quota_list, quota_class):
             log.info("Working on {} quota : {} bytes".format(c, q))
 
-            # LDAP query to retrieve members
-            ldap_queries = quota.ual_ldap_quota_query(c)
-
-            ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
-
-            # Update based on CSV manual input files
-            if mo_status:
-                ldap_members = mo.identify_changes(ldap_members, q, 'quota')
-            log.info(" EDS size {}".format(len(ldap_members)))
-
-            # Grouper query
-            grouper_quota = grouper_query.figshare_group(q, 'quota')
-            gq = grouper_query.GrouperQuery(**grouper_dict,
-                                            grouper_group=grouper_quota)
-            log.info(" Grouper size {}".format(len(gq.members)))
-
-            # Delta between LDAP and Grouper
-            d = delta.Delta(ldap_members=ldap_members,
-                            grouper_query_instance=gq,
-                            **delta_dict,
-                            log=log)
-
-            log.info('ldap and grouper have {} members in common'.format(len(d.common)))
-            log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
-            log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
-
-            if args.sync:
-                log.info('synchronizing ...')
-                d.synchronize()
+            group_check = ga.check_group_exists(q, 'quota')
+            if not group_check:
+                log.warning(f"!!! Grouper quota NOT found : {q} !!!")
             else:
-                log.info('dry run, not performing synchronization')
+                log.info(f"Grouper quota exists : {q}")
+
+                # LDAP query to retrieve members
+                ldap_queries = quota.ual_ldap_quota_query(c)
+
+                ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+
+                # Update based on CSV manual input files
+                if mo_status:
+                    ldap_members = mo.identify_changes(ldap_members, q, 'quota')
+                log.info(" EDS size {}".format(len(ldap_members)))
+
+                # Grouper query
+                grouper_quota = grouper_query.figshare_group(q, 'quota')
+                gq = grouper_query.GrouperQuery(**grouper_dict,
+                                                grouper_group=grouper_quota)
+                log.info(" Grouper size {}".format(len(gq.members)))
+
+                # Delta between LDAP and Grouper
+                d = delta.Delta(ldap_members=ldap_members,
+                                grouper_query_instance=gq,
+                                **delta_dict,
+                                log=log)
+
+                log.info('ldap and grouper have {} members in common'.format(len(d.common)))
+                log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+                log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+
+                if args.sync:
+                    log.info('synchronizing ...')
+                    d.synchronize()
+                else:
+                    log.info('dry run, not performing synchronization')
 
         quota_timer._stop()
         log.info("QUOTA : "+quota_timer.format)
