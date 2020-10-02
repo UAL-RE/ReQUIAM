@@ -1,7 +1,7 @@
 from .ldap_query import ual_grouper_base
 
 
-def ual_ldap_quota_query(ual_class):
+def ual_ldap_quota_query(ual_class, org_codes=None):
     """
     Purpose:
       Construct RFC 4512-compatible LDAP query to search for those within
@@ -19,6 +19,8 @@ def ual_ldap_quota_query(ual_class):
       'faculty' (for faculty, staff, and dcc)
       'grad'    (for graduate students)
       'ugrad'   (for undergraduate students)
+
+    :param org_codes: List of org codes to require in search. Default: None
 
     :return ldap_query: list containing a single query string
     """
@@ -39,4 +41,10 @@ def ual_ldap_quota_query(ual_class):
     if ual_class == 'ugrad':
         ldap_query = '({})'.format(ual_grouper_base('ual-ugrads'))
 
-    return [ldap_query]
+    # Filter by org codes
+    if not isinstance(org_codes, type(None)):
+        ldap_queries = [f'(& (employeePrimaryDept={oc}) {ldap_query} )' for oc in org_codes]
+
+        return ldap_queries
+    else:
+        return [ldap_query]
