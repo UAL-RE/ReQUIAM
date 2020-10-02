@@ -270,6 +270,10 @@ if __name__ == '__main__':
         quota_class = ast.literal_eval(config['global']['quota_class'])
 
         for q, c in zip(quota_list, quota_class):
+            if 'ugrad' in c:
+                log.info(f"Quota execution not required for {c} group. Skipping...")
+                continue
+
             log.info("Working on {} quota : {} bytes".format(c, q))
 
             group_check = ga.check_group_exists(q, 'quota')
