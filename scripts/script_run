@@ -151,6 +151,8 @@ if __name__ == '__main__':
     log.info('     sync = %s', args.sync)
     log.info('    debug = %s', args.debug)
 
+    org_codes = None  # Initialize before --org_codes or --groups
+
     if vargs['org_codes'] and vargs['groups']:
         log.warning("Cannot provide --org_codes and --groups")
         log.warning("Exiting")
@@ -196,11 +198,13 @@ if __name__ == '__main__':
 
         if args.org_codes:
             log.info(f"Filtering for org codes : {args.org_codes}")
-            df = df[df['Org Code'].isin(args.org_codes.split(','))]
+            org_codes = args.org_codes.split(',')
+            df = df[df['Org Code'].isin(org_codes)]
 
         if args.groups:
             log.info(f"Filtering for portals/themes : {args.groups}")
             df = df[df['Sub-portals'].isin(args.groups.split(','))]
+            org_codes = df['Org Code'].to_list()
 
         if df.empty:
             log.warning("Empty portal DataFrame. Skipping portal!")
@@ -283,7 +287,7 @@ if __name__ == '__main__':
                 log.info(f"Grouper quota exists : {q}")
 
                 # LDAP query to retrieve members
-                ldap_queries = quota.ual_ldap_quota_query(c)
+                ldap_queries = quota.ual_ldap_quota_query(c, org_codes=org_codes)
 
                 ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
 
