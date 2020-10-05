@@ -221,13 +221,14 @@ def update_entries(ldap_set, netid, uaid, action, log=None):
     return new_ldap_set
 
 
-def get_current_groups(uid, ldap_dict, log=None, verbose=True):
+def get_current_groups(uid, ldap_dict, production=False, log=None, verbose=True):
     """
     Purpose:
       Retrieve current Figshare ismemberof association
 
     :param uid: str containing User NetID
     :param ldap_dict: dict containing ldap settings
+    :param production: bool flag to indicate using figshare over figtest
     :param log: LogClass object for logging
     :param verbose: bool flag to provide information about each user
     :return figshare_dict: dict containing current Figshare portal and quota
@@ -261,17 +262,17 @@ def get_current_groups(uid, ldap_dict, log=None, verbose=True):
         return figshare_dict
 
     # Check for active group
-    active_stem = figshare_stem('active')
+    active_stem = figshare_stem('active', production=production)
     if active_stem in membership:
         figshare_dict['active'] = True
     else:
-        log.warning(f"{uid} not member of figshare:active group")
+        log.warning(f"{uid} not member of {active_stem} group")
         figshare_dict['active'] = False
 
         revert_command += f'--active_remove '
 
     # Extract portal
-    portal_stem = figshare_stem('portal')
+    portal_stem = figshare_stem('portal', production=production)
     portal = [s for s in membership if ((portal_stem in s) and ('grouper' not in s))]
     if len(portal) == 0:
         log.info(f"No portal Grouper group found for {uid}!")
@@ -288,7 +289,7 @@ def get_current_groups(uid, ldap_dict, log=None, verbose=True):
     revert_command += f"--portal {figshare_dict['portal']} "
 
     # Extract quota
-    quota_stem = figshare_stem('quota')
+    quota_stem = figshare_stem('quota', production=production)
     quota = [s for s in membership if ((quota_stem in s) and ('grouper' not in s))]
     if len(quota) == 0:
         log.info(f"No quota Grouper group found for {uid}!")
