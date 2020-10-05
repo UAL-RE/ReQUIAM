@@ -52,7 +52,8 @@ class GrouperAPI:
 
     get_group_list(group_type)
       Retrieve list of groups in a Grouper stem
-      group_type must be 'portal', 'quota', 'test' or ''
+      group_type must be 'portal', 'quota', 'test', 'group_active' or ''
+        Note: Some of these groups (e.g., group_active does not exists for production=True)
 
       See: https://spaces.at.internet2.edu/display/Grouper/Get+Groups
         but with a different implementation using the stem find
@@ -66,14 +67,14 @@ class GrouperAPI:
 
     check_group_exists(group, group_type)
       Check whether a Grouper group exists within a Grouper stem
-      group_type must be 'portal', 'quota', 'test' or ''
+      group_type must be 'portal', 'quota', 'test', 'group_active' or ''
       group is simply the group name
 
       See: https://spaces.at.internet2.edu/display/Grouper/Find+Groups
 
     add_group(group, group_type, description)
       Create Grouper group within a Grouper stem
-      group_type must be 'portal', 'quota', or 'test'
+      group_type must be 'portal', 'quota', 'group_active' or 'test'
 
       See: https://spaces.at.internet2.edu/display/Grouper/Group+Save
 
@@ -108,7 +109,7 @@ class GrouperAPI:
     def get_group_list(self, group_type):
         """Retrieve list of groups in a Grouper stem"""
 
-        if group_type not in ['portal', 'quota', 'test', '']:
+        if group_type not in ['portal', 'quota', 'test', 'group_active', '']:
             raise ValueError("Incorrect [group_type] input")
 
         endpoint = self.url('groups')
@@ -147,7 +148,7 @@ class GrouperAPI:
     def check_group_exists(self, group, group_type):
         """Check whether a Grouper group exists within a Grouper stem"""
 
-        if group_type not in ['portal', 'quota', 'test', '']:
+        if group_type not in ['portal', 'quota', 'test', 'group_active', '']:
             raise ValueError("Incorrect [group_type] input")
 
         result = self.get_group_list(group_type)
@@ -167,7 +168,7 @@ class GrouperAPI:
 
         endpoint = self.url("groups")
 
-        if group_type not in ['portal', 'quota', 'test']:
+        if group_type not in ['portal', 'quota', 'test', 'group_active']:
             raise ValueError("Incorrect [group_type] input")
 
         grouper_name = figshare_group(group, group_type,
