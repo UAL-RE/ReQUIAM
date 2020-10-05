@@ -2,10 +2,17 @@ from os.path import dirname, join
 import requests
 import pandas as pd
 
+from requests.exceptions import HTTPError
+
 from .commons import figshare_stem
 from .grouper_query import figshare_group
 
 from .logger import log_stdout
+
+# Administrative groups
+superadmins = figshare_group('GrouperSuperAdmins', '', production=True)
+admins = figshare_group('GrouperAdmins', '', production=True)
+managers = figshare_group('GrouperManagers', '', production=True)
 
 
 class GrouperAPI:
@@ -250,3 +257,70 @@ class GrouperAPI:
                     raise ValueError(f"Unexpected result received: {metadata['resultCode']}")
 
         return True
+
+
+def create_groups(groups, group_type, group_descriptions, grouper_api, log0=None, add=False):
+    """
+    Purpose:
+      Process through a list of Grouper groups and add them if they don't exist
+      and set permissions
+
+    :param groups: list of str containing group names
+    :param group_type: str. Either 'portal', 'quota', or 'test'
+    :param group_descriptions: list of str containing description
+    :param grouper_api: GrouperAPI object
+    :param log0: logging.getLogger() object
+    :param add: boolean.  Indicate whether to perform update or dry run
+    """
+
+    if isinstance(log0, type(None)):
+        log0 = log_stdout()
+
+    for group, description in zip(groups, group_descriptions):
+        add_dict = {'group': group,
+                    'group_type': group_type,
+                    'description': description}
+
+        # Check if group exists
+        try:
+            group_exists = grouper_api.check_group_exists(group, group_type)
+        except KeyError:
+            log0.info("Stem is empty")
+            group_exists = False
+
+        if not group_exists:
+            log0.info(f"Group does not exist : {group}")
+
+            if add:
+                log0.info(f'Adding {group} ...')
+                try:
+                    add_result = grouper_api.add_group(**add_dict)
+                    if add_result:
+                        log0.info("SUCCESS")
+                except HTTPError:
+                    raise HTTPError
+            else:
+                log0.info('dry run, not performing group add')
+        else:
+            log0.info(f"Group exists : {group}")
+
+        if add:
+            log0.info(f'Adding admin privileges for groupersuperadmins ...')
+            try:
+                add_privilege = grouper_api.add_privilege(superadmins, group, group_type, 'admin')
+                if add_privilege:
+                    log0.info("SUCCESS")
+            except HTTPError:
+                raise HTTPError
+
+            log0.info(f'Adding privileges for grouperadmins ...')
+            try:
+                add_privilege = grouper_api.add_privilege(admins, group, group_type,
+                                                          ['read', 'view', 'optout'])
+                if add_privilege:
+                    log0.info("SUCCESS")
+            except HTTPError:
+                raise HTTPError
+
+        else:
+            log0.info('dry run, not performing privilege add')
