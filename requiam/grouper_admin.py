@@ -265,9 +265,9 @@ def create_groups(groups, group_type, group_descriptions, grouper_api, log0=None
       Process through a list of Grouper groups and add them if they don't exist
       and set permissions
 
-    :param groups: list of str containing group names
+    :param groups: str or list of str containing group names
     :param group_type: str. Either 'portal', 'quota', or 'test'
-    :param group_descriptions: list of str containing description
+    :param group_descriptions: str or list of str containing description
     :param grouper_api: GrouperAPI object
     :param log0: logging.getLogger() object
     :param add: boolean.  Indicate whether to perform update or dry run
@@ -275,6 +275,11 @@ def create_groups(groups, group_type, group_descriptions, grouper_api, log0=None
 
     if isinstance(log0, type(None)):
         log0 = log_stdout()
+
+    if isinstance(groups, str):
+        groups = [groups]
+    if isinstance(group_descriptions, str):
+        group_descriptions = [group_descriptions]
 
     for group, description in zip(groups, group_descriptions):
         add_dict = {'group': group,
