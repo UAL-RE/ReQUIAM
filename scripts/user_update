@@ -14,7 +14,7 @@ from requiam.grouper_query import grouper_delta_user
 from requiam.logger import LogClass, get_user_hostname
 from requiam import TimerClass
 from requiam.manual_override import ManualOverride, get_current_groups
-from requiam.grouper_admin import GrouperAPI
+from requiam.grouper_admin import GrouperAPI, create_active_group
 
 # Version and branch info
 from requiam import __version__
@@ -275,14 +275,30 @@ if __name__ == '__main__':
     # figshare:active or figtest:active update
     if not vargs['active_remove']:
         if len(current_dict['not_active']['netid']) > 0:
-            log.info(f"Adding to {main_stem}:active group")
+            log.info("Creating figtest:group_active group")
 
-            d = grouper_delta_user('active', '',
-                                   current_dict['not_active']['netid'],
-                                   set(current_dict['not_active']['uaid']),
-                                   'add', grouper_dict, delta_dict,
-                                   sync=args.sync, log=log,
-                                   production=grouper_production)
+            if not args.sync:
+                log.info("dry run, not creating active_group group")
+            else:
+                log.info("PROMPT: Provide the name for group...")
+                group_name = input("PROMPT: ")
+                log.info(f"RESPONSE: {group_name}")
+
+                log.info("PROMPT: Provide the description for group...")
+                group_description = input("PROMPT: ")
+                log.info(f"RESPONSE: {group_description}")
+
+                create_active_group(group_name, grouper_dict,
+                                    group_description=group_description,
+                                    log=log, add=args.sync)
+
+                d = grouper_delta_user(group_name, 'group_active',
+                                       clean_netid_list, clean_uaid_list,
+                                       'add', grouper_dict, delta_dict,
+                                       sync=args.sync, log=log,
+                                       production=grouper_production)
+
+                log.warning("!!! Group will still need to be added indirectly to active group !!!")
         else:
             log.info(f"All users are member of {main_stem}:active. No need to add")
     else:
