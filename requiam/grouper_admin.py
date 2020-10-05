@@ -330,3 +330,30 @@ def create_groups(groups, group_type, group_descriptions, grouper_api, log0=None
 
         else:
             log0.info('dry run, not performing privilege add')
+
+
+def create_active_group(group, grouper_dict, group_description=None, log=None, add=False):
+    """
+    Purpose:
+      Create a temporary group for figshare:active indirect membership
+
+    :param group: str. Name of group (e.g., ual)
+    :param grouper_dict: dict of Grouper configuration settings
+    :param group_description: str of description. Defaults will prompt for it
+    :param log: LogClass logging object
+    :param add: bool to indicate adding group.  Default: False (dry run)
+    """
+
+    if isinstance(log, type(None)):
+        log = log_stdout()
+
+    # This is for figtest stem
+    ga_test = GrouperAPI(**grouper_dict, grouper_production=False, log=log)
+
+    if isinstance(group_description, type(None)):
+        log.info("PROMPT: Provide description for group...")
+        group_description = input("PROMPT: ")
+        log.info(f"RESPONSE: {group_description}")
+
+    create_groups(group, 'group_active', group_description, ga_test,
+                  log0=log, add=add)
