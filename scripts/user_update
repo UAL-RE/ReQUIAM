@@ -348,6 +348,8 @@ if __name__ == '__main__':
                 log.info(f"Adding to {main_stem}:portal:{vargs['portal']}")
 
                 in_mo = None if vargs['portal_file_noupdate'] else mo
+                if isinstance(in_mo, type(None)):
+                    log.warning("--portal_file_noupdate: Not updating portal file")
 
                 d = grouper_delta_user(vargs['portal'], 'portal',
                                        current_dict['not_portal']['netid'],
@@ -364,6 +366,8 @@ if __name__ == '__main__':
                             mo.update_dataframe(current_dict['not_portal']['netid'],
                                                 current_dict['not_portal']['uaid'],
                                                 vargs['portal'], 'portal')
+                        else:
+                            log.warning("--portal_file_noupdate: Not updating portal file")
                     else:
                         log.info("Working with figtest stem. Not updating")
                 else:
@@ -397,6 +401,8 @@ if __name__ == '__main__':
                 log.info(f"Adding to {main_stem}:quota:{vargs['quota']}")
 
                 in_mo = None if vargs['quota_file_noupdate'] else mo
+                if isinstance(in_mo, type(None)):
+                    log.warning("--quota_file_noupdate: Not updating quota file")
 
                 d = grouper_delta_user(vargs['quota'], 'quota',
                                        current_dict['not_quota']['netid'],
@@ -413,6 +419,8 @@ if __name__ == '__main__':
                             mo.update_dataframe(current_dict['not_quota']['netid'],
                                                 current_dict['not_quota']['uaid'],
                                                 vargs['quota'], 'quota')
+                        else:
+                            log.warning("--quota_file_noupdate: Not updating quota file")
                     else:
                         log.info("Working with figtest stem. Not updating")
                 else:
