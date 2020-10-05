@@ -149,9 +149,12 @@ def grouper_delta_user(group, stem, netid, uaid, action, grouper_dict,
 
         # Update manual CSV file
         if not isinstance(mo, type(None)):
-            mo.update_dataframe(netid, uaid, group, stem)
+            if production:
+                mo.update_dataframe(netid, uaid, group, stem)
+            else:
+                log.info("Working with figtest stem. Not updating dataframe")
     else:
         log.info('dry run, not performing synchronization')
-        log.info('dry run, not updating portal dataframe')
+        log.info('dry run, not updating dataframe')
 
     return d

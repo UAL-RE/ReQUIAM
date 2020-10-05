@@ -334,9 +334,12 @@ if __name__ == '__main__':
                 # Remove entry from manual CSV file for 'root' case
                 if args.sync:
                     # Update of df only needed since there's not root portal to add too
-                    mo.update_dataframe(current_dict['not_portal']['netid'],
-                                        current_dict['not_portal']['uaid'],
-                                        vargs['portal'], 'portal')
+                    if grouper_production:
+                        mo.update_dataframe(current_dict['not_portal']['netid'],
+                                            current_dict['not_portal']['uaid'],
+                                            vargs['portal'], 'portal')
+                    else:
+                        log.info("Working with figtest stem. Not updating")
                 else:
                     log.info('dry run, not updating portal dataframe')
 
@@ -376,9 +379,12 @@ if __name__ == '__main__':
                 # Remove entry from manual CSV file for 'root' case
                 if args.sync:
                     # Update of df only needed since there's not root portal to add too
-                    mo.update_dataframe(current_dict['not_quota']['netid'],
-                                        current_dict['not_quota']['uaid'],
-                                        vargs['quota'], 'quota')
+                    if grouper_production:
+                        mo.update_dataframe(current_dict['not_quota']['netid'],
+                                            current_dict['not_quota']['uaid'],
+                                            vargs['quota'], 'quota')
+                    else:
+                        log.info("Working with figtest stem. Not updating")
                 else:
                     log.info('dry run, not updating portal dataframe')
 
