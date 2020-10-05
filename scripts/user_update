@@ -272,6 +272,7 @@ if __name__ == '__main__':
     main_stem = figshare_stem('', production=grouper_production)
     log.info(f"Main stem: {main_stem}")
 
+    log.info("ACTIVE STAGE")
     # figshare:active or figtest:active update
     if not vargs['active_remove']:
         if len(current_dict['not_active']['netid']) > 0:
@@ -316,6 +317,7 @@ if __name__ == '__main__':
 
     # Portal update
     if vargs['portal'] != '(unset)':
+        log.info("PORTAL STAGE")
         if len(current_dict['not_portal']['netid']) == 0:
             log.warning(f"All users are member of {main_stem}:portal:{vargs['portal']}. No need to add")
         else:
@@ -361,6 +363,7 @@ if __name__ == '__main__':
 
     # Quota update
     if vargs['quota'] != '(unset)':
+        log.info("QUOTA STAGE")
         if len(current_dict['not_quota']['netid']) == 0:
             log.warning(f"All users are member of {main_stem}:quota:{vargs['quota']}. No need to add")
         else:
