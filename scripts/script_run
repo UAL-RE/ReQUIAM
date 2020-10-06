@@ -217,50 +217,51 @@ if __name__ == '__main__':
                 log.info("Working on {} ({}) portal".format(portal_name, portal))
 
                 group_check = ga.check_group_exists(portal, 'portal')
-                if not group_check:
+                if not group_check:  # Avoid execution
                     log.warning(f"!!! Grouper portal NOT found : {portal} !!!")
+                    continue
+
+                log.info(f"Grouper portal exists : {portal}")
+
+                df_sub = df.loc[df['Sub-portals'] == portal]
+
+                pandas_write_buffer(df_sub, log_filename)
+
+                # Get list of org codes for [portal]
+                org_code_list = df_sub['Org Code']
+
+                org_name_list = df_sub['Departments/Colleges/Labs/Centers']
+
+                # LDAP query to retrieve members
+                ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
+
+                ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+
+                # Update based on CSV manual input files
+                if mo_status:
+                    ldap_members = mo.identify_changes(ldap_members, portal, 'portal')
+                log.info(" EDS size {}".format(len(ldap_members)))
+
+                # Grouper query
+                grouper_portal = grouper_query.figshare_group(portal, 'portal')
+                gq = grouper_query.GrouperQuery(**grouper_dict,
+                                                grouper_group=grouper_portal, log=log)
+                log.info(" Grouper size {}".format(len(gq.members)))
+
+                d = delta.Delta(ldap_members=ldap_members,
+                                grouper_query_instance=gq,
+                                **delta_dict,
+                                log=log)
+
+                log.info('ldap and grouper have {} members in common'.format(len(d.common)))
+                log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+                log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+
+                if args.sync:
+                    log.info('synchronizing ...')
+                    d.synchronize()
                 else:
-                    log.info(f"Grouper portal exists : {portal}")
-
-                    df_sub = df.loc[df['Sub-portals'] == portal]
-
-                    pandas_write_buffer(df_sub, log_filename)
-
-                    # Get list of org codes for [portal]
-                    org_code_list = df_sub['Org Code']
-
-                    org_name_list = df_sub['Departments/Colleges/Labs/Centers']
-
-                    # LDAP query to retrieve members
-                    ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
-
-                    ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
-
-                    # Update based on CSV manual input files
-                    if mo_status:
-                        ldap_members = mo.identify_changes(ldap_members, portal, 'portal')
-                    log.info(" EDS size {}".format(len(ldap_members)))
-
-                    # Grouper query
-                    grouper_portal = grouper_query.figshare_group(portal, 'portal')
-                    gq = grouper_query.GrouperQuery(**grouper_dict,
-                                                    grouper_group=grouper_portal, log=log)
-                    log.info(" Grouper size {}".format(len(gq.members)))
-
-                    d = delta.Delta(ldap_members=ldap_members,
-                                    grouper_query_instance=gq,
-                                    **delta_dict,
-                                    log=log)
-
-                    log.info('ldap and grouper have {} members in common'.format(len(d.common)))
-                    log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
-                    log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
-
-                    if args.sync:
-                        log.info('synchronizing ...')
-                        d.synchronize()
-                    else:
-                        log.info('dry run, not performing synchronization')
+                    log.info('dry run, not performing synchronization')
 
         portal_timer._stop()
         log.info("PORTAL : " + portal_timer.format)
@@ -281,42 +282,43 @@ if __name__ == '__main__':
             log.info("Working on {} quota : {} bytes".format(c, q))
 
             group_check = ga.check_group_exists(q, 'quota')
-            if not group_check:
+            if not group_check:  # Avoid execution
                 log.warning(f"!!! Grouper quota NOT found : {q} !!!")
+                continue
+
+            log.info(f"Grouper quota exists : {q}")
+
+            # LDAP query to retrieve members
+            ldap_queries = quota.ual_ldap_quota_query(c, org_codes=org_codes)
+
+            ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+
+            # Update based on CSV manual input files
+            if mo_status:
+                ldap_members = mo.identify_changes(ldap_members, q, 'quota')
+            log.info(" EDS size {}".format(len(ldap_members)))
+
+            # Grouper query
+            grouper_quota = grouper_query.figshare_group(q, 'quota')
+            gq = grouper_query.GrouperQuery(**grouper_dict,
+                                            grouper_group=grouper_quota)
+            log.info(" Grouper size {}".format(len(gq.members)))
+
+            # Delta between LDAP and Grouper
+            d = delta.Delta(ldap_members=ldap_members,
+                            grouper_query_instance=gq,
+                            **delta_dict,
+                            log=log)
+
+            log.info('ldap and grouper have {} members in common'.format(len(d.common)))
+            log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+            log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+
+            if args.sync:
+                log.info('synchronizing ...')
+                d.synchronize()
             else:
-                log.info(f"Grouper quota exists : {q}")
-
-                # LDAP query to retrieve members
-                ldap_queries = quota.ual_ldap_quota_query(c, org_codes=org_codes)
-
-                ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
-
-                # Update based on CSV manual input files
-                if mo_status:
-                    ldap_members = mo.identify_changes(ldap_members, q, 'quota')
-                log.info(" EDS size {}".format(len(ldap_members)))
-
-                # Grouper query
-                grouper_quota = grouper_query.figshare_group(q, 'quota')
-                gq = grouper_query.GrouperQuery(**grouper_dict,
-                                                grouper_group=grouper_quota)
-                log.info(" Grouper size {}".format(len(gq.members)))
-
-                # Delta between LDAP and Grouper
-                d = delta.Delta(ldap_members=ldap_members,
-                                grouper_query_instance=gq,
-                                **delta_dict,
-                                log=log)
-
-                log.info('ldap and grouper have {} members in common'.format(len(d.common)))
-                log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
-                log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
-
-                if args.sync:
-                    log.info('synchronizing ...')
-                    d.synchronize()
-                else:
-                    log.info('dry run, not performing synchronization')
+                log.info('dry run, not performing synchronization')
 
         quota_timer._stop()
         log.info("QUOTA : "+quota_timer.format)
