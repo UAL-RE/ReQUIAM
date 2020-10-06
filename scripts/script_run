@@ -293,6 +293,7 @@ if __name__ == '__main__':
                 ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
 
                 ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+                log.info(f"EDS before {len(ldap_members)}")
 
                 # Update based on CSV manual input files
                 if mo_status:
@@ -306,6 +307,12 @@ if __name__ == '__main__':
                 gq = GrouperQuery(**grouper_dict, grouper_group=grouper_portal,
                                   log=log)
                 log.info(" Grouper size {}".format(len(gq.members)))
+
+                # For --org_codes or --groups, only add users
+                if not isinstance(org_codes, type(None)):
+                    log.info("Special mode with --org_codes --groups. Adding users only")
+                    # Combine grouper members with new ldap members
+                    ldap_members = set.union(gq.members, ldap_members)
 
                 d = delta.Delta(ldap_members=ldap_members,
                                 grouper_query_instance=gq,
@@ -350,6 +357,7 @@ if __name__ == '__main__':
             # LDAP query to retrieve members
             ldap_queries = quota.ual_ldap_quota_query(c, org_codes=org_codes)
             ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+            log.info(f"EDS before {len(ldap_members)}")
 
             # Update based on CSV manual input files
             if mo_status:
@@ -361,6 +369,12 @@ if __name__ == '__main__':
             log.info(f"Grouper group : {grouper_quota}")
             gq = GrouperQuery(**grouper_dict, grouper_group=grouper_quota, log=log)
             log.info(" Grouper size {}".format(len(gq.members)))
+
+            # For --org_codes or --groups, only add users
+            if not isinstance(org_codes, type(None)):
+                log.info("Special mode with --org_codes --groups. Adding users only")
+                # Combine grouper members with new ldap members
+                ldap_members = set.union(gq.members, ldap_members)
 
             # Delta between LDAP and Grouper
             d = delta.Delta(ldap_members=ldap_members,
