@@ -166,6 +166,18 @@ Note: Without the `sync` flag, the above command line will perform a
 "dry run" where both `quota` and `portal` queries are conducted. It will
 indicate what Grouper updates will occur.
 
+By default, changes occur on the `figshare` stem. Execution can occur on the
+`figtest` stem with the `--grouper_figtest` boolean flag.
+
+There are additional options to run a subset of portals or organization codes.
+This is specified with the `--org_codes` or `--groups` options, which accepts
+comma-separated inputs. For this to work, the `--portal` must be set. If
+`--quota` is specified, those users are added to the appropriate group.
+Note that with this option, it will create and populate a `figtest:group_active`
+group that allows for indirect membership association. There are a couple of
+interactive prompts to create the `figtest:group_active` group or provide an
+existing one to use/update.
+
 
 ### Manual Changes
 
@@ -222,6 +234,14 @@ can be overwritten on the command line:
   ```
 Note that working templates are provided in the config folder for
 [quota](config/quota_manual_template.csv) and [portal](config/portal_manual_template.csv).
+
+To disable updating the the manual CSV files, you can include the following flags:
+
+`--portal_file_noupdate --quota_file_noupdate`
+
+By default, changes occur on the `figshare` stem. Execution can occur on the
+`figtest` stem with the `--grouper_figtest` boolean flag.
+
 
 ### API Management of Grouper Groups
 
