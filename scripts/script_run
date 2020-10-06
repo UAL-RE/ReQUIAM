@@ -226,6 +226,34 @@ if __name__ == '__main__':
             df = df[df['Sub-portals'].isin(args.groups.split(','))]
             org_codes = df['Org Code'].to_list()
 
+        # Add to group_active group
+        if not args.sync:
+            log.info('dry run, not performing sync on figtest:group_active group')
+        else:
+            if vargs['org_codes'] != "(unset)" or vargs['groups'] != "(unset)":
+                ldap_queries = ldap_query.ual_ldap_queries(org_codes)
+                ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+                log.info(f" EDS size {len(ldap_members)}")
+
+                grouper_portal = figshare_group(group_name, 'group_active',
+                                                production=False)
+                log.info(f"Grouper group : {grouper_portal}")
+                gq = GrouperQuery(**grouper_dict, grouper_group=grouper_portal,
+                                  log=log)
+                log.info(f" Grouper size {len(gq.members)}")
+
+                d = delta.Delta(ldap_members=ldap_members,
+                                grouper_query_instance=gq,
+                                **delta_dict,
+                                log=log)
+
+                log.info(f'ldap and grouper have {len(d.common)} members in common')
+                log.info(f'synchronization will drop {len(d.drops)} entries from grouper group')
+                log.info(f'synchronization will add {len(d.adds)} entries to grouper group')
+
+                log.info('synchronizing ...')
+                d.synchronize()
+
         if df.empty:
             log.warning("Empty portal DataFrame. Skipping portal!")
         else:
