@@ -13,7 +13,7 @@ import argparse
 import ast
 
 from requiam import ldap_query
-from requiam import grouper_query
+from requiam.grouper_query import GrouperQuery, figshare_group
 from requiam.grouper_admin import GrouperAPI
 from requiam import delta
 from requiam import quota
@@ -246,11 +246,11 @@ if __name__ == '__main__':
                 log.info(" EDS size {}".format(len(ldap_members)))
 
                 # Grouper query
-                grouper_portal = grouper_query.figshare_group(portal, 'portal',
-                                                              production=grouper_production)
+                grouper_portal = figshare_group(portal, 'portal',
+                                                production=grouper_production)
                 log.info(f"Grouper group : {grouper_portal}")
-                gq = grouper_query.GrouperQuery(**grouper_dict,
-                                                grouper_group=grouper_portal, log=log)
+                gq = GrouperQuery(**grouper_dict, grouper_group=grouper_portal,
+                                  log=log)
                 log.info(" Grouper size {}".format(len(gq.members)))
 
                 d = delta.Delta(ldap_members=ldap_members,
@@ -303,11 +303,9 @@ if __name__ == '__main__':
             log.info(" EDS size {}".format(len(ldap_members)))
 
             # Grouper query
-            grouper_quota = grouper_query.figshare_group(q, 'quota',
-                                                         production=grouper_production)
+            grouper_quota = figshare_group(q, 'quota', production=grouper_production)
             log.info(f"Grouper group : {grouper_quota}")
-            gq = grouper_query.GrouperQuery(**grouper_dict,
-                                            grouper_group=grouper_quota)
+            gq = GrouperQuery(**grouper_dict, grouper_group=grouper_quota, log=log)
             log.info(" Grouper size {}".format(len(gq.members)))
 
             # Delta between LDAP and Grouper
@@ -349,8 +347,8 @@ if __name__ == '__main__':
             log.info(" Providing empty member list")
 
         # Note testing is only performed on figshare:test and not figtest:test
-        grouper_test = grouper_query.figshare_group('test', '')
-        gq = grouper_query.GrouperQuery(**grouper_dict, grouper_group=grouper_test, log=None)
+        grouper_test = figshare_group('test', '')
+        gq = GrouperQuery(**grouper_dict, grouper_group=grouper_test, log=log)
         log.info(" Grouper size {}".format(len(gq.members)))
 
         # Delta between LDAP and Grouper
