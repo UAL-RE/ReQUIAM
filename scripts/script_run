@@ -153,7 +153,7 @@ if __name__ == '__main__':
 
     org_codes = None  # Initialize before --org_codes or --groups
 
-    if vargs['org_codes'] and vargs['groups']:
+    if vargs['org_codes'] != "(unset)" and vargs['groups'] != "(unset)":
         log.warning("Cannot provide --org_codes and --groups")
         log.warning("Exiting")
         raise ValueError
@@ -196,12 +196,12 @@ if __name__ == '__main__':
         csv_url = config.get('global', 'csv_url')
         df = pd.read_csv(csv_url)
 
-        if args.org_codes:
+        if args.org_codes != "(unset)":
             log.info(f"Filtering for org codes : {args.org_codes}")
             org_codes = args.org_codes.split(',')
             df = df[df['Org Code'].isin(org_codes)]
 
-        if args.groups:
+        if args.groups != "(unset)":
             log.info(f"Filtering for portals/themes : {args.groups}")
             df = df[df['Sub-portals'].isin(args.groups.split(','))]
             org_codes = df['Org Code'].to_list()
@@ -281,7 +281,7 @@ if __name__ == '__main__':
 
             log.info("Working on {} quota : {} bytes".format(c, q))
 
-            group_check = ga.check_group_exists(q, 'quota')
+            group_check = ga.check_group_exists(str(q), 'quota')
             if not group_check:  # Avoid execution
                 log.warning(f"!!! Grouper quota NOT found : {q} !!!")
                 continue
@@ -290,7 +290,6 @@ if __name__ == '__main__':
 
             # LDAP query to retrieve members
             ldap_queries = quota.ual_ldap_quota_query(c, org_codes=org_codes)
-
             ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
 
             # Update based on CSV manual input files
