@@ -14,7 +14,7 @@ import ast
 
 from requiam import ldap_query
 from requiam.grouper_query import GrouperQuery, figshare_group
-from requiam.grouper_admin import GrouperAPI
+from requiam.grouper_admin import GrouperAPI, create_active_group
 from requiam import delta
 from requiam import quota
 from requiam.logger import LogClass, get_user_hostname, pandas_write_buffer
@@ -189,6 +189,23 @@ if __name__ == '__main__':
     # This is for checking whether the group exists
     grouper_production = True if not vargs['grouper_figtest'] else False
     ga = GrouperAPI(**grouper_dict, grouper_production=True, log=log)
+
+    if not args.sync:
+        log.info("dry run, not creating figtest:group_active group")
+    else:
+        if vargs['org_codes'] != "(unset)" or vargs['groups'] != "(unset)":
+            log.info("Creating figtest:group_active group")
+            log.info("PROMPT: Provide the name for group...")
+            group_name = input("PROMPT: ")
+            log.info(f"RESPONSE: {group_name}")
+
+            log.info("PROMPT: Provide the description for group...")
+            group_description = input("PROMPT: ")
+            log.info(f"RESPONSE: {group_description}")
+
+            create_active_group(group_name, grouper_dict,
+                                group_description=group_description,
+                                log=log, add=args.sync)
 
     # Perform EDS-Grouper synchronization for figshare research portals
     if args.portal:
