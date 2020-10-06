@@ -44,6 +44,7 @@ if __name__ == '__main__':
     parser.add_argument('--grouper_base_path', help='base path for Grouper API')
     parser.add_argument('--grouper_user', help='user name for Grouper login')
     parser.add_argument('--grouper_password', help='password for Grouper login')
+    parser.add_argument('--grouper_figtest', action='store_true', help='Flag to use testing stem')
     parser.add_argument('--batch_size', help='synchronization batch size')
     parser.add_argument('--batch_timeout', help='synchronization batch timeout in seconds')
     parser.add_argument('--batch_delay', help='delay between batches in seconds')
@@ -115,8 +116,9 @@ if __name__ == '__main__':
     vargs = vars(args)
     for p in ['persistent_path', 'ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
               'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
-              'batch_size', 'batch_timeout', 'batch_delay', 'portal', 'quota',
-              'portal_file', 'quota_file', 'test', 'test_reverse', 'org_codes',
+              'grouper_figtest', 'batch_size', 'batch_timeout', 'batch_delay',
+              'portal', 'quota', 'portal_file', 'quota_file',
+              'test', 'test_reverse', 'org_codes',
               'groups', 'sync_max']:
 
         if (p in vargs) and (vargs[p] is not None):
@@ -185,6 +187,7 @@ if __name__ == '__main__':
                       sync_max=int(vargs['sync_max']))
 
     # This is for checking whether the group exists
+    grouper_production = True if not vargs['grouper_figtest'] else False
     ga = GrouperAPI(**grouper_dict, grouper_production=True, log=log)
 
     # Perform EDS-Grouper synchronization for figshare research portals
@@ -243,7 +246,9 @@ if __name__ == '__main__':
                 log.info(" EDS size {}".format(len(ldap_members)))
 
                 # Grouper query
-                grouper_portal = grouper_query.figshare_group(portal, 'portal')
+                grouper_portal = grouper_query.figshare_group(portal, 'portal',
+                                                              production=grouper_production)
+                log.info(f"Grouper group : {grouper_portal}")
                 gq = grouper_query.GrouperQuery(**grouper_dict,
                                                 grouper_group=grouper_portal, log=log)
                 log.info(" Grouper size {}".format(len(gq.members)))
@@ -298,7 +303,9 @@ if __name__ == '__main__':
             log.info(" EDS size {}".format(len(ldap_members)))
 
             # Grouper query
-            grouper_quota = grouper_query.figshare_group(q, 'quota')
+            grouper_quota = grouper_query.figshare_group(q, 'quota',
+                                                         production=grouper_production)
+            log.info(f"Grouper group : {grouper_quota}")
             gq = grouper_query.GrouperQuery(**grouper_dict,
                                             grouper_group=grouper_quota)
             log.info(" Grouper size {}".format(len(gq.members)))
@@ -341,6 +348,7 @@ if __name__ == '__main__':
         if args.test_reverse:
             log.info(" Providing empty member list")
 
+        # Note testing is only performed on figshare:test and not figtest:test
         grouper_test = grouper_query.figshare_group('test', '')
         gq = grouper_query.GrouperQuery(**grouper_dict, grouper_group=grouper_test, log=None)
         log.info(" Grouper size {}".format(len(gq.members)))
