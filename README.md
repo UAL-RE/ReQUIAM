@@ -122,8 +122,8 @@ execute the following command:
 ```
 (figshare_patrons) $ export password="insert_password"
 (figshare_patrons) $ export persist_path="/path/to/persistent/storage"
-(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run \
-                       --config config/figshare.ini --persistent_path $persist_path \
+(figshare_patrons) $ python scripts/script_run --config config/figshare.ini \
+                       --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password
 ```
 
@@ -131,7 +131,7 @@ Test command-line flags (`test` and `test_reverse`) are available to test EDS
 query and Grouper synchronization (with the `sync` flag) by executing the following :
 
 ```
-(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run --test \
+(figshare_patrons) $ python scripts/script_run --test \
                        --config config/figshare.ini --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password --sync
 ```
@@ -145,7 +145,7 @@ Without the `sync` flag, the above command line will perform a
 To undo this change, use the `test_reverse` flag:
 
 ```
-(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run --test_reverse \
+(figshare_patrons) $ python scripts/script_run --test_reverse \
                        --config config/figshare.ini --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password --sync
 ```
@@ -156,8 +156,8 @@ To execute the script and update Grouper and EDS, include the `portal`, `quota`,
 and `sync` command-line flags:
 
 ```
-(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run \
-                       --config config/figshare.ini --persistent_path $persist_path \
+(figshare_patrons) $ python scripts/script_run --config config/figshare.ini \
+                       --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password \
                        --quota --portal --sync
 ```
@@ -187,8 +187,8 @@ To this end, the `user_update` script should be used. It has several features:
 Execution can be done as follows:
 
 ```
-(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/user_update \
-                       --config config/figshare.ini --persistent_path $persist_path \
+(figshare_patrons) $ python scripts/user_update --config config/figshare.ini \
+                       --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password \
                        --quota 123456 --portal testportal --netid <username> --sync
 ```
@@ -235,14 +235,14 @@ GrouperSuperAdmins and GrouperAdmins. If a group already exists, it will
 skip to the privilege assignments.  To execute the script:
 
 ```
-(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/add_grouper_groups \
-                       --config config/figshare.ini --grouper_password $password \
+(figshare_patrons) $ python scripts/add_grouper_groups --config config/figshare.ini \
+                       --persistent_path $persist_path --grouper_password $password \
                        --main_themes --sub_portals --quota --add
 ```
 
 The `main_themes`, `sub_portals` and `quota` flags will conduct checks and
 create those sets of groups.  Without the `add` flag, it is a dry run.  By
-default this adjusts a testing Grouper stem `figtest`.  Set the `production`
+default this works on a testing Grouper stem `figtest`.  Set the `production`
 flag to implement on the production stem, `figshare`.
 
 ## Versioning
