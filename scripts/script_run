@@ -194,18 +194,27 @@ if __name__ == '__main__':
         log.info("dry run, not creating figtest:group_active group")
     else:
         if vargs['org_codes'] != "(unset)" or vargs['groups'] != "(unset)":
-            log.info("Creating figtest:group_active group")
-            log.info("PROMPT: Provide the name for group...")
-            group_name = input("PROMPT: ")
-            log.info(f"RESPONSE: {group_name}")
+            log.info("PROMPT: Do you want to create a new group_active group?...")
+            group_prompt = input("PROMPT: Answer Yes/yes. Anything else results in skip")
+            log.info(f"RESPONSE: {group_prompt}")
 
-            log.info("PROMPT: Provide the description for group...")
-            group_description = input("PROMPT: ")
-            log.info(f"RESPONSE: {group_description}")
+            if not group_prompt.lower() == 'yes':
+                log.info("PROMPT: What is the existing group name to user?...")
+                group_name = input("PROMPT: ")
+                log.info(f"RESPONSE: {group_name}")
+            else:
+                log.info("Creating figtest:group_active group")
+                log.info("PROMPT: Provide the name for group...")
+                group_name = input("PROMPT: ")
+                log.info(f"RESPONSE: {group_name}")
 
-            create_active_group(group_name, grouper_dict,
-                                group_description=group_description,
-                                log=log, add=args.sync)
+                log.info("PROMPT: Provide the description for group...")
+                group_description = input("PROMPT: ")
+                log.info(f"RESPONSE: {group_description}")
+
+                create_active_group(group_name, grouper_dict,
+                                    group_description=group_description,
+                                    log=log, add=args.sync)
 
     # Perform EDS-Grouper synchronization for figshare research portals
     if args.portal:
