@@ -14,7 +14,7 @@ from requiam.grouper_query import grouper_delta_user
 from requiam.logger import LogClass, get_user_hostname
 from requiam import TimerClass
 from requiam.manual_override import ManualOverride, get_current_groups
-from requiam.grouper_admin import GrouperAPI
+from requiam.grouper_admin import GrouperAPI, create_active_group
 
 # Version and branch info
 from requiam import __version__
@@ -50,6 +50,10 @@ if __name__ == '__main__':
     parser.add_argument('--quota', help='Specifies quota change')
     parser.add_argument('--portal_file', help='filename for manual-override portal file')
     parser.add_argument('--quota_file', help='filename for manual-override quota file')
+    parser.add_argument('--portal_file_noupdate', action='store_true',
+                        help='Boolean to flag not updating  manual-override portal file')
+    parser.add_argument('--quota_file_noupdate', action='store_true',
+                        help='Boolean to flag not updating manual-override quota file')
     parser.add_argument('--sync', action='store_true', help='perform synchronization')
     parser.add_argument('--sync_max', help='maximum membership delta to allow when synchronizing')
     parser.add_argument('--active_remove', action='store_true', help='Remove membership in figshare:active group')
@@ -103,7 +107,8 @@ if __name__ == '__main__':
     for p in ['netid', 'persistent_path', 'ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
               'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
               'grouper_figtest', 'batch_size', 'batch_timeout', 'batch_delay',
-              'portal', 'quota', 'portal_file', 'quota_file', 'sync_max', 'active_remove']:
+              'portal', 'quota', 'portal_file', 'quota_file',
+              'portal_file_noupdate', 'quota_file_noupdate', 'sync_max', 'active_remove']:
 
         if (p in vargs) and (vargs[p] is not None):
             vargs[p] = vargs[p]
@@ -272,17 +277,34 @@ if __name__ == '__main__':
     main_stem = figshare_stem('', production=grouper_production)
     log.info(f"Main stem: {main_stem}")
 
+    log.info("STAGE: ACTIVE")
     # figshare:active or figtest:active update
     if not vargs['active_remove']:
         if len(current_dict['not_active']['netid']) > 0:
-            log.info(f"Adding to {main_stem}:active group")
+            log.info("Creating figtest:group_active group")
 
-            d = grouper_delta_user('active', '',
-                                   current_dict['not_active']['netid'],
-                                   set(current_dict['not_active']['uaid']),
-                                   'add', grouper_dict, delta_dict,
-                                   sync=args.sync, log=log,
-                                   production=grouper_production)
+            if not args.sync:
+                log.info("dry run, not creating active_group group")
+            else:
+                log.info("PROMPT: Provide the name for group...")
+                group_name = input("PROMPT: ")
+                log.info(f"RESPONSE: {group_name}")
+
+                log.info("PROMPT: Provide the description for group...")
+                group_description = input("PROMPT: ")
+                log.info(f"RESPONSE: {group_description}")
+
+                create_active_group(group_name, grouper_dict,
+                                    group_description=group_description,
+                                    log=log, add=args.sync)
+
+                d = grouper_delta_user(group_name, 'group_active',
+                                       clean_netid_list, clean_uaid_list,
+                                       'add', grouper_dict, delta_dict,
+                                       sync=args.sync, log=log,
+                                       production=grouper_production)
+
+                log.warning("!!! Group will still need to be added indirectly to active group !!!")
         else:
             log.info(f"All users are member of {main_stem}:active. No need to add")
     else:
@@ -300,6 +322,7 @@ if __name__ == '__main__':
 
     # Portal update
     if vargs['portal'] != '(unset)':
+        log.info("STAGE: PORTAL")
         if len(current_dict['not_portal']['netid']) == 0:
             log.warning(f"All users are member of {main_stem}:portal:{vargs['portal']}. No need to add")
         else:
@@ -324,10 +347,14 @@ if __name__ == '__main__':
             if vargs['portal'] != 'root':
                 log.info(f"Adding to {main_stem}:portal:{vargs['portal']}")
 
+                in_mo = None if vargs['portal_file_noupdate'] else mo
+                if isinstance(in_mo, type(None)):
+                    log.warning("--portal_file_noupdate: Not updating portal file")
+
                 d = grouper_delta_user(vargs['portal'], 'portal',
                                        current_dict['not_portal']['netid'],
                                        current_dict['not_portal']['uaid'],
-                                       'add', grouper_dict, delta_dict, mo=mo,
+                                       'add', grouper_dict, delta_dict, mo=in_mo,
                                        sync=args.sync, log=log,
                                        production=grouper_production)
             else:
@@ -335,9 +362,12 @@ if __name__ == '__main__':
                 if args.sync:
                     # Update of df only needed since there's not root portal to add too
                     if grouper_production:
-                        mo.update_dataframe(current_dict['not_portal']['netid'],
-                                            current_dict['not_portal']['uaid'],
-                                            vargs['portal'], 'portal')
+                        if not vargs['portal_file_noupdate']:
+                            mo.update_dataframe(current_dict['not_portal']['netid'],
+                                                current_dict['not_portal']['uaid'],
+                                                vargs['portal'], 'portal')
+                        else:
+                            log.warning("--portal_file_noupdate: Not updating portal file")
                     else:
                         log.info("Working with figtest stem. Not updating")
                 else:
@@ -345,6 +375,7 @@ if __name__ == '__main__':
 
     # Quota update
     if vargs['quota'] != '(unset)':
+        log.info("STAGE: QUOTA")
         if len(current_dict['not_quota']['netid']) == 0:
             log.warning(f"All users are member of {main_stem}:quota:{vargs['quota']}. No need to add")
         else:
@@ -369,20 +400,27 @@ if __name__ == '__main__':
             if vargs['quota'] != 'root':
                 log.info(f"Adding to {main_stem}:quota:{vargs['quota']}")
 
+                in_mo = None if vargs['quota_file_noupdate'] else mo
+                if isinstance(in_mo, type(None)):
+                    log.warning("--quota_file_noupdate: Not updating quota file")
+
                 d = grouper_delta_user(vargs['quota'], 'quota',
                                        current_dict['not_quota']['netid'],
                                        current_dict['not_quota']['uaid'],
                                        'add', grouper_dict, delta_dict,
-                                       mo=mo, sync=args.sync, log=log,
+                                       mo=in_mo, sync=args.sync, log=log,
                                        production=grouper_production)
             else:
                 # Remove entry from manual CSV file for 'root' case
                 if args.sync:
                     # Update of df only needed since there's not root portal to add too
                     if grouper_production:
-                        mo.update_dataframe(current_dict['not_quota']['netid'],
-                                            current_dict['not_quota']['uaid'],
-                                            vargs['quota'], 'quota')
+                        if not vargs['quota_file_noupdate']:
+                            mo.update_dataframe(current_dict['not_quota']['netid'],
+                                                current_dict['not_quota']['uaid'],
+                                                vargs['quota'], 'quota')
+                        else:
+                            log.warning("--quota_file_noupdate: Not updating quota file")
                     else:
                         log.info("Working with figtest stem. Not updating")
                 else:
