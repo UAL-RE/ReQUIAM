@@ -48,7 +48,11 @@ def ual_ldap_quota_query(ual_class, org_codes=None):
                      f'(! ({ual_dcc}) ) )'
 
     if ual_class == 'ugrad':
-        ldap_query = f'({ual_ugrads})'
+        ldap_query = f'( & ({ual_ugrads}) ' + \
+                     f'(! ({ual_faculty}) ) ' + \
+                     f'(! ({ual_staff}) ) ' + \
+                     f'(! ({ual_dcc}) )' + \
+                     f'(! ({ual_grads}) ) )'
 
     # Filter by org codes
     if not isinstance(org_codes, type(None)):
