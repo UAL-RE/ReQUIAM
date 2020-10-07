@@ -42,7 +42,10 @@ def ual_ldap_quota_query(ual_class, org_codes=None):
                      f'({ual_dcc}) )'
 
     if ual_class == 'grad':
-        ldap_query = f'({ual_grads})'
+        ldap_query = f'( & ({ual_grads}) ' + \
+                     f'(! ({ual_faculty}) ) ' + \
+                     f'(! ({ual_staff}) ) ' + \
+                     f'(! ({ual_dcc}) ) )'
 
     if ual_class == 'ugrad':
         ldap_query = f'({ual_ugrads})'
