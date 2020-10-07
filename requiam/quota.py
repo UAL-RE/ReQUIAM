@@ -1,7 +1,7 @@
 from .ldap_query import ual_grouper_base
 
 
-def ual_ldap_quota_query(ual_class):
+def ual_ldap_quota_query(ual_class, org_codes=None):
     """
     Purpose:
       Construct RFC 4512-compatible LDAP query to search for those within
@@ -20,6 +20,8 @@ def ual_ldap_quota_query(ual_class):
       'grad'    (for graduate students)
       'ugrad'   (for undergraduate students)
 
+    :param org_codes: List of org codes to require in search. Default: None
+
     :return ldap_query: list containing a single query string
     """
 
@@ -28,15 +30,34 @@ def ual_ldap_quota_query(ual_class):
         print("Exiting!")
         return
 
+    ual_faculty = ual_grouper_base('ual-faculty')
+    ual_staff = ual_grouper_base('ual-staff')
+    ual_dcc = ual_grouper_base('ual-dcc')
+    ual_grads = ual_grouper_base('ual-grads')
+    ual_ugrads = ual_grouper_base('ual-ugrads')
+
     if ual_class == 'faculty':
-        ldap_query = '( | ({}) '.format(ual_grouper_base('ual-faculty')) + \
-                     '({}) '.format(ual_grouper_base('ual-staff')) + \
-                     '({}) )'.format(ual_grouper_base('ual-dcc'))
+        ldap_query = f'( | ({ual_faculty}) ' + \
+                     f'({ual_staff}) ' + \
+                     f'({ual_dcc}) )'
 
     if ual_class == 'grad':
-        ldap_query = '({})'.format(ual_grouper_base('ual-grads'))
+        ldap_query = f'( & ({ual_grads}) ' + \
+                     f'(! ({ual_faculty}) ) ' + \
+                     f'(! ({ual_staff}) ) ' + \
+                     f'(! ({ual_dcc}) ) )'
 
     if ual_class == 'ugrad':
-        ldap_query = '({})'.format(ual_grouper_base('ual-ugrads'))
+        ldap_query = f'( & ({ual_ugrads}) ' + \
+                     f'(! ({ual_faculty}) ) ' + \
+                     f'(! ({ual_staff}) ) ' + \
+                     f'(! ({ual_dcc}) )' + \
+                     f'(! ({ual_grads}) ) )'
 
-    return [ldap_query]
+    # Filter by org codes
+    if not isinstance(org_codes, type(None)):
+        ldap_queries = [f'(& (employeePrimaryDept={oc}) {ldap_query} )' for oc in org_codes]
+
+        return ldap_queries
+    else:
+        return [ldap_query]

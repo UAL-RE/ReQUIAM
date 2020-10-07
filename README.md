@@ -99,7 +99,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.12.2`.
+You should see that the version is `0.13.0`.
 
 ### Configuration Settings
 
@@ -122,8 +122,8 @@ execute the following command:
 ```
 (figshare_patrons) $ export password="insert_password"
 (figshare_patrons) $ export persist_path="/path/to/persistent/storage"
-(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run \
-                       --config config/figshare.ini --persistent_path $persist_path \
+(figshare_patrons) $ python scripts/script_run --config config/figshare.ini \
+                       --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password
 ```
 
@@ -131,7 +131,7 @@ Test command-line flags (`test` and `test_reverse`) are available to test EDS
 query and Grouper synchronization (with the `sync` flag) by executing the following :
 
 ```
-(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run --test \
+(figshare_patrons) $ python scripts/script_run --test \
                        --config config/figshare.ini --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password --sync
 ```
@@ -145,7 +145,7 @@ Without the `sync` flag, the above command line will perform a
 To undo this change, use the `test_reverse` flag:
 
 ```
-(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run --test_reverse \
+(figshare_patrons) $ python scripts/script_run --test_reverse \
                        --config config/figshare.ini --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password --sync
 ```
@@ -156,8 +156,8 @@ To execute the script and update Grouper and EDS, include the `portal`, `quota`,
 and `sync` command-line flags:
 
 ```
-(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/script_run \
-                       --config config/figshare.ini --persistent_path $persist_path \
+(figshare_patrons) $ python scripts/script_run --config config/figshare.ini \
+                       --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password \
                        --quota --portal --sync
 ```
@@ -165,6 +165,18 @@ and `sync` command-line flags:
 Note: Without the `sync` flag, the above command line will perform a
 "dry run" where both `quota` and `portal` queries are conducted. It will
 indicate what Grouper updates will occur.
+
+By default, changes occur on the `figshare` stem. Execution can occur on the
+`figtest` stem with the `--grouper_figtest` boolean flag.
+
+There are additional options to run a subset of portals or organization codes.
+This is specified with the `--org_codes` or `--groups` options, which accepts
+comma-separated inputs. For this to work, the `--portal` must be set. If
+`--quota` is specified, those users are added to the appropriate group.
+Note that with this option, it will create and populate a `figtest:group_active`
+group that allows for indirect membership association. There are a couple of
+interactive prompts to create the `figtest:group_active` group or provide an
+existing one to use/update.
 
 
 ### Manual Changes
@@ -187,8 +199,8 @@ To this end, the `user_update` script should be used. It has several features:
 Execution can be done as follows:
 
 ```
-(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/user_update \
-                       --config config/figshare.ini --persistent_path $persist_path \
+(figshare_patrons) $ python scripts/user_update --config config/figshare.ini \
+                       --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password \
                        --quota 123456 --portal testportal --netid <username> --sync
 ```
@@ -223,6 +235,14 @@ can be overwritten on the command line:
 Note that working templates are provided in the config folder for
 [quota](config/quota_manual_template.csv) and [portal](config/portal_manual_template.csv).
 
+To disable updating the the manual CSV files, you can include the following flags:
+
+`--portal_file_noupdate --quota_file_noupdate`
+
+By default, changes occur on the `figshare` stem. Execution can occur on the
+`figtest` stem with the `--grouper_figtest` boolean flag.
+
+
 ### API Management of Grouper Groups
 
 The `add_grouper_groups` currently create and assign privileges to groups
@@ -235,14 +255,14 @@ GrouperSuperAdmins and GrouperAdmins. If a group already exists, it will
 skip to the privilege assignments.  To execute the script:
 
 ```
-(figshare_patrons) $ python /path/to/parent/folder/ReQUIAM/scripts/add_grouper_groups \
-                       --config config/figshare.ini --grouper_password $password \
+(figshare_patrons) $ python scripts/add_grouper_groups --config config/figshare.ini \
+                       --persistent_path $persist_path --grouper_password $password \
                        --main_themes --sub_portals --quota --add
 ```
 
 The `main_themes`, `sub_portals` and `quota` flags will conduct checks and
 create those sets of groups.  Without the `add` flag, it is a dry run.  By
-default this adjusts a testing Grouper stem `figtest`.  Set the `production`
+default this works on a testing Grouper stem `figtest`.  Set the `production`
 flag to implement on the production stem, `figshare`.
 
 ## Versioning
@@ -256,6 +276,17 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
+v0.14.0:
+ * Enhancements to `script_run` script:
+   - Option to run with subset of org codes or portal names #65
+   - Option to switch between production and testing Grouper stems for #68
+   - Disable adding undergrads to 100MB quota #69
+   - Bug: Remove extraneous messages from `ManualOverride` #77
+ * Enhancements to `user_update` script:
+   - Option to create indirect membership for active #72
+   - Option to not update manual CSV files #76
+ * Bug: handling of multi-classification members for `quota` #78
+
 v0.12.0 - 0.12.2:
  * Grouper API tool, `GrouperAPI` #42, #60
  * Grouper group creation with `add_grouper_group` script #42, #58
@@ -264,7 +295,7 @@ v0.12.0 - 0.12.2:
  * Minor: buffering of `pandas` DataFrame for `script_run` #64
  * Minor: Code refactoring in `grouper_query`, `ManualOverride` #62, #63
  * Minor: Perform checks to ensure that Grouper groups exist before API calls #66
- * Minor: Option to switch between production and testing Grouper stems #73
+ * Minor: Option to switch between production and testing Grouper stems for `user_update` #73
 
 v0.11.0 - 0.11.3:
  * Include manual override tool, `ManualOverride` #31, #47
