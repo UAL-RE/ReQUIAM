@@ -30,16 +30,22 @@ def ual_ldap_quota_query(ual_class, org_codes=None):
         print("Exiting!")
         return
 
+    ual_faculty = ual_grouper_base('ual-faculty')
+    ual_staff = ual_grouper_base('ual-staff')
+    ual_dcc = ual_grouper_base('ual-dcc')
+    ual_grads = ual_grouper_base('ual-grads')
+    ual_ugrads = ual_grouper_base('ual-ugrads')
+
     if ual_class == 'faculty':
-        ldap_query = '( | ({}) '.format(ual_grouper_base('ual-faculty')) + \
-                     '({}) '.format(ual_grouper_base('ual-staff')) + \
-                     '({}) )'.format(ual_grouper_base('ual-dcc'))
+        ldap_query = f'( | ({ual_faculty}) ' + \
+                     f'({ual_staff}) ' + \
+                     f'({ual_dcc}) )'
 
     if ual_class == 'grad':
-        ldap_query = '({})'.format(ual_grouper_base('ual-grads'))
+        ldap_query = f'({ual_grads})'
 
     if ual_class == 'ugrad':
-        ldap_query = '({})'.format(ual_grouper_base('ual-ugrads'))
+        ldap_query = f'({ual_ugrads})'
 
     # Filter by org codes
     if not isinstance(org_codes, type(None)):
