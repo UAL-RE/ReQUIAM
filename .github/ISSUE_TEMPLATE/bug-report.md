@@ -11,9 +11,9 @@ assignees: ''
 A clear and concise description of what the bug is.
 
 **Version information (please complete the following, default in brackets): (REQUIRED)**
- - ReQUIAM version: [e.g. `0.11.2`] 
- - ReQUIAM branch info: [e.g., `hotfix/v0.11.2`]
- - `pandas` version: [e.g., 0.25.3]
+ - ReQUIAM version: [e.g. `0.14.0`]
+ - ReQUIAM branch info: [e.g., `master`]
+ - `pandas` version: [e.g., 1.1.0]
  - `requests` version: [e.g., 2.22.0]
  - `numpy` version: [e.g., 1.18.0]
 
