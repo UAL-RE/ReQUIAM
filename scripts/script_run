@@ -218,6 +218,7 @@ if __name__ == '__main__':
 
     # Perform EDS-Grouper synchronization for figshare research portals
     if args.portal:
+        log.info("STAGE: PORTAL")
         portal_timer = TimerClass()
         portal_timer._start()
 
@@ -334,6 +335,7 @@ if __name__ == '__main__':
 
     # Perform EDS-Grouper synchronization for figshare quota
     if args.quota:
+        log.info("STAGE: QUOTA")
         quota_timer = TimerClass()
         quota_timer._start()
 
@@ -397,6 +399,7 @@ if __name__ == '__main__':
 
     # Perform EDS-Grouper synchronization for simple test
     if args.test or args.test_reverse:
+        log.info("STAGE: TEST")
         test_timer = TimerClass()
         test_timer._start()
 
