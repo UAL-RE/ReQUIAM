@@ -188,8 +188,8 @@ def update_entries(ldap_set, netid, uaid, action, log=None):
       Add/remove entries from a set
 
     :param ldap_set: set of uaid values
-    :param netid: User netid
-    :param uaid: User uaid
+    :param netid: list. User netid
+    :param uaid: set. User uaid
     :param action: str
       Action to perform. Either 'remove' or 'add'
     :param log: LogClass object
@@ -205,17 +205,23 @@ def update_entries(ldap_set, netid, uaid, action, log=None):
     new_ldap_set = set(ldap_set)
 
     if action == 'remove':
-        if isinstance(netid, list):
-            log.info(f"Removing : {list(netid)}")
-        if isinstance(netid, str):
-            log.info(f"Removing : {netid}")
+        remove_uaid = ldap_set & uaid
+        if len(remove_uaid) > 0:
+            remove_netid = [netid[i] for i in range(len(netid)) if
+                            list(uaid)[i] in remove_uaid]
+            log.info(f"Removing : {', '.join(remove_netid)}")
+        else:
+            log.info("Nothing is removed")
         new_ldap_set = ldap_set - uaid
 
     if action == 'add':
-        if isinstance(netid, list):
-            log.info(f"Adding : {list(netid)}")
-        if isinstance(netid, str):
-            log.info(f"Adding : {netid}")
+        new_uaid = uaid - ldap_set
+        if len(new_uaid) > 0:
+            new_netid = [netid[i] for i in range(len(netid)) if
+                         list(uaid)[i] in new_uaid]
+            log.info(f"Adding : {', '.join(new_netid)}")
+        else:
+            log.info(f"Nothing is added")
         new_ldap_set = set.union(ldap_set, uaid)
 
     return new_ldap_set

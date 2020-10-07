@@ -13,8 +13,8 @@ import argparse
 import ast
 
 from requiam import ldap_query
-from requiam import grouper_query
-from requiam.grouper_admin import GrouperAPI
+from requiam.grouper_query import GrouperQuery, figshare_group
+from requiam.grouper_admin import GrouperAPI, create_active_group
 from requiam import delta
 from requiam import quota
 from requiam.logger import LogClass, get_user_hostname, pandas_write_buffer
@@ -44,6 +44,7 @@ if __name__ == '__main__':
     parser.add_argument('--grouper_base_path', help='base path for Grouper API')
     parser.add_argument('--grouper_user', help='user name for Grouper login')
     parser.add_argument('--grouper_password', help='password for Grouper login')
+    parser.add_argument('--grouper_figtest', action='store_true', help='Flag to use testing stem')
     parser.add_argument('--batch_size', help='synchronization batch size')
     parser.add_argument('--batch_timeout', help='synchronization batch timeout in seconds')
     parser.add_argument('--batch_delay', help='delay between batches in seconds')
@@ -51,6 +52,12 @@ if __name__ == '__main__':
     parser.add_argument('--quota', action='store_true', help='perform quota queries')
     parser.add_argument('--test', action='store_true', help='perform test query')
     parser.add_argument('--test_reverse', action='store_true', help='reverse test query (i.e., remove from Grouper)')
+    parser.add_argument('--org_codes',
+                        help='''List of org codes (comma separated) to implement.
+                                Only set org_codes or groups. Not both''')
+    parser.add_argument('--groups',
+                        help='''List of portals/themes (comma separated) to implement.
+                                Only set org_codes or groups. Not both''')
     parser.add_argument('--portal_file', help='filename for manual-override portal file')
     parser.add_argument('--quota_file', help='filename for manual-override quota file')
     parser.add_argument('--sync', action='store_true', help='perform synchronization')
@@ -109,8 +116,10 @@ if __name__ == '__main__':
     vargs = vars(args)
     for p in ['persistent_path', 'ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
               'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
-              'batch_size', 'batch_timeout', 'batch_delay', 'portal', 'quota',
-              'portal_file', 'quota_file', 'test', 'test_reverse', 'sync_max']:
+              'grouper_figtest', 'batch_size', 'batch_timeout', 'batch_delay',
+              'portal', 'quota', 'portal_file', 'quota_file',
+              'test', 'test_reverse', 'org_codes',
+              'groups', 'sync_max']:
 
         if (p in vargs) and (vargs[p] is not None):
             vargs[p] = vargs[p]
@@ -139,8 +148,17 @@ if __name__ == '__main__':
         log.warning("Exiting")
         raise ValueError
 
+    log.info('org_codes = %s', args.org_codes)
+    log.info('   groups = %s', args.groups)
     log.info('     sync = %s', args.sync)
     log.info('    debug = %s', args.debug)
+
+    org_codes = None  # Initialize before --org_codes or --groups
+
+    if vargs['org_codes'] != "(unset)" and vargs['groups'] != "(unset)":
+        log.warning("Cannot provide --org_codes and --groups")
+        log.warning("Exiting")
+        raise ValueError
 
     try:
         mo = manual_override.ManualOverride(vargs['portal_file'], vargs['quota_file'],
@@ -169,10 +187,38 @@ if __name__ == '__main__':
                       sync_max=int(vargs['sync_max']))
 
     # This is for checking whether the group exists
+    grouper_production = True if not vargs['grouper_figtest'] else False
     ga = GrouperAPI(**grouper_dict, grouper_production=True, log=log)
+
+    if not args.sync:
+        log.info("dry run, not creating figtest:group_active group")
+    else:
+        if vargs['org_codes'] != "(unset)" or vargs['groups'] != "(unset)":
+            log.info("PROMPT: Do you want to create a new group_active group?...")
+            group_prompt = input("PROMPT: Answer Yes/yes. Anything else results in skip")
+            log.info(f"RESPONSE: {group_prompt}")
+
+            if not group_prompt.lower() == 'yes':
+                log.info("PROMPT: What is the existing group name to user?...")
+                group_name = input("PROMPT: ")
+                log.info(f"RESPONSE: {group_name}")
+            else:
+                log.info("Creating figtest:group_active group")
+                log.info("PROMPT: Provide the name for group...")
+                group_name = input("PROMPT: ")
+                log.info(f"RESPONSE: {group_name}")
+
+                log.info("PROMPT: Provide the description for group...")
+                group_description = input("PROMPT: ")
+                log.info(f"RESPONSE: {group_description}")
+
+                create_active_group(group_name, grouper_dict,
+                                    group_description=group_description,
+                                    log=log, add=args.sync)
 
     # Perform EDS-Grouper synchronization for figshare research portals
     if args.portal:
+        log.info("STAGE: PORTAL")
         portal_timer = TimerClass()
         portal_timer._start()
 
@@ -180,17 +226,59 @@ if __name__ == '__main__':
         csv_url = config.get('global', 'csv_url')
         df = pd.read_csv(csv_url)
 
-        unique_portals = df['Sub-portals'].unique()
-        unique_portals_name = df['Research Themes'].unique()
+        if args.org_codes != "(unset)":
+            log.info(f"Filtering for org codes : {args.org_codes}")
+            org_codes = args.org_codes.split(',')
+            df = df[df['Org Code'].isin(org_codes)]
 
-        # Loop over sub-portals
-        for portal, portal_name in zip(unique_portals, unique_portals_name):
-            log.info("Working on {} ({}) portal".format(portal_name, portal))
+        if args.groups != "(unset)":
+            log.info(f"Filtering for portals/themes : {args.groups}")
+            df = df[df['Sub-portals'].isin(args.groups.split(','))]
+            org_codes = df['Org Code'].to_list()
 
-            group_check = ga.check_group_exists(portal, 'portal')
-            if not group_check:
-                log.warning(f"!!! Grouper portal NOT found : {portal} !!!")
-            else:
+        # Add to group_active group
+        if not args.sync:
+            log.info('dry run, not performing sync on figtest:group_active group')
+        else:
+            if vargs['org_codes'] != "(unset)" or vargs['groups'] != "(unset)":
+                ldap_queries = ldap_query.ual_ldap_queries(org_codes)
+                ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+                log.info(f" EDS size {len(ldap_members)}")
+
+                grouper_portal = figshare_group(group_name, 'group_active',
+                                                production=False)
+                log.info(f"Grouper group : {grouper_portal}")
+                gq = GrouperQuery(**grouper_dict, grouper_group=grouper_portal,
+                                  log=log)
+                log.info(f" Grouper size {len(gq.members)}")
+
+                d = delta.Delta(ldap_members=ldap_members,
+                                grouper_query_instance=gq,
+                                **delta_dict,
+                                log=log)
+
+                log.info(f'ldap and grouper have {len(d.common)} members in common')
+                log.info(f'synchronization will drop {len(d.drops)} entries from grouper group')
+                log.info(f'synchronization will add {len(d.adds)} entries to grouper group')
+
+                log.info('synchronizing ...')
+                d.synchronize()
+
+        if df.empty:
+            log.warning("Empty portal DataFrame. Skipping portal!")
+        else:
+            unique_portals = df['Sub-portals'].unique()
+            unique_portals_name = df['Research Themes'].unique()
+
+            # Loop over sub-portals
+            for portal, portal_name in zip(unique_portals, unique_portals_name):
+                log.info("Working on {} ({}) portal".format(portal_name, portal))
+
+                group_check = ga.check_group_exists(portal, 'portal')
+                if not group_check:  # Avoid execution
+                    log.warning(f"!!! Grouper portal NOT found : {portal} !!!")
+                    continue
+
                 log.info(f"Grouper portal exists : {portal}")
 
                 df_sub = df.loc[df['Sub-portals'] == portal]
@@ -206,6 +294,7 @@ if __name__ == '__main__':
                 ldap_queries = ldap_query.ual_ldap_queries(org_code_list)
 
                 ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+                log.info(f"EDS before {len(ldap_members)}")
 
                 # Update based on CSV manual input files
                 if mo_status:
@@ -213,10 +302,18 @@ if __name__ == '__main__':
                 log.info(" EDS size {}".format(len(ldap_members)))
 
                 # Grouper query
-                grouper_portal = grouper_query.figshare_group(portal, 'portal')
-                gq = grouper_query.GrouperQuery(**grouper_dict,
-                                                grouper_group=grouper_portal, log=log)
+                grouper_portal = figshare_group(portal, 'portal',
+                                                production=grouper_production)
+                log.info(f"Grouper group : {grouper_portal}")
+                gq = GrouperQuery(**grouper_dict, grouper_group=grouper_portal,
+                                  log=log)
                 log.info(" Grouper size {}".format(len(gq.members)))
+
+                # For --org_codes or --groups, only add users
+                if not isinstance(org_codes, type(None)):
+                    log.info("Special mode with --org_codes --groups. Adding users only")
+                    # Combine grouper members with new ldap members
+                    ldap_members = set.union(gq.members, ldap_members)
 
                 d = delta.Delta(ldap_members=ldap_members,
                                 grouper_query_instance=gq,
@@ -238,6 +335,7 @@ if __name__ == '__main__':
 
     # Perform EDS-Grouper synchronization for figshare quota
     if args.quota:
+        log.info("STAGE: QUOTA")
         quota_timer = TimerClass()
         quota_timer._start()
 
@@ -245,51 +343,63 @@ if __name__ == '__main__':
         quota_class = ast.literal_eval(config['global']['quota_class'])
 
         for q, c in zip(quota_list, quota_class):
+            if 'ugrad' in c:
+                log.info(f"Quota execution not required for {c} group. Skipping...")
+                continue
+
             log.info("Working on {} quota : {} bytes".format(c, q))
 
-            group_check = ga.check_group_exists(q, 'quota')
-            if not group_check:
+            group_check = ga.check_group_exists(str(q), 'quota')
+            if not group_check:  # Avoid execution
                 log.warning(f"!!! Grouper quota NOT found : {q} !!!")
+                continue
+
+            log.info(f"Grouper quota exists : {q}")
+
+            # LDAP query to retrieve members
+            ldap_queries = quota.ual_ldap_quota_query(c, org_codes=org_codes)
+            ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+            log.info(f"EDS before {len(ldap_members)}")
+
+            # Update based on CSV manual input files
+            if mo_status:
+                ldap_members = mo.identify_changes(ldap_members, q, 'quota')
+            log.info(" EDS size {}".format(len(ldap_members)))
+
+            # Grouper query
+            grouper_quota = figshare_group(q, 'quota', production=grouper_production)
+            log.info(f"Grouper group : {grouper_quota}")
+            gq = GrouperQuery(**grouper_dict, grouper_group=grouper_quota, log=log)
+            log.info(" Grouper size {}".format(len(gq.members)))
+
+            # For --org_codes or --groups, only add users
+            if not isinstance(org_codes, type(None)):
+                log.info("Special mode with --org_codes --groups. Adding users only")
+                # Combine grouper members with new ldap members
+                ldap_members = set.union(gq.members, ldap_members)
+
+            # Delta between LDAP and Grouper
+            d = delta.Delta(ldap_members=ldap_members,
+                            grouper_query_instance=gq,
+                            **delta_dict,
+                            log=log)
+
+            log.info('ldap and grouper have {} members in common'.format(len(d.common)))
+            log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+            log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+
+            if args.sync:
+                log.info('synchronizing ...')
+                d.synchronize()
             else:
-                log.info(f"Grouper quota exists : {q}")
-
-                # LDAP query to retrieve members
-                ldap_queries = quota.ual_ldap_quota_query(c)
-
-                ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
-
-                # Update based on CSV manual input files
-                if mo_status:
-                    ldap_members = mo.identify_changes(ldap_members, q, 'quota')
-                log.info(" EDS size {}".format(len(ldap_members)))
-
-                # Grouper query
-                grouper_quota = grouper_query.figshare_group(q, 'quota')
-                gq = grouper_query.GrouperQuery(**grouper_dict,
-                                                grouper_group=grouper_quota)
-                log.info(" Grouper size {}".format(len(gq.members)))
-
-                # Delta between LDAP and Grouper
-                d = delta.Delta(ldap_members=ldap_members,
-                                grouper_query_instance=gq,
-                                **delta_dict,
-                                log=log)
-
-                log.info('ldap and grouper have {} members in common'.format(len(d.common)))
-                log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
-                log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
-
-                if args.sync:
-                    log.info('synchronizing ...')
-                    d.synchronize()
-                else:
-                    log.info('dry run, not performing synchronization')
+                log.info('dry run, not performing synchronization')
 
         quota_timer._stop()
         log.info("QUOTA : "+quota_timer.format)
 
     # Perform EDS-Grouper synchronization for simple test
     if args.test or args.test_reverse:
+        log.info("STAGE: TEST")
         test_timer = TimerClass()
         test_timer._start()
 
@@ -307,8 +417,9 @@ if __name__ == '__main__':
         if args.test_reverse:
             log.info(" Providing empty member list")
 
-        grouper_test = grouper_query.figshare_group('test', '')
-        gq = grouper_query.GrouperQuery(**grouper_dict, grouper_group=grouper_test, log=None)
+        # Note testing is only performed on figshare:test and not figtest:test
+        grouper_test = figshare_group('test', '')
+        gq = GrouperQuery(**grouper_dict, grouper_group=grouper_test, log=log)
         log.info(" Grouper size {}".format(len(gq.members)))
 
         # Delta between LDAP and Grouper

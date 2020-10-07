@@ -2,10 +2,17 @@ from os.path import dirname, join
 import requests
 import pandas as pd
 
+from requests.exceptions import HTTPError
+
 from .commons import figshare_stem
 from .grouper_query import figshare_group
 
 from .logger import log_stdout
+
+# Administrative groups
+superadmins = figshare_group('GrouperSuperAdmins', '', production=True)
+admins = figshare_group('GrouperAdmins', '', production=True)
+managers = figshare_group('GrouperManagers', '', production=True)
 
 
 class GrouperAPI:
@@ -45,7 +52,8 @@ class GrouperAPI:
 
     get_group_list(group_type)
       Retrieve list of groups in a Grouper stem
-      group_type must be 'portal', 'quota', 'test' or ''
+      group_type must be 'portal', 'quota', 'test', 'group_active' or ''
+        Note: Some of these groups (e.g., group_active does not exists for production=True)
 
       See: https://spaces.at.internet2.edu/display/Grouper/Get+Groups
         but with a different implementation using the stem find
@@ -59,14 +67,14 @@ class GrouperAPI:
 
     check_group_exists(group, group_type)
       Check whether a Grouper group exists within a Grouper stem
-      group_type must be 'portal', 'quota', 'test' or ''
+      group_type must be 'portal', 'quota', 'test', 'group_active' or ''
       group is simply the group name
 
       See: https://spaces.at.internet2.edu/display/Grouper/Find+Groups
 
     add_group(group, group_type, description)
       Create Grouper group within a Grouper stem
-      group_type must be 'portal', 'quota', or 'test'
+      group_type must be 'portal', 'quota', 'group_active' or 'test'
 
       See: https://spaces.at.internet2.edu/display/Grouper/Group+Save
 
@@ -101,7 +109,7 @@ class GrouperAPI:
     def get_group_list(self, group_type):
         """Retrieve list of groups in a Grouper stem"""
 
-        if group_type not in ['portal', 'quota', 'test', '']:
+        if group_type not in ['portal', 'quota', 'test', 'group_active', '']:
             raise ValueError("Incorrect [group_type] input")
 
         endpoint = self.url('groups')
@@ -140,7 +148,7 @@ class GrouperAPI:
     def check_group_exists(self, group, group_type):
         """Check whether a Grouper group exists within a Grouper stem"""
 
-        if group_type not in ['portal', 'quota', 'test', '']:
+        if group_type not in ['portal', 'quota', 'test', 'group_active', '']:
             raise ValueError("Incorrect [group_type] input")
 
         result = self.get_group_list(group_type)
@@ -160,7 +168,7 @@ class GrouperAPI:
 
         endpoint = self.url("groups")
 
-        if group_type not in ['portal', 'quota', 'test']:
+        if group_type not in ['portal', 'quota', 'test', 'group_active']:
             raise ValueError("Incorrect [group_type] input")
 
         grouper_name = figshare_group(group, group_type,
@@ -250,3 +258,102 @@ class GrouperAPI:
                     raise ValueError(f"Unexpected result received: {metadata['resultCode']}")
 
         return True
+
+
+def create_groups(groups, group_type, group_descriptions, grouper_api, log0=None, add=False):
+    """
+    Purpose:
+      Process through a list of Grouper groups and add them if they don't exist
+      and set permissions
+
+    :param groups: str or list of str containing group names
+    :param group_type: str. Either 'portal', 'quota', or 'test'
+    :param group_descriptions: str or list of str containing description
+    :param grouper_api: GrouperAPI object
+    :param log0: logging.getLogger() object
+    :param add: boolean.  Indicate whether to perform update or dry run
+    """
+
+    if isinstance(log0, type(None)):
+        log0 = log_stdout()
+
+    if isinstance(groups, str):
+        groups = [groups]
+    if isinstance(group_descriptions, str):
+        group_descriptions = [group_descriptions]
+
+    for group, description in zip(groups, group_descriptions):
+        add_dict = {'group': group,
+                    'group_type': group_type,
+                    'description': description}
+
+        # Check if group exists
+        try:
+            group_exists = grouper_api.check_group_exists(group, group_type)
+        except KeyError:
+            log0.info("Stem is empty")
+            group_exists = False
+
+        if not group_exists:
+            log0.info(f"Group does not exist : {group}")
+
+            if add:
+                log0.info(f'Adding {group} ...')
+                try:
+                    add_result = grouper_api.add_group(**add_dict)
+                    if add_result:
+                        log0.info("SUCCESS")
+                except HTTPError:
+                    raise HTTPError
+            else:
+                log0.info('dry run, not performing group add')
+        else:
+            log0.info(f"Group exists : {group}")
+
+        if add:
+            log0.info(f'Adding admin privileges for groupersuperadmins ...')
+            try:
+                add_privilege = grouper_api.add_privilege(superadmins, group, group_type, 'admin')
+                if add_privilege:
+                    log0.info("SUCCESS")
+            except HTTPError:
+                raise HTTPError
+
+            log0.info(f'Adding privileges for grouperadmins ...')
+            try:
+                add_privilege = grouper_api.add_privilege(admins, group, group_type,
+                                                          ['read', 'view', 'optout'])
+                if add_privilege:
+                    log0.info("SUCCESS")
+            except HTTPError:
+                raise HTTPError
+
+        else:
+            log0.info('dry run, not performing privilege add')
+
+
+def create_active_group(group, grouper_dict, group_description=None, log=None, add=False):
+    """
+    Purpose:
+      Create a temporary group for figshare:active indirect membership
+
+    :param group: str. Name of group (e.g., ual)
+    :param grouper_dict: dict of Grouper configuration settings
+    :param group_description: str of description. Defaults will prompt for it
+    :param log: LogClass logging object
+    :param add: bool to indicate adding group.  Default: False (dry run)
+    """
+
+    if isinstance(log, type(None)):
+        log = log_stdout()
+
+    # This is for figtest stem
+    ga_test = GrouperAPI(**grouper_dict, grouper_production=False, log=log)
+
+    if isinstance(group_description, type(None)):
+        log.info("PROMPT: Provide description for group...")
+        group_description = input("PROMPT: ")
+        log.info(f"RESPONSE: {group_description}")
+
+    create_groups(group, 'group_active', group_description, ga_test,
+                  log0=log, add=add)
