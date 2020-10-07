@@ -276,6 +276,17 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
+v0.14.0:
+ * Enhancements to `script_run` script:
+   - Option to run with subset of org codes or portal names #65
+   - Option to switch between production and testing Grouper stems for #68
+   - Disable adding undergrads to 100MB quota #69
+   - Bug: Remove extraneous messages from `ManualOverride` #77
+ * Enhancements to `user_update` script:
+   - Option to create indirect membership for active #72
+   - Option to not update manual CSV files #76
+ * Bug: handling of multi-classification members for `quota` #78
+
 v0.12.0 - 0.12.2:
  * Grouper API tool, `GrouperAPI` #42, #60
  * Grouper group creation with `add_grouper_group` script #42, #58
@@ -284,7 +295,7 @@ v0.12.0 - 0.12.2:
  * Minor: buffering of `pandas` DataFrame for `script_run` #64
  * Minor: Code refactoring in `grouper_query`, `ManualOverride` #62, #63
  * Minor: Perform checks to ensure that Grouper groups exist before API calls #66
- * Minor: Option to switch between production and testing Grouper stems #73
+ * Minor: Option to switch between production and testing Grouper stems for `user_update` #73
 
 v0.11.0 - 0.11.3:
  * Include manual override tool, `ManualOverride` #31, #47
