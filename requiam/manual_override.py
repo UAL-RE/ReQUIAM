@@ -103,7 +103,7 @@ class ManualOverride:
         if len(add_df) > 0:
             # Add to ldap_set
             add_netid = add_df['netid'].to_list()
-            add_uaid = set(add_df['uaid'].to_list())
+            add_uaid = add_df['uaid'].to_list()
             add_ldap_set = update_entries(ldap_set, add_netid, add_uaid,
                                           'add', log=self.log)
 
@@ -111,7 +111,7 @@ class ManualOverride:
         outside_df = manual_df.loc[manual_df[group_type] != group]
         if len(outside_df) > 0:
             out_netid = outside_df['netid'].to_list()
-            out_uaid = set(outside_df['uaid'].to_list())
+            out_uaid = outside_df['uaid'].to_list()
             new_ldap_set = update_entries(add_ldap_set, out_netid, out_uaid,
                                           'remove', log=self.log)
         else:
@@ -189,7 +189,7 @@ def update_entries(ldap_set, netid, uaid, action, log=None):
 
     :param ldap_set: set of uaid values
     :param netid: list. User netid
-    :param uaid: set. User uaid
+    :param uaid: list. User uaid
     :param action: str
       Action to perform. Either 'remove' or 'add'
     :param log: LogClass object
@@ -205,24 +205,24 @@ def update_entries(ldap_set, netid, uaid, action, log=None):
     new_ldap_set = set(ldap_set)
 
     if action == 'remove':
-        remove_uaid = ldap_set & uaid
+        remove_uaid = ldap_set & set(uaid)
         if len(remove_uaid) > 0:
             remove_netid = [netid[i] for i in range(len(netid)) if
-                            list(uaid)[i] in remove_uaid]
+                            uaid[i] in remove_uaid]
             log.info(f"Removing : {', '.join(remove_netid)}")
         else:
             log.info("Nothing is removed")
-        new_ldap_set = ldap_set - uaid
+        new_ldap_set = ldap_set - set(uaid)
 
     if action == 'add':
-        new_uaid = uaid - ldap_set
+        new_uaid = set(uaid) - ldap_set
         if len(new_uaid) > 0:
             new_netid = [netid[i] for i in range(len(netid)) if
-                         list(uaid)[i] in new_uaid]
+                         uaid[i] in new_uaid]
             log.info(f"Adding : {', '.join(new_netid)}")
         else:
             log.info(f"Nothing is added")
-        new_ldap_set = set.union(ldap_set, uaid)
+        new_ldap_set = set.union(ldap_set, set(uaid))
 
     return new_ldap_set
 
