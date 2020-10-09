@@ -195,7 +195,7 @@ if __name__ == '__main__':
     else:
         if vargs['org_codes'] != "(unset)" or vargs['groups'] != "(unset)":
             log.info("PROMPT: Do you want to create a new group_active group?...")
-            group_prompt = input("PROMPT: Answer Yes/yes. Anything else results in skip")
+            group_prompt = input("PROMPT: Answer Yes/yes. Anything else results in skip ")
             log.info(f"RESPONSE: {group_prompt}")
 
             if not group_prompt.lower() == 'yes':
