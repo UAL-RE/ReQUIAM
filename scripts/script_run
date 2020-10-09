@@ -259,7 +259,11 @@ if __name__ == '__main__':
 
                 log.info(f'ldap and grouper have {len(d.common)} members in common')
                 log.info(f'synchronization will drop {len(d.drops)} entries from grouper group')
+                if len(d.drops) < 20:
+                    log.info(f'drops : {list(d.drops)}')
                 log.info(f'synchronization will add {len(d.adds)} entries to grouper group')
+                if len(d.drops) < 20:
+                    log.info(f'drops : {list(d.adds)}')
 
                 log.info('synchronizing ...')
                 d.synchronize()
@@ -322,7 +326,11 @@ if __name__ == '__main__':
 
                 log.info('ldap and grouper have {} members in common'.format(len(d.common)))
                 log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+                if len(d.drops) < 20:
+                    log.info(f'drops : {list(d.drops)}')
                 log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+                if len(d.adds) < 20:
+                    log.info(f'drops : {list(d.adds)}')
 
                 if args.sync:
                     log.info('synchronizing ...')
@@ -386,7 +394,11 @@ if __name__ == '__main__':
 
             log.info('ldap and grouper have {} members in common'.format(len(d.common)))
             log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+            if len(d.drops) < 20:
+                log.info(f'drops : {list(d.drops)}')
             log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+            if len(d.adds) < 20:
+                log.info(f'drops : {list(d.adds)}')
 
             if args.sync:
                 log.info('synchronizing ...')
@@ -428,7 +440,11 @@ if __name__ == '__main__':
 
         log.info('ldap and grouper have {} members in common'.format(len(d.common)))
         log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+        if len(d.drops) < 20:
+            log.info(f'drops : {list(d.drops)}')
         log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+        if len(d.adds) < 20:
+            log.info(f'drops : {list(d.adds)}')
 
         if args.sync:
             log.info('synchronizing ...')
