@@ -1,0 +1,45 @@
+# Action to create release with each tagged version
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*'  # Push events to matching v*
+
+name: Create Release
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+      - name: Get tag info
+        # See: https://github.com/actions/virtual-environments/issues/1717
+        # See: https://stackoverflow.com/questions/57968497/how-do-i-set-an-env-var-with-a-bash-expression-in-github-actions
+        id: get_tag
+        shell: bash
+        run: |
+          TAG_SUBJECT=$(/usr/bin/git tag -l $TAG_VERSION --format='%(subject)')
+          echo SUBJECT=$TAG_SUBJECT
+          TAG_BODY=$(/usr/bin/git tag -l $TAG_VERSION --format='%(body)')
+          echo BODY=$TAG_BODY
+        env:
+          TAG_VERSION: ${{ github.ref }}
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          # Use tag subject and message body for release description
+          body: |
+            ${{ env.TAG_SUBJECT }}
+            ${{ env.TAG_BODY }}
+          draft: false
+          prerelease: false
