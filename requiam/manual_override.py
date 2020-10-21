@@ -204,9 +204,6 @@ def update_entries(ldap_set, netid, uaid, action, log=None):
 
     new_ldap_set = set(ldap_set)
 
-    netid = list(netid)
-    uaid  = list(uaid)
-
     if action == 'remove':
         remove_uaid = ldap_set & set(uaid)
         if len(remove_uaid) > 0:
