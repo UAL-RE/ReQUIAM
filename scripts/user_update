@@ -338,7 +338,7 @@ if __name__ == '__main__':
                     log.info(f"Removing {not_portal_netid[i]} from current portal: {current_portal}")
 
                     d = grouper_delta_user(current_portal, 'portal',
-                                           not_portal_netid[i], {not_portal_uaid[i]},
+                                           not_portal_netid[i], not_portal_uaid[i],
                                            'remove', grouper_dict, delta_dict,
                                            sync=args.sync, log=log,
                                            production=grouper_production)
@@ -391,7 +391,7 @@ if __name__ == '__main__':
                     log.info(f"Removing {not_quota_netid[i]} from current quota: {current_quota}")
 
                     d = grouper_delta_user(current_quota, 'quota',
-                                           not_quota_netid[i], {not_quota_uaid[i]},
+                                           not_quota_netid[i], not_quota_uaid[i],
                                            'remove', grouper_dict, delta_dict,
                                            sync=args.sync, log=log,
                                            production=grouper_production)

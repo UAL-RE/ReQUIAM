@@ -99,7 +99,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.13.2`.
+You should see that the version is `0.13.3`.
 
 ### Configuration Settings
 
@@ -276,7 +276,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
-v0.13.0 - v0.13.2:
+v0.13.0 - v0.13.3:
  * Enhancements to `script_run` script:
    - Option to run with subset of org codes or portal names #65
    - Option to switch between production and testing Grouper stems for #68
@@ -288,6 +288,7 @@ v0.13.0 - v0.13.2:
  * Bug: handling of multi-classification members for `quota` #78
  * Minor: Additional messaging for verbosity in `script_run` #39 #80
  * GitHub Action to create releases with tagged version #83
+ * Bug: Issue with `ManualOverride` #85
 
 v0.12.0 - 0.12.2:
  * Grouper API tool, `GrouperAPI` #42, #60
