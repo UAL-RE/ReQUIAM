@@ -135,7 +135,7 @@ def grouper_delta_user(group, stem, netid, uaid, action, grouper_dict,
     if not isinstance(netid, list):
         netid = [netid]
     if not isinstance(uaid, list):
-        netid = [netid]
+        uaid = [uaid]
     member_set = update_entries(member_set, netid, uaid, action, log=log)
 
     d = Delta(ldap_members=member_set,
