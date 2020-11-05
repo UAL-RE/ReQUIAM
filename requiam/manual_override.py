@@ -208,7 +208,7 @@ def update_entries(ldap_set, netid, uaid, action, log=None):
         remove_uaid = ldap_set & set(uaid)
         if len(remove_uaid) > 0:
             remove_netid = [netid[i] for i in range(len(netid)) if
-                            uaid[i] in remove_uaid]
+                            uaid[i] in list(remove_uaid)]
             log.info(f"Removing : {', '.join(remove_netid)}")
         else:
             log.info("Nothing is removed")
@@ -218,7 +218,7 @@ def update_entries(ldap_set, netid, uaid, action, log=None):
         new_uaid = set(uaid) - ldap_set
         if len(new_uaid) > 0:
             new_netid = [netid[i] for i in range(len(netid)) if
-                         uaid[i] in new_uaid]
+                         uaid[i] in list(new_uaid)]
             log.info(f"Adding : {', '.join(new_netid)}")
         else:
             log.info(f"Nothing is added")
