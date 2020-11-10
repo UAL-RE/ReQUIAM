@@ -1,18 +1,21 @@
 # ![ReDATA EDS Query and Update for Identity and Access Management](ReQUIAM_full.png)
 
-- [Overview](#overview)
-- [Getting Started](#getting-started)
+- [!ReDATA EDS Query and Update for Identity and Access Management](#img-srcrequiam_fullpng-altredata-eds-query-and-update-for-identity-and-access-management)
+  - [Overview](#overview)
+- [!ReQUIAM Service Architecture](#img-srcimgrequiam_architecturepng-altrequiam-service-architecture)
+  - [Getting Started](#getting-started)
     - [Requirements](#requirements)
     - [Installation Instructions](#installation-instructions)
+      - [Python and setting up a `conda` environment](#python-and-setting-up-a-conda-environment)
     - [Configuration Settings](#configuration-settings)
     - [Testing Installation](#testing-installation)
-- [Execution](#execution)
+  - [Execution](#execution)
     - [Manual Changes](#manual-changes)
     - [API Management of Grouper Groups](#api-management-of-grouper-groups)
-- [Versioning](#versioning)
-- [Changelog](#changelog)
-- [Authors](#authors)
-- [License](#license)
+  - [Versioning](#versioning)
+  - [Changelog](#changelog)
+  - [Authors](#authors)
+  - [License](#license)
 
 --------------
 
@@ -122,7 +125,7 @@ execute the following command:
 ```
 (figshare_patrons) $ export password="insert_password"
 (figshare_patrons) $ export persist_path="/path/to/persistent/storage"
-(figshare_patrons) $ python scripts/script_run --config config/figshare.ini \
+(figshare_patrons) $ ./ReQUIAM/scripts/script_run --config config/figshare.ini \
                        --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password
 ```
@@ -131,7 +134,7 @@ Test command-line flags (`test` and `test_reverse`) are available to test EDS
 query and Grouper synchronization (with the `sync` flag) by executing the following :
 
 ```
-(figshare_patrons) $ python scripts/script_run --test \
+(figshare_patrons) $ ./ReQUIAM/scripts/script_run --test \
                        --config config/figshare.ini --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password --sync
 ```
@@ -145,7 +148,7 @@ Without the `sync` flag, the above command line will perform a
 To undo this change, use the `test_reverse` flag:
 
 ```
-(figshare_patrons) $ python scripts/script_run --test_reverse \
+(figshare_patrons) $ ./ReQUIAM/scripts/script_run --test_reverse \
                        --config config/figshare.ini --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password --sync
 ```
@@ -156,7 +159,7 @@ To execute the script and update Grouper and EDS, include the `portal`, `quota`,
 and `sync` command-line flags:
 
 ```
-(figshare_patrons) $ python scripts/script_run --config config/figshare.ini \
+(figshare_patrons) $ ./ReQUIAM/scripts/script_run --config config/figshare.ini \
                        --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password \
                        --quota --portal --sync
@@ -199,7 +202,7 @@ To this end, the `user_update` script should be used. It has several features:
 Execution can be done as follows:
 
 ```
-(figshare_patrons) $ python scripts/user_update --config config/figshare.ini \
+(figshare_patrons) $ ./ReQUIAM/scripts/user_update --config config/figshare.ini \
                        --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password \
                        --quota 123456 --portal testportal --netid <username> --sync
@@ -255,7 +258,7 @@ GrouperSuperAdmins and GrouperAdmins. If a group already exists, it will
 skip to the privilege assignments.  To execute the script:
 
 ```
-(figshare_patrons) $ python scripts/add_grouper_groups --config config/figshare.ini \
+(figshare_patrons) $ ./ReQUIAM/scripts/add_grouper_groups --config config/figshare.ini \
                        --persistent_path $persist_path --grouper_password $password \
                        --main_themes --sub_portals --quota --add
 ```
@@ -276,7 +279,8 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
-v0.13.0 - v0.13.4:
+v0.13.0 - v0.13.5:
+ * All scripts under the `scripts/` are now executable
  * Enhancements to `script_run` script:
    - Option to run with subset of org codes or portal names #65
    - Option to switch between production and testing Grouper stems for #68
