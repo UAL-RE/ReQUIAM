@@ -1,0 +1,17 @@
+os: linux
+dist: bionic
+language: python
+jobs:
+  include:
+    - name: Python 3.7 on Bionic
+      python: 3.7
+
+# command to install dependencies
+before_install:
+  - python --version
+  - pip install -U pip
+  - pip install -U pytest pytest-cov
+install:
+  - python setup.py install
+
+script: pytest --cov-report term-missing --cov=requiam tests
