@@ -1,21 +1,18 @@
 # ![ReDATA EDS Query and Update for Identity and Access Management](ReQUIAM_full.png)
 
-- [!ReDATA EDS Query and Update for Identity and Access Management](#img-srcrequiam_fullpng-altredata-eds-query-and-update-for-identity-and-access-management)
-  - [Overview](#overview)
-- [!ReQUIAM Service Architecture](#img-srcimgrequiam_architecturepng-altrequiam-service-architecture)
-  - [Getting Started](#getting-started)
+- [Overview](#overview)
+- [Getting Started](#getting-started)
     - [Requirements](#requirements)
     - [Installation Instructions](#installation-instructions)
-      - [Python and setting up a `conda` environment](#python-and-setting-up-a-conda-environment)
     - [Configuration Settings](#configuration-settings)
     - [Testing Installation](#testing-installation)
-  - [Execution](#execution)
+- [Execution](#execution)
     - [Manual Changes](#manual-changes)
     - [API Management of Grouper Groups](#api-management-of-grouper-groups)
-  - [Versioning](#versioning)
-  - [Changelog](#changelog)
-  - [Authors](#authors)
-  - [License](#license)
+- [Versioning](#versioning)
+- [Changelog](#changelog)
+- [Authors](#authors)
+- [License](#license)
 
 --------------
 
