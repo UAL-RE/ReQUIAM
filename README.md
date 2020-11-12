@@ -99,7 +99,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.13.5`.
+You should see that the version is `0.13.6`.
 
 ### Configuration Settings
 
@@ -276,8 +276,8 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
-v0.13.0 - v0.13.5:
- * Make scripts executable #82 
+v0.13.0 - v0.13.6:
+ * Make scripts executable #82, #95
  * Enhancements to `script_run` script:
    - Option to run with subset of org codes or portal names #65
    - Option to switch between production and testing Grouper stems for #68
