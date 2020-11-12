@@ -15,8 +15,10 @@ install:
   - python setup.py install
 
 before_script:
-  - git clone https://github.com/ualibraries/ReQUIAM
-  - cd ReQUIAM
+  - pwd
+  - ls -l
+#  - git clone https://github.com/ualibraries/ReQUIAM
+#  - cd ReQUIAM
 
 script:
   pytest --cov-report term-missing --cov=requiam tests
