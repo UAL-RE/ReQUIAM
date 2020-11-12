@@ -349,6 +349,8 @@ v0.1.0:
 
 * Chun Ly, Ph.D. ([@astrochun](http://www.github.com/astrochun)) - [University of Arizona Libraries](https://github.com/ualibraries), [Office of Digital Innovation and Stewardship](https://github.com/UAL-ODIS)
 
+* Damian Romero ([@damian-romero](https://www.github.com/damian-romero)) - [University of Arizona Libraries](https://github.com/ualibraries), [Office of Digital Innovation and Stewardship](https://github.com/UAL-ODIS)
+
 See also the list of
 [contributors](https://github.com/ualibraries/ReQUIAM/contributors) who participated in this project.
 
