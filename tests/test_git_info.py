@@ -11,4 +11,8 @@ def test_get_latest_commit():
 
     assert isinstance(git_commit, str)
     assert isinstance(git_short_commit, str)
-    assert len(git_short_commit) == 7
+
+    if not git_short_commit:  # Empty string
+        assert len(git_short_commit) == 0
+    else:
+        assert len(git_short_commit) == 7
