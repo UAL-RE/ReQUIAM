@@ -16,9 +16,7 @@ install:
 
 before_script:
   - pwd
-  - ls -l
-#  - git clone https://github.com/ualibraries/ReQUIAM
-#  - cd ReQUIAM
+  - ls -la
 
 script:
-  pytest --cov-report term-missing --cov=requiam tests
+  pytest --ignore=tests/test_git_info.py --cov-report term-missing --cov-config=.coveragerc --cov=requiam tests

@@ -1,0 +1,4 @@
+[run]
+omit =
+  # Git info checks
+  requiam/git_info.py
