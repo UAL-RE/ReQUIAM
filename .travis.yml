@@ -17,6 +17,7 @@ install:
 before_script:
   - pwd
   - ls -la
+  - git log --oneline -n 5
 
 script:
   pytest --ignore=tests/test_git_info.py --cov-report term-missing --cov-config=.coveragerc --cov=requiam tests
