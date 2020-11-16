@@ -20,7 +20,6 @@ before_script:
   - git log --oneline -n 5
   - git status
   - cat .git/HEAD
-  - cat .git
-  - ls -la .git/refs/heads/
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
 script:
-  pytest --ignore=tests/test_git_info.py --cov-report term-missing --cov-config=.coveragerc --cov=requiam tests
+  - pytest --ignore=tests/test_git_info.py --cov-report term-missing --cov-config=.coveragerc --cov=requiam tests
