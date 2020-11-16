@@ -18,6 +18,9 @@ before_script:
   - pwd
   - ls -la
   - git log --oneline -n 5
-
+  - git status
+  - cat .git/HEAD
+  - cat .git
+  - ls -la .git/refs/heads/
 script:
   pytest --ignore=tests/test_git_info.py --cov-report term-missing --cov-config=.coveragerc --cov=requiam tests
