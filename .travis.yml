@@ -20,5 +20,5 @@ before_script:
 script:
   - echo $BRANCH
   - pytest --cov-report term-missing --cov-config=.coveragerc --cov=requiam tests
-  - export persist_path = ""
-  - ./scripts/script_run --config config/figshare.ini persist_path=$persist_path --ldap_password $tests --grouper_password $tests
+  - export persist_path=$(pwd)
+  - ./scripts/script_run --config config/figshare.ini --persist_path $persist_path --ldap_password $tests --grouper_password $tests
