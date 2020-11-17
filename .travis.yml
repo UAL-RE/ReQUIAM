@@ -22,4 +22,6 @@ before_script:
   - cat .git/HEAD
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
 script:
-  - pytest --cov-report term-missing --cov-config=.coveragerc --cov=requiam tests
+  pytest --cov-report term-missing --cov-config=.coveragerc --cov=requiam tests
+  export persist_path = ""
+  ./scripts/script_run persist_path=$persist_path --ldap_password $tests --grouper_password $tests
