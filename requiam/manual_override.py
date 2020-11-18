@@ -6,6 +6,8 @@ from .commons import figshare_stem
 from .logger import log_stdout
 
 root_dir = dirname(dirname(__file__))
+portal_template_file = join(root_dir, 'config/portal_manual_template.csv')
+quota_template_file = join(root_dir, 'config/quota_manual_template.csv')
 
 
 class ManualOverride:
@@ -57,13 +59,13 @@ class ManualOverride:
         if self.file_checks(portal_file):
             self.portal_file = portal_file
         else:
-            self.portal_file = join(root_dir, 'config/portal_manual_template.csv')
+            self.portal_file = portal_template_file
             self.log.info(f"Using: {self.portal_file}")
 
         if self.file_checks(quota_file):
             self.quota_file = quota_file
         else:
-            self.quota_file = join(root_dir, 'config/quota_manual_template.csv')
+            self.quota_file = quota_template_file
             self.log.info(f"Using: {self.quota_file}")
 
         # Read in CSV as pandas DataFrame
