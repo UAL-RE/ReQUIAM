@@ -62,6 +62,7 @@ if __name__ == '__main__':
     parser.add_argument('--quota_file', help='filename for manual-override quota file')
     parser.add_argument('--sync', action='store_true', help='perform synchronization')
     parser.add_argument('--sync_max', help='maximum membership delta to allow when synchronizing')
+    parser.add_argument('--ci', action='store_true', help='Flag for CI build tests')
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
 
@@ -119,7 +120,7 @@ if __name__ == '__main__':
               'grouper_figtest', 'batch_size', 'batch_timeout', 'batch_delay',
               'portal', 'quota', 'portal_file', 'quota_file',
               'test', 'test_reverse', 'org_codes',
-              'groups', 'sync_max']:
+              'groups', 'sync_max', 'ci']:
 
         if (p in vargs) and (vargs[p] is not None):
             vargs[p] = vargs[p]
@@ -136,7 +137,7 @@ if __name__ == '__main__':
             else:
                 log.info('   {0: >17} = (set)'.format(p))
         else:
-            log.info('   {0: >17} = {1:}'. format(p, vargs[p]))
+            log.info('   {0: >17} = {1:}'.format(p, vargs[p]))
 
     if vargs['test'] and vargs['test_reverse']:
         log.warning("Cannot provide --test and --test_reverse")
@@ -259,11 +260,12 @@ if __name__ == '__main__':
 
                 log.info(f'ldap and grouper have {len(d.common)} members in common')
                 log.info(f'synchronization will drop {len(d.drops)} entries from grouper group')
-                if (len(d.drops) < 20) and (len(d.drops) > 0):
-                    log.info(f'drops : {list(d.drops)}')
-                log.info(f'synchronization will add {len(d.adds)} entries to grouper group')
-                if (len(d.adds) < 20) and (len(d.adds) > 0):
-                    log.info(f'adds  : {list(d.adds)}')
+                if not vargs['ci']:
+                    if (len(d.drops) < 20) and (len(d.drops) > 0):
+                        log.info(f'drops : {list(d.drops)}')
+                    log.info(f'synchronization will add {len(d.adds)} entries to grouper group')
+                    if (len(d.adds) < 20) and (len(d.adds) > 0):
+                        log.info(f'adds  : {list(d.adds)}')
 
                 log.info('synchronizing ...')
                 d.synchronize()
@@ -326,11 +328,12 @@ if __name__ == '__main__':
 
                 log.info('ldap and grouper have {} members in common'.format(len(d.common)))
                 log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
-                if (len(d.drops) < 20) and (len(d.drops) > 0):
-                    log.info(f'drops : {list(d.drops)}')
-                log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
-                if (len(d.adds) < 20) and (len(d.adds) > 0):
-                    log.info(f'adds  : {list(d.adds)}')
+                if not vargs['ci']:
+                    if (len(d.drops) < 20) and (len(d.drops) > 0):
+                        log.info(f'drops : {list(d.drops)}')
+                    log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+                    if (len(d.adds) < 20) and (len(d.adds) > 0):
+                        log.info(f'adds  : {list(d.adds)}')
 
                 if args.sync:
                     log.info('synchronizing ...')
@@ -394,11 +397,12 @@ if __name__ == '__main__':
 
             log.info('ldap and grouper have {} members in common'.format(len(d.common)))
             log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
-            if (len(d.drops) < 20) and (len(d.drops) > 0):
-                log.info(f'drops : {list(d.drops)}')
-            log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
-            if (len(d.adds) < 20) and (len(d.adds) > 0):
-                log.info(f'adds  : {list(d.adds)}')
+            if not vargs['ci']:
+                if (len(d.drops) < 20) and (len(d.drops) > 0):
+                    log.info(f'drops : {list(d.drops)}')
+                log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+                if (len(d.adds) < 20) and (len(d.adds) > 0):
+                    log.info(f'adds  : {list(d.adds)}')
 
             if args.sync:
                 log.info('synchronizing ...')
@@ -440,11 +444,12 @@ if __name__ == '__main__':
 
         log.info('ldap and grouper have {} members in common'.format(len(d.common)))
         log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
-        if (len(d.drops) < 20) and (len(d.drops) > 0):
-            log.info(f'drops : {list(d.drops)}')
-        log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
-        if (len(d.adds) < 20) and (len(d.adds) > 0):
-            log.info(f'adds  : {list(d.adds)}')
+        if not vargs['ci']:
+            if (len(d.drops) < 20) and (len(d.drops) > 0):
+                log.info(f'drops : {list(d.drops)}')
+            log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+            if (len(d.adds) < 20) and (len(d.adds) > 0):
+                log.info(f'adds  : {list(d.adds)}')
 
         if args.sync:
             log.info('synchronizing ...')

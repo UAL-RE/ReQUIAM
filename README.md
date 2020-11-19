@@ -1,5 +1,10 @@
 # ![ReDATA EDS Query and Update for Identity and Access Management](ReQUIAM_full.png)
 
+[![Build Status](https://travis-ci.com/ualibraries/ReQUIAM.svg?branch=feature/travis_ci)](https://travis-ci.com/ualibraries/ReQUIAM)
+![GitHub top language](https://img.shields.io/github/languages/top/ualibraries/ReQUIAM)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/ualibraries/ReQUIAM)
+![GitHub](https://img.shields.io/github/license/ualibraries/ReQUIAM?color=blue)
+
 - [Overview](#overview)
 - [Getting Started](#getting-started)
     - [Requirements](#requirements)
