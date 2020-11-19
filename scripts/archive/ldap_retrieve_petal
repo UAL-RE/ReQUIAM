@@ -1,4 +1,4 @@
-#!/Applications/anaconda3/envs/figshare/bin/python
+#!/usr/bin/env python
 
 import argparse
 import configparser
