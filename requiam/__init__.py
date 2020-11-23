@@ -1,4 +1,4 @@
-__version__ = "0.13.6"
+__version__ = "0.14.0"
 
 
 class TimerClass(object):
