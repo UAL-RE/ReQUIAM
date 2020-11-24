@@ -56,7 +56,9 @@ if __name__ == '__main__':
                         help='Boolean to flag not updating manual-override quota file')
     parser.add_argument('--sync', action='store_true', help='perform synchronization')
     parser.add_argument('--sync_max', help='maximum membership delta to allow when synchronizing')
-    parser.add_argument('--active_remove', action='store_true', help='Remove membership in figshare:active group')
+    parser.add_argument('--active_remove', action='store_true',
+                        help='Remove membership in figshare:active group')
+    parser.add_argument('--root_add', action='store_true', help='Include root in portal CSV')
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
 
@@ -108,7 +110,8 @@ if __name__ == '__main__':
               'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
               'grouper_figtest', 'batch_size', 'batch_timeout', 'batch_delay',
               'portal', 'quota', 'portal_file', 'quota_file',
-              'portal_file_noupdate', 'quota_file_noupdate', 'sync_max', 'active_remove']:
+              'portal_file_noupdate', 'quota_file_noupdate', 'sync_max', 'active_remove',
+              'root_add']:
 
         if (p in vargs) and (vargs[p] is not None):
             vargs[p] = vargs[p]
@@ -151,7 +154,8 @@ if __name__ == '__main__':
                       sync_max=int(vargs['sync_max']))
 
     # Manual override class
-    mo = ManualOverride(vargs['portal_file'], vargs['quota_file'], log=log)
+    mo = ManualOverride(vargs['portal_file'], vargs['quota_file'],
+                        log=log, root_add=vargs['root_add'])
 
     # Initiate LDAP connection
     ldc = ldap_query.LDAPConnection(**ldap_dict, log=log)
