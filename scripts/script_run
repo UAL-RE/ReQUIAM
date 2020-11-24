@@ -20,6 +20,7 @@ from requiam import quota
 from requiam.logger import LogClass, get_user_hostname, pandas_write_buffer
 from requiam import TimerClass
 from requiam import manual_override
+from requiam.commons import get_summary_dict
 
 # Version and branch info
 from requiam import __version__
@@ -191,6 +192,8 @@ if __name__ == '__main__':
     grouper_production = True if not vargs['grouper_figtest'] else False
     ga = GrouperAPI(**grouper_dict, grouper_production=True, log=log)
 
+    summary_dict = dict()  # Initialize
+
     if not args.sync:
         log.info("dry run, not creating figtest:group_active group")
     else:
@@ -301,7 +304,6 @@ if __name__ == '__main__':
 
                 ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
                 log.info(f"EDS before {len(ldap_members)}")
-
                 # Update based on CSV manual input files
                 if mo_status:
                     ldap_members = mo.identify_changes(ldap_members, portal, 'portal')
@@ -325,6 +327,8 @@ if __name__ == '__main__':
                                 grouper_query_instance=gq,
                                 **delta_dict,
                                 log=log)
+
+                summary_dict[portal] = get_summary_dict(ldap_members, gq.members, d)
 
                 log.info('ldap and grouper have {} members in common'.format(len(d.common)))
                 log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
@@ -395,6 +399,8 @@ if __name__ == '__main__':
                             **delta_dict,
                             log=log)
 
+            summary_dict[q] = get_summary_dict(ldap_members, gq.members, d)
+
             log.info('ldap and grouper have {} members in common'.format(len(d.common)))
             log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
             if not vargs['ci']:
@@ -462,6 +468,11 @@ if __name__ == '__main__':
 
     main_timer._stop()
     log.info(main_timer.format)
+
+    log.info("******************************")
+    log.info("SUMMARY DATA")
+    summary_df = pd.DataFrame.from_dict(summary_dict, orient='index')
+    pandas_write_buffer(summary_df, log_filename)
 
     log.info("******************************")
     log.info("Exit 0")
