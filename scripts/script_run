@@ -131,7 +131,7 @@ if __name__ == '__main__':
             vargs[p] = '(unset)'
 
         if p in ['ldap_user', 'ldap_password', 'grouper_user', 'grouper_password']:
-            if vargs[p] is '(unset)':
+            if vargs[p] == '(unset)':
                 log.info('   {0: >17} = (unset)'.format(p))
                 cred_err += 1
             else:
