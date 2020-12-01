@@ -1,6 +1,6 @@
 # ![ReDATA EDS Query and Update for Identity and Access Management](ReQUIAM_full.png)
 
-[![Build Status](https://travis-ci.com/ualibraries/ReQUIAM.svg?branch=feature/travis_ci)](https://travis-ci.com/ualibraries/ReQUIAM)
+[![Build Status](https://travis-ci.com/ualibraries/ReQUIAM.svg?branch=master)](https://travis-ci.com/ualibraries/ReQUIAM)
 ![GitHub top language](https://img.shields.io/github/languages/top/ualibraries/ReQUIAM)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ualibraries/ReQUIAM)
 ![GitHub](https://img.shields.io/github/license/ualibraries/ReQUIAM?color=blue)
@@ -104,7 +104,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.13.7`.
+You should see that the version is `0.14.0`.
 
 ### Configuration Settings
 
@@ -281,8 +281,13 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
-v0.13.0 - v0.13.7:
- * Add `enhancement` template #100
+v0.14.0:
+ * Travis CI integration #91
+ * Add summary data for `script_run` #99
+ * Enable setting 'root' for portal in `ManualOverride` #88
+ * Bug: equality checks #93
+
+v0.13.0 - v0.13.6:
  * Make scripts executable #82, #95
  * Enhancements to `script_run` script:
    - Option to run with subset of org codes or portal names #65

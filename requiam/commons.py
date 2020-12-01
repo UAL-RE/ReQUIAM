@@ -29,3 +29,24 @@ def figshare_stem(stem='', production=True):
         stem_query += f':{stem}'
 
     return stem_query
+
+
+def get_summary_dict(ldap_members, grouper_members, delta):
+    """
+    Purpose:
+      Return a dict containing summary data for EDS and Grouper queries
+
+    :param ldap_members: set containing EDS entries
+    :param grouper_members: set containing Grouper entries
+    :param delta: Delta object containing computation of adds and drops
+    :return: summary_dict: dict containing summary data
+    """
+
+    summary_dict = {
+        'num_EDS': len(ldap_members),
+        'num_Grouper': len(grouper_members),
+        'adds': len(delta.adds),
+        'drops': len(delta.drops),
+        'total': len(delta.adds) + len(delta.drops)
+    }
+    return summary_dict
