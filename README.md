@@ -283,6 +283,9 @@ List is sorted from moderate to minor revisions for reach release.
 
 v0.14.0:
  * Travis CI integration #91
+ * Add summary data for `script_run` #99
+ * Enable setting 'root' for portal in `ManualOverride` #88
+ * Bug: equality checks #93
 
 v0.13.0 - v0.13.6:
  * Make scripts executable #82, #95
