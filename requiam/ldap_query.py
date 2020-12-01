@@ -35,7 +35,7 @@ class LDAPConnection(object):
         
         #
         # set properties
-        
+
         self.ldap_host = ldap_host
         self.ldap_base_dn = ldap_base_dn
         self.ldap_user = ldap_user
@@ -45,7 +45,7 @@ class LDAPConnection(object):
         self.ldap_bind_dn = 'uid=' + ldap_user + ',ou=app users,' + ldap_base_dn
         self.ldap_search_dn = 'ou=people,' + ldap_base_dn
         self.ldap_attribs = ['uaid']
-        
+
         #
         # execute ldap query and populate members property
 

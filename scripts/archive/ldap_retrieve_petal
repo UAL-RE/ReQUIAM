@@ -94,7 +94,7 @@ if __name__ == '__main__':
             vargs[p] = '(unset)'
 
         if p in ['ldap_passwd', 'grouper_passwd']:
-            if vargs[p] is '(unset)':
+            if vargs[p] == '(unset)':
                 logger.debug('    %s = (unset)', p)
             else:
                 logger.debug('    %s = (set)', p)
