@@ -25,5 +25,11 @@ jobs:
         python -m pip install pytest pytest-cov
         python setup.py install
     - name: Test with pytest
+      env:
+        pass: ${{ secrets.pass }}
+        persist_path: ./
       run: |
         pytest --cov-report term-missing --cov-config=.coveragerc --cov=requiam tests
+        ./scripts/script_run --ci --config config/figshare.ini --persistent_path $persist_path --ldap_password $pass --grouper_password $pass
+        ./scripts/script_run --ci --test --config config/figshare.ini --persistent_path $persist_path --ldap_password $pass --grouper_password $pass
+        ./scripts/script_run --ci --test_reverse --config config/figshare.ini --persistent_path $persist_path --ldap_password $pass --grouper_password $pass
