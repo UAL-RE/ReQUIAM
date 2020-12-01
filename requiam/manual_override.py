@@ -1,8 +1,13 @@
 import pandas as pd
+from os.path import exists, join, islink, dirname
 
 from .ldap_query import LDAPConnection
 from .commons import figshare_stem
 from .logger import log_stdout
+
+root_dir = dirname(dirname(__file__))
+portal_template_file = join(root_dir, 'config/portal_manual_template.csv')
+quota_template_file = join(root_dir, 'config/quota_manual_template.csv')
 
 
 class ManualOverride:
@@ -21,6 +26,8 @@ class ManualOverride:
       Full file path for CSV file containing manual quota specs (e.g., config/quota_manual.csv)
     log : LogClass object
       For logging
+    root_add: bool
+      Flag to set root as portal in manual CSV file
 
     portal_df : pandas.core.frame.DataFrame
       pandas DataFrame of [portal_csv]
@@ -32,6 +39,9 @@ class ManualOverride:
 
     Methods
     -------
+    file_checks(input_file):
+      Checks to see if manual CSV file exists. If not return a False boolean
+
     read_manual_file(group_type):
       Return a pandas DataFrame containing the manual override file
 
@@ -41,14 +51,24 @@ class ManualOverride:
     update_dataframe(netid, uaid, group, group_type):
       Update pandas DataFrame with necessary changes
     """
-    def __init__(self, portal_file, quota_file, log=None):
-        self.portal_file = portal_file
-        self.quota_file = quota_file
-
+    def __init__(self, portal_file, quota_file, log=None, root_add=False):
         if isinstance(log, type(None)):
             self.log = log_stdout()
         else:
             self.log = log
+
+        # If files exist use, otherwise, use available templates
+        if self.file_checks(portal_file):
+            self.portal_file = portal_file
+        else:
+            self.portal_file = portal_template_file
+            self.log.info(f"Using: {self.portal_file}")
+
+        if self.file_checks(quota_file):
+            self.quota_file = quota_file
+        else:
+            self.quota_file = quota_template_file
+            self.log.info(f"Using: {self.quota_file}")
 
         # Read in CSV as pandas DataFrame
         self.portal_df = self.read_manual_file('portal')
@@ -57,6 +77,21 @@ class ManualOverride:
         # Read in CSV headers
         self.portal_header = csv_commented_header(self.portal_file)
         self.quota_header = csv_commented_header(self.quota_file)
+
+        # This flag it to indicate whether root should be included for
+        # portal association
+        self.root_add = root_add
+
+    def file_checks(self, input_file):
+        """Checks to see if manual CSV file exists. If not return a False boolean"""
+        file_pass = True
+        if not exists(input_file):
+            self.log.info(f"File not found! {input_file}")
+            file_pass = False
+
+            if islink(input_file):
+                self.log.info(f"{input_file} is symbolic link")
+        return file_pass
 
     def read_manual_file(self, group_type):
         """Return a pandas DataFrame containing the manual override file"""
@@ -132,14 +167,20 @@ class ManualOverride:
 
         for i in range(len(netid)):
             loc0 = revised_df.loc[revised_df['netid'] == netid[i]].index
+
+            table_update = True
+            if group == 'root':
+                if group_type == 'quota' or not self.root_add:
+                    table_update = False
+
             if len(loc0) == 0:
-                if group != 'root':
+                if table_update:
                     self.log.info(f"Adding entry for {netid[i]}")
                     revised_df.loc[len(revised_df)] = [netid[i], list(uaid)[i], group]
                 else:
                     self.log.info(f"No update needed - root setting and {netid[i]} is not in list")
             else:
-                if group != 'root':
+                if table_update:
                     self.log.info(f"Updating entry for {netid[i]}")
                     revised_df.loc[loc0[0]] = [netid[i], list(uaid)[i], group]
                 else:

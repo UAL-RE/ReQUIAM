@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -8,8 +8,8 @@ with open("requirements.txt", "r") as fr:
 
 setup(
     name='requiam',
-    version='v0.13.7',
-    packages=find_packages('requiam'),
+    version='v0.14.0',
+    packages=['requiam'],
     url='https://github.com/ualibraries/ReQUIAM',
     license='MIT License',
     author='Chun Ly',
