@@ -17,6 +17,7 @@
     - [Manual Changes](#manual-changes)
     - [API Management of Grouper Groups](#api-management-of-grouper-groups)
 - [Versioning](#versioning)
+- [Continuous Integration](#continuous-integration)
 - [Changelog](#changelog)
 - [Authors](#authors)
 - [License](#license)
@@ -274,9 +275,19 @@ flag to implement on the production stem, `figshare`.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the
-[tags on this repository](https://github.com/ualibraries/ReQUIAM/tags).
+We use [SemVer](http://semver.org/) for versioning. For the versions available,
+see the [tags on this repository](https://github.com/ualibraries/ReQUIAM/tags).
 
+## Continuous Integration
+
+Initially we started using [Travis CI](https://travis-ci.com); however, due
+to the change in pricing for open-source repositories, we decided to use
+[GitHub Actions](https://docs.github.com/en/free-pro-team@latest/actions).
+There are two GitHub Action workflows:
+1. A "Create release" workflow, [`create-release.yml`](.github/workflows/create-release.yml)
+   for new releases created with tags
+2. A "Python package" workflow, [`python-package.yml`](.github/workflows/python-package.yml)
+   for builds and tests
 
 ## Changelog
 
