@@ -1,6 +1,8 @@
 # ![ReDATA EDS Query and Update for Identity and Access Management](ReQUIAM_full.png)
 
 [![Build Status](https://travis-ci.com/ualibraries/ReQUIAM.svg?branch=master)](https://travis-ci.com/ualibraries/ReQUIAM)
+
+[![GitHub build](https://github.com/ualibraries/ReQUIAM/workflows/Python%20package/badge.svg?branch=feature/gh_actions_build_test)](https://github.com/ualibraries/ReQUIAM/actions?query=workflow%3A%22Python+package%22)
 ![GitHub top language](https://img.shields.io/github/languages/top/ualibraries/ReQUIAM)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ualibraries/ReQUIAM)
 ![GitHub](https://img.shields.io/github/license/ualibraries/ReQUIAM?color=blue)
@@ -15,6 +17,7 @@
     - [Manual Changes](#manual-changes)
     - [API Management of Grouper Groups](#api-management-of-grouper-groups)
 - [Versioning](#versioning)
+- [Continuous Integration](#continuous-integration)
 - [Changelog](#changelog)
 - [Authors](#authors)
 - [License](#license)
@@ -272,9 +275,21 @@ flag to implement on the production stem, `figshare`.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the
-[tags on this repository](https://github.com/ualibraries/ReQUIAM/tags).
+We use [SemVer](http://semver.org/) for versioning. For the versions available,
+see the [tags on this repository](https://github.com/ualibraries/ReQUIAM/tags).
 
+## Continuous Integration
+
+Initially we started using [Travis CI](https://travis-ci.com); however, due
+to the change in
+[pricing for open-source repositories](https://travis-ci.community/t/org-com-migration-unexpectedly-comes-with-a-plan-change-for-oss-what-exactly-is-the-new-deal/10567),
+we decided to use
+[GitHub Actions](https://docs.github.com/en/free-pro-team@latest/actions).
+Currently, there are two GitHub Action workflows:
+1. A "Create release" workflow, [`create-release.yml`](.github/workflows/create-release.yml)
+   for new releases when a tag is pushed
+2. A "Python package" workflow, [`python-package.yml`](.github/workflows/python-package.yml)
+   for builds and tests
 
 ## Changelog
 
