@@ -3,12 +3,19 @@
 
 name: Python package
 
-on: [push, pull_request]
-paths-ignore:
-  - '**.md'
-  - '**.png'
-  - 'img/*'
-  - 'LICENSE'
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+      - '**.png'
+      - 'img/*'
+      - 'LICENSE'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '**.png'
+      - 'img/*'
+      - 'LICENSE'
 
 jobs:
   build:
