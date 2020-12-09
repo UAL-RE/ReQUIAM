@@ -1,3 +1,6 @@
+import configparser
+
+
 def figshare_stem(stem='', production=True):
     """
     Purpose:
@@ -29,6 +32,49 @@ def figshare_stem(stem='', production=True):
         stem_query += f':{stem}'
 
     return stem_query
+
+
+def dict_load(config_file, vargs=None):
+    """
+    Purpose:
+      Read in a config INI file using configparser and return a dictionary
+      with sections and options
+
+    :param config_file: str. Full/relative path of configuration file
+    :param vargs: Dictionary containing command-line arguments
+    :return config_dict: dict of dict with hierarchy of sections follow by options
+    """
+
+    config = configparser.ConfigParser()
+    config.read(config_file)
+
+    # Read in default settings
+    config_dict = {}
+    for section in config.sections():
+        config_dict[section] = {}
+        for option in config.options(section):
+            option_input = config.get(section, option)
+            if option_input in ['True', 'False']:
+                config_dict[section][option] = config.getboolean(section, option)
+            else:
+                config_dict[section][option] = config.get(section, option)
+
+    # Populate with command-line arguments overrides
+    config_dict['extras'] = {}
+    if not isinstance(vargs, type(None)):
+        for p in vargs.keys():
+            if not isinstance(vargs[p], type(None)):
+                if p in config_dict['global']:
+                    # If input argument is set, override global settings
+                    config_dict['global'][p] = vargs[p]
+                else:
+                    # Add to extras dictionary
+                    config_dict['extras'][p] = vargs[p]
+            else:
+                if p not in config_dict['global']:
+                    config_dict['extras'][p] = '(unset)'
+
+    return config_dict
 
 
 def get_summary_dict(ldap_members, grouper_members, delta):
