@@ -5,11 +5,10 @@ from os import mkdir
 
 from datetime import date
 
-import configparser
 import argparse
 
 from requiam import ldap_query
-from requiam.commons import figshare_stem
+from requiam.commons import dict_load, figshare_stem
 from requiam.grouper_query import grouper_delta_user
 from requiam.logger import LogClass, get_user_hostname
 from requiam import TimerClass
@@ -61,6 +60,7 @@ if __name__ == '__main__':
     parser.add_argument('--root_add', action='store_true', help='Include root in portal CSV')
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
+    vargs = vars(args)
 
     branch_name = get_active_branch_name(library_root_path)
     git_commit, git_short_commit = get_latest_commit(library_root_path)
@@ -79,11 +79,12 @@ if __name__ == '__main__':
     main_timer = TimerClass()
     main_timer._start()
 
-    config = configparser.ConfigParser()
-    config.read(args.config)
+    config_dict = dict_load(args.config, vargs=vargs)
+    global_dict = config_dict['global']  # These are settings in args.config
+    extras_dict = config_dict['extras']  # These are settings specific to script not in args.config
 
     # Define logfile
-    log_dir = path.join(args.persistent_path, config.get('global', 'log_dir'))
+    log_dir = path.join(global_dict['persistent_path'], global_dict['log_dir'])
 
     if not path.exists(log_dir):
         mkdir(log_dir)
@@ -105,71 +106,49 @@ if __name__ == '__main__':
     log.debug(f"Op. Sys. : {sys_info['os']}")
 
     cred_err = 0
-    vargs = vars(args)
-    for p in ['netid', 'persistent_path', 'ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
-              'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
-              'grouper_figtest', 'batch_size', 'batch_timeout', 'batch_delay',
-              'portal', 'quota', 'portal_file', 'quota_file',
-              'portal_file_noupdate', 'quota_file_noupdate', 'sync_max', 'active_remove',
-              'root_add']:
-
-        if (p in vargs) and (vargs[p] is not None):
-            vargs[p] = vargs[p]
-        elif (p in config['global']) and (config['global'][p] is not None) and \
-                (config['global'][p] != "***override***"):
-            vargs[p] = config['global'][p]
-        else:
-            vargs[p] = '(unset)'
-
+    for p in vargs.keys():
         if p in ['ldap_user', 'ldap_password', 'grouper_user', 'grouper_password']:
-            if vargs[p] == '(unset)':
-                log.info('   {0: >17} = (unset)'.format(p))
+            if global_dict[p] == '***override***':
+                log.info(f'   {p: >17} = (unset)')
                 cred_err += 1
             else:
-                log.info('   {0: >17} = (set)'.format(p))
+                log.info(f'   {p: >17} = (set)')
         else:
-            log.info('   {0: >17} = {1:}'. format(p, vargs[p]))
+            value = global_dict[p] if p in global_dict else extras_dict[p]
+            log.info(f"   {p: >17} = {value}")
 
     if cred_err:
         log.warning("Not all credentials available!")
         log.warning("Exiting")
         raise ValueError
 
-    log.info('     sync = %s', args.sync)
-    log.info('    debug = %s', args.debug)
+    ldap_keys = [key for key in global_dict.keys() if 'ldap_' in key]
+    ldap_dict = {x: global_dict[x] for x in ldap_keys}
 
-    ldap_dict = dict(ldap_host=vargs['ldap_host'],
-                     ldap_base_dn=vargs['ldap_base_dn'],
-                     ldap_user=vargs['ldap_user'],
-                     ldap_password=vargs['ldap_password'])
+    grouper_keys = ['grouper_'+suffix for
+                    suffix in ['host', 'base_path', 'user', 'password']]
+    grouper_dict = {x: global_dict[x] for x in grouper_keys}
 
-    grouper_dict = dict(grouper_host=vargs['grouper_host'],
-                        grouper_base_path=vargs['grouper_base_path'],
-                        grouper_user=vargs['grouper_user'],
-                        grouper_password=vargs['grouper_password'])
-
-    delta_dict = dict(batch_size=int(vargs['batch_size']),
-                      batch_timeout=int(vargs['batch_timeout']),
-                      batch_delay=int(vargs['batch_delay']),
-                      sync_max=int(vargs['sync_max']))
+    delta_keys = ['batch_size', 'batch_timeout', 'batch_delay', 'sync_max']
+    delta_dict = {x: global_dict[x] for x in delta_keys}
 
     # Manual override class
-    mo = ManualOverride(vargs['portal_file'], vargs['quota_file'],
-                        log=log, root_add=vargs['root_add'])
+    mo = ManualOverride(global_dict['portal_file'], global_dict['quota_file'],
+                        log=log, root_add=extras_dict['root_add'])
 
     # Initiate LDAP connection
     ldc = ldap_query.LDAPConnection(**ldap_dict, log=log)
 
-    if '.txt' in vargs['netid'][-4:]:
+    if '.txt' in extras_dict['netid'][-4:]:
         # Read in text file with list of users
-        log.info(f"Reading : {vargs['netid']}")
-        with open(vargs['netid']) as f:
+        log.info(f"Reading : {extras_dict['netid']}")
+        with open(extras_dict['netid']) as f:
             netid_list = f.read().splitlines()
         f.close()
         log.info(f"List of input users: {netid_list}")
     else:
         # Separate comma-separated list of users
-        netid_list = vargs['netid'].split(',')
+        netid_list = extras_dict['netid'].split(',')
 
     netid_set = sorted(set(netid_list), key=netid_list.index)
     num_netid = len(netid_set)
@@ -192,22 +171,22 @@ if __name__ == '__main__':
         raise ValueError
 
     # Grouper API tool
-    grouper_production = True if not vargs['grouper_figtest'] else False
+    grouper_production = True if not extras_dict['grouper_figtest'] else False
     ga = GrouperAPI(**grouper_dict, log=log,
                     grouper_production=grouper_production)
 
     # Check to see if portal exists on Grouper before proceeding
     portal_check = True
-    if vargs['portal'] != '(unset)' and vargs['portal'] != 'root':
-        portal_check = ga.check_group_exists(vargs['portal'], 'portal')
+    if extras_dict['portal'] != '(unset)' and extras_dict['portal'] != 'root':
+        portal_check = ga.check_group_exists(extras_dict['portal'], 'portal')
 
         if not portal_check:
             log.warning("portal not found on Grouper!")
 
     # Check to see if quota exists on Grouper before proceeding
     quota_check = True
-    if vargs['quota'] != '(unset)' and vargs['quota'] != 'root':
-        quota_check = ga.check_group_exists(vargs['quota'], 'quota')
+    if extras_dict['quota'] != '(unset)' and extras_dict['quota'] != 'root':
+        quota_check = ga.check_group_exists(extras_dict['quota'], 'quota')
 
         if not quota_check:
             log.warning("quota not found on Grouper!")
@@ -222,12 +201,12 @@ if __name__ == '__main__':
     current_dict['not_active'] = {'uaid': [], 'netid': []}
 
     current_dict['summary'] = {'active': 0}
-    if vargs['portal'] != '(unset)':
+    if extras_dict['portal'] != '(unset)':
         current_dict['summary']['portal'] = 0
 
         current_dict['portal'] = {'uaid': [], 'netid': []}
         current_dict['not_portal'] = {'uaid': [], 'netid': []}
-    if vargs['quota'] != '(unset)':
+    if extras_dict['quota'] != '(unset)':
         current_dict['summary']['quota'] = 0
 
         current_dict['quota'] = {'uaid': [], 'netid': []}
@@ -247,8 +226,8 @@ if __name__ == '__main__':
             current_dict['not_active']['uaid'] += [uaid]
             current_dict['not_active']['netid'] += [netid]
 
-        if vargs['portal'] != '(unset)':
-            if current_dict[netid]['portal'] == vargs['portal']:
+        if extras_dict['portal'] != '(unset)':
+            if current_dict[netid]['portal'] == extras_dict['portal']:
                 current_dict['summary']['portal'] += 1
 
                 current_dict['portal']['uaid'] += [uaid]
@@ -257,8 +236,8 @@ if __name__ == '__main__':
                 current_dict['not_portal']['uaid'] += [uaid]
                 current_dict['not_portal']['netid'] += [netid]
 
-        if vargs['quota'] != '(unset)':
-            if current_dict[netid]['quota'] == vargs['quota']:
+        if extras_dict['quota'] != '(unset)':
+            if current_dict[netid]['quota'] == extras_dict['quota']:
                 current_dict['summary']['quota'] += 1
 
                 current_dict['quota']['uaid'] += [uaid]
@@ -283,11 +262,11 @@ if __name__ == '__main__':
 
     log.info("STAGE: ACTIVE")
     # figshare:active or figtest:active update
-    if not vargs['active_remove']:
+    if not extras_dict['active_remove']:
         if len(current_dict['not_active']['netid']) > 0:
             log.info("Creating figtest:group_active group")
 
-            if not args.sync:
+            if not extras_dict['sync']:
                 log.info("dry run, not creating active_group group")
             else:
                 log.info("PROMPT: Provide the name for group...")
@@ -300,12 +279,12 @@ if __name__ == '__main__':
 
                 create_active_group(group_name, grouper_dict,
                                     group_description=group_description,
-                                    log=log, add=args.sync)
+                                    log=log, add=extras_dict['sync'])
 
                 d = grouper_delta_user(group_name, 'group_active',
                                        clean_netid_list, clean_uaid_list,
                                        'add', grouper_dict, delta_dict,
-                                       sync=args.sync, log=log,
+                                       sync=extras_dict['sync'], log=log,
                                        production=grouper_production)
 
                 log.warning("!!! Group will still need to be added indirectly to active group !!!")
@@ -319,16 +298,16 @@ if __name__ == '__main__':
                                    current_dict['active']['netid'],
                                    set(current_dict['active']['uaid']),
                                    'remove', grouper_dict, delta_dict,
-                                   sync=args.sync, log=log,
+                                   sync=extras_dict['sync'], log=log,
                                    production=grouper_production)
         else:
             log.info(f"All users not a member of {main_stem}:active. No need to remove")
 
     # Portal update
-    if vargs['portal'] != '(unset)':
+    if extras_dict['portal'] != '(unset)':
         log.info("STAGE: PORTAL")
         if len(current_dict['not_portal']['netid']) == 0:
-            log.warning(f"All users are member of {main_stem}:portal:{vargs['portal']}. No need to add")
+            log.warning(f"All users are member of {main_stem}:portal:{extras_dict['portal']}. No need to add")
         else:
             # First remove from current portal group
             not_portal_netid = current_dict['not_portal']['netid']
@@ -344,32 +323,32 @@ if __name__ == '__main__':
                     d = grouper_delta_user(current_portal, 'portal',
                                            not_portal_netid[i], not_portal_uaid[i],
                                            'remove', grouper_dict, delta_dict,
-                                           sync=args.sync, log=log,
+                                           sync=extras_dict['sync'], log=log,
                                            production=grouper_production)
 
             # Add to new portal group
-            if vargs['portal'] != 'root':
-                log.info(f"Adding to {main_stem}:portal:{vargs['portal']}")
+            if extras_dict['portal'] != 'root':
+                log.info(f"Adding to {main_stem}:portal:{extras_dict['portal']}")
 
-                in_mo = None if vargs['portal_file_noupdate'] else mo
+                in_mo = None if extras_dict['portal_file_noupdate'] else mo
                 if isinstance(in_mo, type(None)):
                     log.warning("--portal_file_noupdate: Not updating portal file")
 
-                d = grouper_delta_user(vargs['portal'], 'portal',
+                d = grouper_delta_user(extras_dict['portal'], 'portal',
                                        current_dict['not_portal']['netid'],
                                        current_dict['not_portal']['uaid'],
                                        'add', grouper_dict, delta_dict, mo=in_mo,
-                                       sync=args.sync, log=log,
+                                       sync=extras_dict['sync'], log=log,
                                        production=grouper_production)
             else:
                 # Remove entry from manual CSV file for 'root' case
-                if args.sync:
+                if extras_dict['sync']:
                     # Update of df only needed since there's not root portal to add too
                     if grouper_production:
-                        if not vargs['portal_file_noupdate']:
+                        if not extras_dict['portal_file_noupdate']:
                             mo.update_dataframe(current_dict['not_portal']['netid'],
                                                 current_dict['not_portal']['uaid'],
-                                                vargs['portal'], 'portal')
+                                                extras_dict['portal'], 'portal')
                         else:
                             log.warning("--portal_file_noupdate: Not updating portal file")
                     else:
@@ -378,10 +357,10 @@ if __name__ == '__main__':
                     log.info('dry run, not updating portal dataframe')
 
     # Quota update
-    if vargs['quota'] != '(unset)':
+    if extras_dict['quota'] != '(unset)':
         log.info("STAGE: QUOTA")
         if len(current_dict['not_quota']['netid']) == 0:
-            log.warning(f"All users are member of {main_stem}:quota:{vargs['quota']}. No need to add")
+            log.warning(f"All users are member of {main_stem}:quota:{extras_dict['quota']}. No need to add")
         else:
             # First remove from current quota group
             not_quota_netid = current_dict['not_quota']['netid']
@@ -397,32 +376,32 @@ if __name__ == '__main__':
                     d = grouper_delta_user(current_quota, 'quota',
                                            not_quota_netid[i], not_quota_uaid[i],
                                            'remove', grouper_dict, delta_dict,
-                                           sync=args.sync, log=log,
+                                           sync=extras_dict['sync'], log=log,
                                            production=grouper_production)
 
             # Add to new quota group
-            if vargs['quota'] != 'root':
-                log.info(f"Adding to {main_stem}:quota:{vargs['quota']}")
+            if extras_dict['quota'] != 'root':
+                log.info(f"Adding to {main_stem}:quota:{extras_dict['quota']}")
 
-                in_mo = None if vargs['quota_file_noupdate'] else mo
+                in_mo = None if extras_dict['quota_file_noupdate'] else mo
                 if isinstance(in_mo, type(None)):
                     log.warning("--quota_file_noupdate: Not updating quota file")
 
-                d = grouper_delta_user(vargs['quota'], 'quota',
+                d = grouper_delta_user(extras_dict['quota'], 'quota',
                                        current_dict['not_quota']['netid'],
                                        current_dict['not_quota']['uaid'],
                                        'add', grouper_dict, delta_dict,
-                                       mo=in_mo, sync=args.sync, log=log,
+                                       mo=in_mo, sync=extras_dict['sync'], log=log,
                                        production=grouper_production)
             else:
                 # Remove entry from manual CSV file for 'root' case
-                if args.sync:
+                if extras_dict['sync']:
                     # Update of df only needed since there's not root portal to add too
                     if grouper_production:
-                        if not vargs['quota_file_noupdate']:
+                        if not extras_dict['quota_file_noupdate']:
                             mo.update_dataframe(current_dict['not_quota']['netid'],
                                                 current_dict['not_quota']['uaid'],
-                                                vargs['quota'], 'quota')
+                                                extras_dict['quota'], 'quota')
                         else:
                             log.warning("--quota_file_noupdate: Not updating quota file")
                     else:
