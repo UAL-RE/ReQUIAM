@@ -57,7 +57,10 @@ def dict_load(config_file, vargs=None):
             if option_input in ['True', 'False']:
                 config_dict[section][option] = config.getboolean(section, option)
             else:
-                config_dict[section][option] = config.get(section, option)
+                if option_input.isdigit():  # set as integer
+                    config_dict[section][option] = int(option_input)
+                else:
+                    config_dict[section][option] = config.get(section, option)
 
     # Populate with command-line arguments overrides
     config_dict['extras'] = {}
