@@ -5,7 +5,6 @@ from os import mkdir
 
 from datetime import date
 
-import configparser
 import argparse
 
 # For LDAP query
@@ -17,6 +16,7 @@ from requiam.org_code_numbers import get_numbers
 # Logging
 from requiam.logger import LogClass, get_user_hostname
 from requiam import TimerClass
+from requiam.commons import dict_load
 
 # Version and branch info
 from requiam import __version__
@@ -39,6 +39,7 @@ if __name__ == '__main__':
     parser.add_argument('--org_url', help='URL that exports CSV file with organizational code ')
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
+    vargs = vars(args)
 
     branch_name = get_active_branch_name(library_root_path)
     git_commit, git_short_commit = get_latest_commit(library_root_path)
@@ -58,15 +59,16 @@ if __name__ == '__main__':
     main_timer = TimerClass()
     main_timer._start()
 
-    config = configparser.ConfigParser()
-    config.read(args.config)
+    config_dict = dict_load(args.config, vargs=vargs)
+    global_dict = config_dict['global']  # These are settings in args.config
+    extras_dict = config_dict['extras']  # These are settings specific to script not in args.config
 
     # Define logfile
-    log_dir = path.join(args.persistent_path, config.get('global', 'log_dir'))
+    log_dir = path.join(global_dict['persistent_path'], global_dict['log_dir'])
 
     if not path.exists(log_dir):
         mkdir(log_dir)
-    logfile = "org_code_numbers.{}.log".format(today.strftime("%Y-%m-%d"))
+    logfile = f"org_code_numbers.{today.strftime('%Y-%m-%d')}.log"
 
     log = LogClass(log_dir, logfile).get_logger()
 
@@ -84,46 +86,33 @@ if __name__ == '__main__':
     log.debug(f"Op. Sys. : {sys_info['os']}")
 
     cred_err = 0
-    vargs = vars(args)
-    for p in ['ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password']:
-
-        if (p in vargs) and (vargs[p] is not None):
-            vargs[p] = vargs[p]
-        elif (p in config['global']) and (config['global'][p] is not None) and \
-                (config['global'][p] != "***override***"):
-            vargs[p] = config['global'][p]
+    for p in vargs.keys():
+        if p in global_dict:
+            value = global_dict[p]
+        elif p in config_dict['google']:
+            value = config_dict['google'][p]
         else:
-            vargs[p] = '(unset)'
+            value = extras_dict[p]
 
-        if p in ['ldap_user', 'ldap_password']:
-            if vargs[p] == '(unset)':
-                log.info('   {0: >17} = (unset)'.format(p))
+        if p in ['ldap_user', 'ldap_password', 'org_url']:
+            if value == '(unset)':
+                log.info(f'   {p: >17} = (unset)')
                 cred_err += 1
             else:
-                log.info('   {0: >17} = (set)'.format(p))
+                log.info(f'   {p: >17} = (set)')
         else:
-            log.info('   {0: >17} = {1:}'. format(p, vargs[p]))
+            log.info(f'   {p: >17} = {value}')
 
     if cred_err:
         log.warning("Not all credentials available!")
         log.warning("Exiting")
         raise ValueError
 
-    for p in ['org_url']:
-        if (p in vargs) and (vargs[p] is not None):
-            vargs[p] = vargs[p]
-        elif (p in config['google']) and (config['google'][p] is not None) and \
-                (config['google'][p] != "***override***"):
-            vargs[p] = config['google'][p]
-        else:
-            vargs[p] = '(unset)'
+    ldap_keys = [key for key in global_dict.keys() if 'ldap_' in key]
+    ldap_dict = {x: global_dict[x] for x in ldap_keys}
+    ldc = LDAPConnection(**ldap_dict, log=log)
 
-    ldc = LDAPConnection(ldap_host=vargs['ldap_host'],
-                         ldap_base_dn=vargs['ldap_base_dn'],
-                         ldap_user=vargs['ldap_user'],
-                         ldap_password=vargs['ldap_password'], log=log)
-
-    get_numbers(ldc, vargs['org_url'], log)
+    get_numbers(ldc, config_dict['google']['org_url'], log)
 
     main_timer._stop()
     log.info(main_timer.format)
