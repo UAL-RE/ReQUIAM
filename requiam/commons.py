@@ -71,10 +71,14 @@ def dict_load(config_file, vargs=None):
                     # If input argument is set, override global settings
                     config_dict['global'][p] = vargs[p]
                 else:
-                    # Add to extras dictionary
-                    config_dict['extras'][p] = vargs[p]
+                    if p in config_dict['google']:
+                        config_dict['google'][p] = vargs[p]
+                    else:
+                        # Add to extras dictionary
+                        config_dict['extras'][p] = vargs[p]
             else:
-                if p not in config_dict['global']:
+                if (p not in config_dict['global']) and \
+                        (p not in config_dict['google']):
                     config_dict['extras'][p] = '(unset)'
 
     return config_dict
