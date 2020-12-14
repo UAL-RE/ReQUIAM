@@ -104,3 +104,37 @@ def pandas_write_buffer(df, log_filename):
     with open(log_filename, mode='a') as f:
         print(buffer.getvalue(), file=f)
     buffer.close()
+
+
+def log_settings(vargs, config_dict, protected_keys, log=None):
+    """
+    Purpose:
+      Log parsed arguments settings for scripts
+
+    :param vargs: dict of parsed arguments
+    :param config_dict: dict containing configuration settings. See commons.dict_load
+    :param protected_keys: list of private arguments to print unset or set status
+    :param log: LogClass
+
+    :return cred_error: int providing number of errors with credentials
+    """
+
+    if log is None:
+        log = log_stdout()
+
+    cred_err = 0
+    for p in vargs.keys():
+        for k in config_dict.keys():
+            if p in config_dict[k].keys():
+                value = config_dict[k][p]
+
+        if p in protected_keys:
+            if value == '***override***':
+                log.info(f'   {p: >17} = (unset)')
+                cred_err += 1
+            else:
+                log.info(f'   {p: >17} = (set)')
+        else:
+            log.info(f"   {p: >17} = {value}")
+
+    return cred_err
