@@ -41,8 +41,8 @@ def dict_load(config_file, vargs=None):
       with sections and options
 
     :param config_file: str. Full/relative path of configuration file
-    :param vargs: Dictionary containing command-line arguments
-    :return config_dict: dict of dict with hierarchy of sections follow by options
+    :param vargs: dict containing command-line arguments
+    :return config_dict: dict of dict with hierarchy for config sections
     """
 
     if vargs is None:
