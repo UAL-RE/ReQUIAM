@@ -67,7 +67,7 @@ def dict_load(config_file, vargs=None):
 
     # Populate with command-line arguments overrides
     config_dict['extras'] = {}
-    if not vargs:
+    if vargs:
         for p in vargs.keys():
             if not isinstance(vargs[p], type(None)):
                 if p in config_dict['global']:
