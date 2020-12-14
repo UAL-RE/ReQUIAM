@@ -69,7 +69,7 @@ def dict_load(config_file, vargs=None):
     config_dict['extras'] = {}
     if vargs:
         for p in vargs.keys():
-            if not isinstance(vargs[p], type(None)):
+            if vargs[p] is not None:
                 if p in config_dict['global']:
                     # If input argument is set, override global settings
                     config_dict['global'][p] = vargs[p]
