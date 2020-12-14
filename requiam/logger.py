@@ -123,11 +123,12 @@ def log_settings(vargs, config_dict, protected_keys, log=None):
         log = log_stdout()
 
     cred_err = 0
+    sections = config_dict.keys()
     for p in vargs.keys():
         value = ''
-        for k in config_dict.keys():
-            if p in config_dict[k].keys():
-                value = config_dict[k][p]
+        for section in sections:
+            if p in config_dict[section].keys():
+                value = config_dict[section][p]
 
         if p in protected_keys:
             if value == '***override***' or value == '':
