@@ -14,7 +14,7 @@ from requiam.ldap_query import LDAPConnection
 from requiam.org_code_numbers import get_numbers
 
 # Logging
-from requiam.logger import LogClass, get_user_hostname
+from requiam.logger import LogClass, get_user_hostname, log_settings
 from requiam import TimerClass
 from requiam.commons import dict_load
 
@@ -85,23 +85,8 @@ if __name__ == '__main__':
     log.debug(f"IP Addr  : {sys_info['ip']}")
     log.debug(f"Op. Sys. : {sys_info['os']}")
 
-    cred_err = 0
-    for p in vargs.keys():
-        if p in global_dict:
-            value = global_dict[p]
-        elif p in config_dict['google']:
-            value = config_dict['google'][p]
-        else:
-            value = extras_dict[p]
-
-        if p in ['ldap_user', 'ldap_password', 'org_url']:
-            if value == '(unset)':
-                log.info(f'   {p: >17} = (unset)')
-                cred_err += 1
-            else:
-                log.info(f'   {p: >17} = (set)')
-        else:
-            log.info(f'   {p: >17} = {value}')
+    protected_keys = ['ldap_user', 'ldap_password', 'org_url']
+    cred_err = log_settings(vargs, config_dict, protected_keys, log=log)
 
     if cred_err:
         log.warning("Not all credentials available!")
