@@ -10,7 +10,7 @@ import argparse
 from requiam import ldap_query
 from requiam.commons import dict_load, figshare_stem
 from requiam.grouper_query import grouper_delta_user
-from requiam.logger import LogClass, get_user_hostname
+from requiam.logger import LogClass, get_user_hostname, log_settings
 from requiam import TimerClass
 from requiam.manual_override import ManualOverride, get_current_groups
 from requiam.grouper_admin import GrouperAPI, create_active_group
@@ -105,17 +105,9 @@ if __name__ == '__main__':
     log.debug(f"IP Addr  : {sys_info['ip']}")
     log.debug(f"Op. Sys. : {sys_info['os']}")
 
-    cred_err = 0
-    for p in vargs.keys():
-        if p in ['ldap_user', 'ldap_password', 'grouper_user', 'grouper_password']:
-            if global_dict[p] == '***override***':
-                log.info(f'   {p: >17} = (unset)')
-                cred_err += 1
-            else:
-                log.info(f'   {p: >17} = (set)')
-        else:
-            value = global_dict[p] if p in global_dict else extras_dict[p]
-            log.info(f"   {p: >17} = {value}")
+    protected_keys = ['ldap_user', 'ldap_password',
+                      'grouper_user', 'grouper_password']
+    cred_err = log_settings(vargs, config_dict, protected_keys, log=log)
 
     if cred_err:
         log.warning("Not all credentials available!")
