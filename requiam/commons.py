@@ -45,6 +45,9 @@ def dict_load(config_file, vargs=None):
     :return config_dict: dict of dict with hierarchy of sections follow by options
     """
 
+    if vargs is None:
+        vargs = dict()
+
     config = configparser.ConfigParser()
     config.read(config_file)
 
@@ -64,7 +67,7 @@ def dict_load(config_file, vargs=None):
 
     # Populate with command-line arguments overrides
     config_dict['extras'] = {}
-    if not isinstance(vargs, type(None)):
+    if not vargs:
         for p in vargs.keys():
             if not isinstance(vargs[p], type(None)):
                 if p in config_dict['global']:
