@@ -250,7 +250,7 @@ if __name__ == '__main__':
 
             # Loop over sub-portals
             for portal, portal_name in zip(unique_portals, unique_portals_name):
-                log.info("Working on {} ({}) portal".format(portal_name, portal))
+                log.info(f"Working on {portal_name} ({portal}) portal")
 
                 group_check = ga.check_group_exists(portal, 'portal')
                 if not group_check:  # Avoid execution
@@ -276,7 +276,7 @@ if __name__ == '__main__':
                 # Update based on CSV manual input files
                 if mo_status:
                     ldap_members = mo.identify_changes(ldap_members, portal, 'portal')
-                log.info(" EDS size {}".format(len(ldap_members)))
+                log.info(f" EDS size {len(ldap_members)}")
 
                 # Grouper query
                 grouper_portal = figshare_group(portal, 'portal',
@@ -284,7 +284,7 @@ if __name__ == '__main__':
                 log.info(f"Grouper group : {grouper_portal}")
                 gq = GrouperQuery(**grouper_dict, grouper_group=grouper_portal,
                                   log=log)
-                log.info(" Grouper size {}".format(len(gq.members)))
+                log.info(f" Grouper size {len(gq.members)}")
 
                 # For --org_codes or --groups, only add users
                 if not isinstance(org_codes, type(None)):
@@ -299,12 +299,12 @@ if __name__ == '__main__':
 
                 summary_dict[portal] = get_summary_dict(ldap_members, gq.members, d)
 
-                log.info('ldap and grouper have {} members in common'.format(len(d.common)))
-                log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+                log.info(f'ldap and grouper have {len(d.common)} members in common')
+                log.info(f'synchronization will drop {len(d.drops)} entries from grouper group')
                 if not extras_dict['ci']:
                     if (len(d.drops) < 20) and (len(d.drops) > 0):
                         log.info(f'drops : {list(d.drops)}')
-                    log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+                    log.info(f'synchronization will add {len(d.adds)} entries to grouper group')
                     if (len(d.adds) < 20) and (len(d.adds) > 0):
                         log.info(f'adds  : {list(d.adds)}')
 
@@ -331,7 +331,7 @@ if __name__ == '__main__':
                 log.info(f"Quota execution not required for {c} group. Skipping...")
                 continue
 
-            log.info("Working on {} quota : {} bytes".format(c, q))
+            log.info(f"Working on {c} quota : {q} bytes")
 
             group_check = ga.check_group_exists(str(q), 'quota')
             if not group_check:  # Avoid execution
@@ -348,13 +348,13 @@ if __name__ == '__main__':
             # Update based on CSV manual input files
             if mo_status:
                 ldap_members = mo.identify_changes(ldap_members, q, 'quota')
-            log.info(" EDS size {}".format(len(ldap_members)))
+            log.info(f" EDS size {len(ldap_members)}")
 
             # Grouper query
             grouper_quota = figshare_group(q, 'quota', production=grouper_production)
             log.info(f"Grouper group : {grouper_quota}")
             gq = GrouperQuery(**grouper_dict, grouper_group=grouper_quota, log=log)
-            log.info(" Grouper size {}".format(len(gq.members)))
+            log.info(f" Grouper size {len(gq.members)}")
 
             # For --org_codes or --groups, only add users
             if not isinstance(org_codes, type(None)):
@@ -370,12 +370,12 @@ if __name__ == '__main__':
 
             summary_dict[q] = get_summary_dict(ldap_members, gq.members, d)
 
-            log.info('ldap and grouper have {} members in common'.format(len(d.common)))
-            log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+            log.info(f'ldap and grouper have {len(d.common)} members in common')
+            log.info(f'synchronization will drop {len(d.drops)} entries from grouper group')
             if not extras_dict['ci']:
                 if (len(d.drops) < 20) and (len(d.drops) > 0):
                     log.info(f'drops : {list(d.drops)}')
-                log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+                log.info(f'synchronization will add {len(d.adds)} entries to grouper group')
                 if (len(d.adds) < 20) and (len(d.adds) > 0):
                     log.info(f'adds  : {list(d.adds)}')
 
@@ -399,30 +399,30 @@ if __name__ == '__main__':
         # LDAP query to retrieve members
         test_uid = global_dict['uid']
         ldap_queries = ldap_query.uid_query(test_uid)
-        log.info(" test account : {}".format(test_uid))
+        log.info(f" test account : {test_uid}")
 
         ldap_members = set()
         if extras_dict['test']:
             ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
-            log.info(" EDS size {}".format(len(ldap_members)))
+            log.info(f" EDS size {len(ldap_members)}")
         if extras_dict['test_reverse']:
             log.info(" Providing empty member list")
 
         # Note testing is only performed on figshare:test and not figtest:test
         grouper_test = figshare_group('test', '')
         gq = GrouperQuery(**grouper_dict, grouper_group=grouper_test, log=log)
-        log.info(" Grouper size {}".format(len(gq.members)))
+        log.info(f" Grouper size {len(gq.members)}")
 
         # Delta between LDAP and Grouper
         d = delta.Delta(ldap_members=ldap_members, grouper_query_instance=gq,
                         **delta_dict, log=log)
 
-        log.info('ldap and grouper have {} members in common'.format(len(d.common)))
-        log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
+        log.info(f'ldap and grouper have {d.common} members in common')
+        log.info(f'synchronization will drop {len(d.drops)} entries from grouper group')
         if not extras_dict['ci']:
             if (len(d.drops) < 20) and (len(d.drops) > 0):
                 log.info(f'drops : {list(d.drops)}')
-            log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+            log.info(f'synchronization will add {len(d.adds)} entries to grouper group')
             if (len(d.adds) < 20) and (len(d.adds) > 0):
                 log.info(f'adds  : {list(d.adds)}')
 
