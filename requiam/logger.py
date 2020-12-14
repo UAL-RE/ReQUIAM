@@ -124,12 +124,13 @@ def log_settings(vargs, config_dict, protected_keys, log=None):
 
     cred_err = 0
     for p in vargs.keys():
+        value = ''
         for k in config_dict.keys():
             if p in config_dict[k].keys():
                 value = config_dict[k][p]
 
         if p in protected_keys:
-            if value == '***override***':
+            if value == '***override***' or value == '':
                 log.info(f'   {p: >17} = (unset)')
                 cred_err += 1
             else:
