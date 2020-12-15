@@ -239,8 +239,11 @@ if __name__ == '__main__':
                     if (len(d.adds) < 20) and (len(d.adds) > 0):
                         log.info(f"adds  : {list(d.adds)}")
 
-                log.info('synchronizing ...')
-                d.synchronize()
+                if len(d.drops) + len(d.adds) > 0:
+                    log.info('synchronizing ...')
+                    d.synchronize()
+                else:
+                    log.info("synchronizing not needed")
 
         if df.empty:
             log.warning("Empty portal DataFrame. Skipping portal!")
@@ -309,8 +312,11 @@ if __name__ == '__main__':
                         log.info(f"adds  : {list(d.adds)}")
 
                 if extras_dict['sync']:
-                    log.info('synchronizing ...')
-                    d.synchronize()
+                    if len(d.drops)+len(d.adds) > 0:
+                        log.info('synchronizing ...')
+                        d.synchronize()
+                    else:
+                        log.info("synchronizing not needed")
                 else:
                     log.info('dry run, not performing synchronization')
 
@@ -380,8 +386,11 @@ if __name__ == '__main__':
                     log.info(f"adds  : {list(d.adds)}")
 
             if extras_dict['sync']:
-                log.info('synchronizing ...')
-                d.synchronize()
+                if len(d.drops) + len(d.adds) > 0:
+                    log.info('synchronizing ...')
+                    d.synchronize()
+                else:
+                    log.info("synchronizing not needed")
             else:
                 log.info('dry run, not performing synchronization')
 
@@ -427,8 +436,11 @@ if __name__ == '__main__':
                 log.info(f"adds  : {list(d.adds)}")
 
         if extras_dict['sync']:
-            log.info('synchronizing ...')
-            d.synchronize()
+            if len(d.drops) + len(d.adds) > 0:
+                log.info('synchronizing ...')
+                d.synchronize()
+            else:
+                log.info("synchronizing not needed")
         else:
             log.info('dry run, not performing synchronization')
 
