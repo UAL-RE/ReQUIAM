@@ -39,25 +39,26 @@ class Delta(object):
         self.batch_delay = batch_delay
         self.sync_max = sync_max
 
+        self.drops = self._drops()
+        self.adds = self._adds()
+        self.common = self._common()
+
         self.log.debug('returning')
         return
 
-    @property
-    def common(self):
+    def _common(self):
         common = self.ldap_members & self.grouper_query_instance.members
 
         self.log.debug('finished common')
         return common
 
-    @property
-    def adds(self):
+    def _adds(self):
         adds = self.ldap_members - self.grouper_query_instance.members
 
         self.log.debug('finished adds')
         return adds
 
-    @property
-    def drops(self):
+    def _drops(self):
         drops = self.grouper_query_instance.members - self.ldap_members
 
         self.log.debug('finished drops')
