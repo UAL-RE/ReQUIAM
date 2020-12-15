@@ -33,7 +33,7 @@ class Delta(object):
         self.log.debug('entered')
 
         self.ldap_members = ldap_members
-        self.grouper_query_instance = grouper_query_instance
+        self.gq = grouper_query_instance
         self.batch_size = batch_size
         self.batch_timeout = batch_timeout
         self.batch_delay = batch_delay
@@ -47,19 +47,19 @@ class Delta(object):
         return
 
     def _common(self):
-        common = self.ldap_members & self.grouper_query_instance.members
+        common = self.ldap_members & self.gq.members
 
         self.log.debug('finished common')
         return common
 
     def _adds(self):
-        adds = self.ldap_members - self.grouper_query_instance.members
+        adds = self.ldap_members - self.gq.members
 
         self.log.debug('finished adds')
         return adds
 
     def _drops(self):
-        drops = self.grouper_query_instance.members - self.ldap_members
+        drops = self.gq.members - self.ldap_members
 
         self.log.debug('finished drops')
         return drops
@@ -69,12 +69,12 @@ class Delta(object):
 
         total_delta = len(list(self.adds)) + len(list(self.drops))
         if total_delta > self.sync_max:
-            self.log.warning(
-                f"total delta ({total_delta}) exceeds maximum sync limit ({self.sync_max}), will not synchronize")
+            self.log.warning(f"total delta ({total_delta}) exceeds maximum " +
+                             f"sync limit ({self.sync_max}), will not synchronize")
             self.log.debug('returning')
             return
 
-        self.log.info(f"synchronizing ldap query results to {self.grouper_query_instance.grouper_group}")
+        self.log.info(f"synchronizing ldap query results to {self.gq.grouper_group}")
         self.log.info(f"batch size = {self.batch_size}, " +
                       f"batch timeout = {self.batch_timeout} seconds, " +
                       f"batch delay = {self.batch_delay} seconds")
@@ -82,13 +82,14 @@ class Delta(object):
         self.log.info('processing drops:')
         n_batches = 0
         list_of_drops = list(self.drops)
-        for batch in [list_of_drops[i:i + self.batch_size] for i in range(0, len(list_of_drops), self.batch_size)]:
+        for batch in [list_of_drops[i:i + self.batch_size] for
+                      i in range(0, len(list_of_drops), self.batch_size)]:
             n_batches += 1
 
             start_t = datetime.datetime.now()
-            rsp = requests.post(self.grouper_query_instance.grouper_group_members_url,
-                                auth=(self.grouper_query_instance.grouper_user,
-                                      self.grouper_query_instance.grouper_password),
+            rsp = requests.post(self.gq.grouper_group_members_url,
+                                auth=(self.gq.grouper_user,
+                                      self.gq.grouper_password),
                                 data=json.dumps({
                                     'WsRestDeleteMemberRequest': {
                                         'replaceAllExisting': 'F',
@@ -105,7 +106,9 @@ class Delta(object):
                 self.log.warning('problem running batch delete, result code = %s',
                                  rsp_j['WsDeleteMemberResults']['resultMetadata']['resultCode'])
             else:
-                self.log.info(f"dropped batch {n_batches}, {len(batch)} entries, {batch_t} seconds")
+                self.log.info(f"dropped batch {n_batches}, " +
+                              f"{len(batch)} entries, " +
+                              f"{batch_t} seconds")
 
             if self.batch_delay > 0:
                 self.log.info(f"pausing for {self.batch_delay} seconds")
@@ -114,13 +117,14 @@ class Delta(object):
         self.log.info('processing adds:')
         n_batches = 0
         list_of_adds = list(self.adds)
-        for batch in [list_of_adds[i:i + self.batch_size] for i in range(0, len(list_of_adds), self.batch_size)]:
+        for batch in [list_of_adds[i:i + self.batch_size] for
+                      i in range(0, len(list_of_adds), self.batch_size)]:
             n_batches += 1
 
             start_t = datetime.datetime.now()
-            rsp = requests.put(self.grouper_query_instance.grouper_group_members_url,
-                               auth=(self.grouper_query_instance.grouper_user,
-                                     self.grouper_query_instance.grouper_password),
+            rsp = requests.put(self.gq.grouper_group_members_url,
+                               auth=(self.gq.grouper_user,
+                                     self.gq.grouper_password),
                                data=json.dumps({
                                    'WsRestAddMemberRequest': {
                                        'replaceAllExisting': 'F',
@@ -137,7 +141,9 @@ class Delta(object):
                 self.log.warning('problem running batch add, result code = %s',
                                  rsp_j['WsAddMemberResults']['resultMetadata']['resultCode'])
             else:
-                self.log.info(f"added batch {n_batches}, {len(batch)} entries, {batch_t} seconds")
+                self.log.info(f"added batch {n_batches}, " +
+                              f"{len(batch)} entries, " +
+                              "{batch_t} seconds")
 
             if self.batch_delay > 0:
                 self.log.info(f"pausing for {self.batch_delay} seconds")
