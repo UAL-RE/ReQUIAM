@@ -70,13 +70,14 @@ class Delta(object):
         total_delta = len(list(self.adds)) + len(list(self.drops))
         if total_delta > self.sync_max:
             self.log.warning(
-                'total delta (%d) exceeds maximum sync limit (%d), will not synchronize' % (total_delta, self.sync_max))
+                f"total delta ({total_delta}) exceeds maximum sync limit ({self.sync_max}), will not synchronize")
             self.log.debug('returning')
             return
 
-        self.log.info('synchronizing ldap query results to %s' % self.grouper_query_instance.grouper_group)
-        self.log.info('batch size = %d, batch timeout = %d seconds, batch delay = %d seconds' %
-                      (self.batch_size, self.batch_timeout, self.batch_delay))
+        self.log.info(f"synchronizing ldap query results to {self.grouper_query_instance.grouper_group}")
+        self.log.info(f"batch size = {self.batch_size}, " +
+                      f"batch timeout = {self.batch_timeout} seconds, " +
+                      f"batch delay = {self.batch_delay} seconds")
 
         self.log.info('processing drops:')
         n_batches = 0
@@ -104,10 +105,10 @@ class Delta(object):
                 self.log.warning('problem running batch delete, result code = %s',
                                  rsp_j['WsDeleteMemberResults']['resultMetadata']['resultCode'])
             else:
-                self.log.info('dropped batch %d, %d entries, %d seconds' % (n_batches, len(batch), batch_t))
+                self.log.info(f"dropped batch {n_batches}, {len(batch)} entries, {batch_t} seconds")
 
             if self.batch_delay > 0:
-                self.log.info('pausing for %d seconds' % self.batch_delay)
+                self.log.info(f"pausing for {self.batch_delay} seconds")
                 time.sleep(self.batch_delay)
 
         self.log.info('processing adds:')
@@ -136,11 +137,11 @@ class Delta(object):
                 self.log.warning('problem running batch add, result code = %s',
                                  rsp_j['WsAddMemberResults']['resultMetadata']['resultCode'])
             else:
-                self.log.info('added batch %d, %d entries, %d seconds' % (n_batches, len(batch), batch_t))
+                self.log.info(f"added batch {n_batches}, {len(batch)} entries, {batch_t} seconds")
 
             if self.batch_delay > 0:
-                self.log.info('pausing for %d seconds' % self.batch_delay)
+                self.log.info(f"pausing for {self.batch_delay} seconds")
                 time.sleep(self.batch_delay)
 
-        self.log.debug('returning')
+        self.log.debug('finished synchronize')
         return

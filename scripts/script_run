@@ -426,7 +426,7 @@ if __name__ == '__main__':
         d = delta.Delta(ldap_members=ldap_members, grouper_query_instance=gq,
                         **delta_dict, log=log)
 
-        log.info(f"ldap and grouper have {d.common} members in common")
+        log.info(f"ldap and grouper have {len(d.common)} members in common")
         log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
         log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
         if not extras_dict['ci']:
