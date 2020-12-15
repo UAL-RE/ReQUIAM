@@ -232,10 +232,10 @@ if __name__ == '__main__':
 
                 log.info(f"ldap and grouper have {len(d.common)} members in common")
                 log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
+                log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
                 if not extras_dict['ci']:
                     if (len(d.drops) < 20) and (len(d.drops) > 0):
                         log.info(f"drops : {list(d.drops)}")
-                    log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
                     if (len(d.adds) < 20) and (len(d.adds) > 0):
                         log.info(f"adds  : {list(d.adds)}")
 
@@ -301,10 +301,10 @@ if __name__ == '__main__':
 
                 log.info(f"ldap and grouper have {len(d.common)} members in common")
                 log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
+                log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
                 if not extras_dict['ci']:
                     if (len(d.drops) < 20) and (len(d.drops) > 0):
                         log.info(f"drops : {list(d.drops)}")
-                    log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
                     if (len(d.adds) < 20) and (len(d.adds) > 0):
                         log.info(f"adds  : {list(d.adds)}")
 
@@ -372,10 +372,10 @@ if __name__ == '__main__':
 
             log.info(f"ldap and grouper have {len(d.common)} members in common")
             log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
+            log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
             if not extras_dict['ci']:
                 if (len(d.drops) < 20) and (len(d.drops) > 0):
                     log.info(f"drops : {list(d.drops)}")
-                log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
                 if (len(d.adds) < 20) and (len(d.adds) > 0):
                     log.info(f"adds  : {list(d.adds)}")
 
@@ -419,10 +419,10 @@ if __name__ == '__main__':
 
         log.info(f"ldap and grouper have {d.common} members in common")
         log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
+        log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
         if not extras_dict['ci']:
             if (len(d.drops) < 20) and (len(d.drops) > 0):
                 log.info(f"drops : {list(d.drops)}")
-            log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
             if (len(d.adds) < 20) and (len(d.adds) > 0):
                 log.info(f"adds  : {list(d.adds)}")
 
