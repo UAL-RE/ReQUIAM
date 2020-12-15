@@ -1,21 +1,17 @@
 #!/usr/bin/env python
 
-from os import path
-from os import mkdir
-
-from requests.exceptions import HTTPError
+from os import path, mkdir
 
 import pandas as pd
 
 from datetime import date
 
-import configparser
 import argparse
 
 from requiam.grouper_admin import GrouperAPI, create_groups
-from requiam.grouper_query import figshare_group
-from requiam.logger import LogClass, log_stdout, get_user_hostname
+from requiam.logger import LogClass, get_user_hostname, log_settings
 from requiam import TimerClass
+from requiam.commons import dict_load
 
 # Version and branch info
 from requiam import __version__
@@ -45,6 +41,7 @@ if __name__ == '__main__':
     parser.add_argument('--add', action='store_true', help='perform add')
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
+    vargs = vars(args)
 
     branch_name = get_active_branch_name(library_root_path)
     git_commit, git_short_commit = get_latest_commit(library_root_path)
@@ -67,11 +64,12 @@ if __name__ == '__main__':
     main_timer = TimerClass()
     main_timer._start()
 
-    config = configparser.ConfigParser()
-    config.read(args.config)
+    config_dict = dict_load(args.config, vargs=vargs)
+    global_dict = config_dict['global']  # These are settings in args.config
+    extras_dict = config_dict['extras']  # These are settings specific to script not in args.config
 
     # Define logfile
-    log_dir = path.join(args.persistent_path, config.get('global', 'log_dir'))
+    log_dir = path.join(global_dict['persistent_path'], global_dict['log_dir'])
 
     if not path.exists(log_dir):
         mkdir(log_dir)
@@ -92,46 +90,19 @@ if __name__ == '__main__':
     log.debug(f"IP Addr  : {sys_info['ip']}")
     log.debug(f"Op. Sys. : {sys_info['os']}")
 
-    cred_err = 0
-    vargs = vars(args)
-    for p in ['grouper_host', 'grouper_base_path', 'grouper_user',
-              'grouper_password']:
-
-        if (p in vargs) and (vargs[p] is not None):
-            vargs[p] = vargs[p]
-        elif (p in config['global']) and (config['global'][p] is not None) and \
-                (config['global'][p] != "***override***"):
-            vargs[p] = config['global'][p]
-        else:
-            vargs[p] = '(unset)'
-
-        if p in ['grouper_user', 'grouper_password']:
-            if vargs[p] == '(unset)':
-                log.info('   {0: >17} = (unset)'.format(p))
-                cred_err += 1
-            else:
-                log.info('   {0: >17} = (set)'.format(p))
-        else:
-            log.info('   {0: >17} = {1:}'. format(p, vargs[p]))
+    protected_keys = ['grouper_user', 'grouper_password']
+    cred_err = log_settings(vargs, config_dict, protected_keys, log=log)
 
     if cred_err:
         log.warning("Not all credentials available!")
         log.warning("Exiting")
         raise ValueError
 
-    log.info(f'main_themes = {args.main_themes}')
-    log.info(f'sub_portals = {args.sub_portals}')
-    log.info(f'      quota = {args.quota}')
-    log.info(f' production = {args.production}')
-    log.info(f'        add = {args.add}')
-    log.info(f'      debug = {args.debug}')
+    grouper_keys = ['grouper_'+suffix for
+                    suffix in ['host', 'base_path', 'user', 'password']]
+    grouper_dict = {x: global_dict[x] for x in grouper_keys}
 
-    grouper_dict = dict(grouper_host=vargs['grouper_host'],
-                        grouper_base_path=vargs['grouper_base_path'],
-                        grouper_user=vargs['grouper_user'],
-                        grouper_password=vargs['grouper_password'])
-
-    if vargs['production']:
+    if extras_dict['production']:
         grouper_production = True
     else:
         grouper_production = False
@@ -140,12 +111,12 @@ if __name__ == '__main__':
                     log=log)
 
     # Main portals / Overall Research Themes
-    if vargs['main_themes']:
+    if extras_dict['main_themes']:
         mainTheme_timer = TimerClass()
         mainTheme_timer._start()
 
         # Read in Google Sheet CSV with main themes
-        mainTheme_url = config.get('google', 'maintheme_url')
+        mainTheme_url = config_dict['google']['maintheme_url']
         log.info("Reading Main Theme CSV into DataFrame ...")
         mainTheme_df = pd.read_csv(mainTheme_url)
 
@@ -170,18 +141,18 @@ if __name__ == '__main__':
         log.info(f"List of main themes: {', '.join(main_groups)}")
 
         create_groups(main_groups, 'portal', main_descriptions, ga, log0=log,
-                      add=args.add)
+                      add=extras_dict['add'])
 
         mainTheme_timer._stop()
         log.info(f"MAIN PORTAL : {mainTheme_timer.format}")
 
     # Sub-portals
-    if vargs['sub_portals']:
+    if extras_dict['sub_portals']:
         subPortal_timer = TimerClass()
         subPortal_timer._start()
 
         # Read in Google Sheet CSV with sub-portals
-        subPortal_url = config.get('google', 'subportal_url')
+        subPortal_url = config_dict['google']['subportal_url']
         log.info("Reading Sub-portals CSV into DataFrame ...")
         subPortal_df = pd.read_csv(subPortal_url)
 
@@ -206,18 +177,18 @@ if __name__ == '__main__':
         log.info(f"List of sub-portals: {', '.join(sub_groups)}")
 
         create_groups(sub_groups, 'portal', sub_descriptions, ga, log0=log,
-                      add=args.add)
+                      add=extras_dict['add'])
 
         subPortal_timer._stop()
         log.info(f"SUB-PORTAL : {subPortal_timer.format}")
 
     # Quotas
-    if vargs['quota']:
+    if extras_dict['quota']:
         quota_timer = TimerClass()
         quota_timer._start()
 
         # Read in Google Sheet CSV with sub-portals
-        quota_url = config.get('google', 'quota_url')
+        quota_url = config_dict['google']['quota_url']
         log.info("Reading Quotas CSV into DataFrame ...")
         quota_df = pd.read_csv(quota_url)
 
@@ -240,7 +211,7 @@ if __name__ == '__main__':
         log.info(f"List of quotas: {', '.join(quota_groups)}")
 
         create_groups(quota_groups, 'quota', quota_descriptions, ga, log0=log,
-                      add=args.add)
+                      add=extras_dict['add'])
 
         quota_timer._stop()
         log.info(f"QUOTA : {quota_timer.format}")
