@@ -321,7 +321,7 @@ if __name__ == '__main__':
                     log.info('dry run, not performing synchronization')
 
         portal_timer._stop()
-        log.info("PORTAL : " + portal_timer.format)
+        log.info(f"PORTAL : {portal_timer.format}")
 
     # Perform EDS-Grouper synchronization for figshare quota
     if extras_dict['quota']:
@@ -395,7 +395,7 @@ if __name__ == '__main__':
                 log.info('dry run, not performing synchronization')
 
         quota_timer._stop()
-        log.info("QUOTA : "+quota_timer.format)
+        log.info(f"QUOTA : {quota_timer.format}")
 
     # Perform EDS-Grouper synchronization for simple test
     if extras_dict['test'] or extras_dict['test_reverse']:
@@ -445,7 +445,7 @@ if __name__ == '__main__':
             log.info('dry run, not performing synchronization')
 
         test_timer._stop()
-        log.info("TEST_SYNC : "+test_timer.format)
+        log.info(f"TEST_SYNC : {test_timer.format}")
 
     main_timer._stop()
     log.info(main_timer.format)
