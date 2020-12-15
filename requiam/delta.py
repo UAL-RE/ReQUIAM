@@ -44,29 +44,23 @@ class Delta(object):
 
     @property
     def common(self):
-        self.log.debug('entered')
-
         common = self.ldap_members & self.grouper_query_instance.members
 
-        self.log.debug('returning')
+        self.log.debug('finished common')
         return common
 
     @property
     def adds(self):
-        self.log.debug('entered')
-
         adds = self.ldap_members - self.grouper_query_instance.members
 
-        self.log.debug('returning')
+        self.log.debug('finished adds')
         return adds
 
     @property
     def drops(self):
-        self.log.debug('entered')
-
         drops = self.grouper_query_instance.members - self.ldap_members
 
-        self.log.debug('returning')
+        self.log.debug('finished drops')
         return drops
 
     def synchronize(self):
