@@ -232,15 +232,18 @@ if __name__ == '__main__':
 
                 log.info(f"ldap and grouper have {len(d.common)} members in common")
                 log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
+                log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
                 if not extras_dict['ci']:
                     if (len(d.drops) < 20) and (len(d.drops) > 0):
                         log.info(f"drops : {list(d.drops)}")
-                    log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
                     if (len(d.adds) < 20) and (len(d.adds) > 0):
                         log.info(f"adds  : {list(d.adds)}")
 
-                log.info('synchronizing ...')
-                d.synchronize()
+                if len(d.drops) + len(d.adds) > 0:
+                    log.info('synchronizing ...')
+                    d.synchronize()
+                else:
+                    log.info("synchronizing not needed")
 
         if df.empty:
             log.warning("Empty portal DataFrame. Skipping portal!")
@@ -301,21 +304,24 @@ if __name__ == '__main__':
 
                 log.info(f"ldap and grouper have {len(d.common)} members in common")
                 log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
+                log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
                 if not extras_dict['ci']:
                     if (len(d.drops) < 20) and (len(d.drops) > 0):
                         log.info(f"drops : {list(d.drops)}")
-                    log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
                     if (len(d.adds) < 20) and (len(d.adds) > 0):
                         log.info(f"adds  : {list(d.adds)}")
 
                 if extras_dict['sync']:
-                    log.info('synchronizing ...')
-                    d.synchronize()
+                    if len(d.drops)+len(d.adds) > 0:
+                        log.info('synchronizing ...')
+                        d.synchronize()
+                    else:
+                        log.info("synchronizing not needed")
                 else:
                     log.info('dry run, not performing synchronization')
 
         portal_timer._stop()
-        log.info("PORTAL : " + portal_timer.format)
+        log.info(f"PORTAL : {portal_timer.format}")
 
     # Perform EDS-Grouper synchronization for figshare quota
     if extras_dict['quota']:
@@ -372,21 +378,24 @@ if __name__ == '__main__':
 
             log.info(f"ldap and grouper have {len(d.common)} members in common")
             log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
+            log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
             if not extras_dict['ci']:
                 if (len(d.drops) < 20) and (len(d.drops) > 0):
                     log.info(f"drops : {list(d.drops)}")
-                log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
                 if (len(d.adds) < 20) and (len(d.adds) > 0):
                     log.info(f"adds  : {list(d.adds)}")
 
             if extras_dict['sync']:
-                log.info('synchronizing ...')
-                d.synchronize()
+                if len(d.drops) + len(d.adds) > 0:
+                    log.info('synchronizing ...')
+                    d.synchronize()
+                else:
+                    log.info("synchronizing not needed")
             else:
                 log.info('dry run, not performing synchronization')
 
         quota_timer._stop()
-        log.info("QUOTA : "+quota_timer.format)
+        log.info(f"QUOTA : {quota_timer.format}")
 
     # Perform EDS-Grouper synchronization for simple test
     if extras_dict['test'] or extras_dict['test_reverse']:
@@ -417,23 +426,26 @@ if __name__ == '__main__':
         d = delta.Delta(ldap_members=ldap_members, grouper_query_instance=gq,
                         **delta_dict, log=log)
 
-        log.info(f"ldap and grouper have {d.common} members in common")
+        log.info(f"ldap and grouper have {len(d.common)} members in common")
         log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
+        log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
         if not extras_dict['ci']:
             if (len(d.drops) < 20) and (len(d.drops) > 0):
                 log.info(f"drops : {list(d.drops)}")
-            log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
             if (len(d.adds) < 20) and (len(d.adds) > 0):
                 log.info(f"adds  : {list(d.adds)}")
 
         if extras_dict['sync']:
-            log.info('synchronizing ...')
-            d.synchronize()
+            if len(d.drops) + len(d.adds) > 0:
+                log.info('synchronizing ...')
+                d.synchronize()
+            else:
+                log.info("synchronizing not needed")
         else:
             log.info('dry run, not performing synchronization')
 
         test_timer._stop()
-        log.info("TEST_SYNC : "+test_timer.format)
+        log.info(f"TEST_SYNC : {test_timer.format}")
 
     main_timer._stop()
     log.info(main_timer.format)
