@@ -7,7 +7,6 @@ import pandas as pd
 
 from datetime import date
 
-import configparser
 import argparse
 
 import ast
@@ -17,10 +16,10 @@ from requiam.grouper_query import GrouperQuery, figshare_group
 from requiam.grouper_admin import GrouperAPI, create_active_group
 from requiam import delta
 from requiam import quota
-from requiam.logger import LogClass, get_user_hostname, pandas_write_buffer
+from requiam.logger import LogClass, get_user_hostname, pandas_write_buffer, log_settings
 from requiam import TimerClass
 from requiam import manual_override
-from requiam.commons import get_summary_dict
+from requiam.commons import dict_load, get_summary_dict
 
 # Version and branch info
 from requiam import __version__
@@ -66,6 +65,7 @@ if __name__ == '__main__':
     parser.add_argument('--ci', action='store_true', help='Flag for CI build tests')
     parser.add_argument('--debug', action='store_true', help='turn on debug logging')
     args = parser.parse_args()
+    vargs = vars(args)
 
     branch_name = get_active_branch_name(library_root_path)
     git_commit, git_short_commit = get_latest_commit(library_root_path)
@@ -87,15 +87,15 @@ if __name__ == '__main__':
     main_timer = TimerClass()
     main_timer._start()
 
-    config = configparser.ConfigParser()
-    config.read(args.config)
+    config_dict = dict_load(args.config, vargs=vargs)
+    global_dict = config_dict['global']  # These are settings in args.config
+    extras_dict = config_dict['extras']  # These are settings specific to script not in args.config
 
     # Define logfile
-    log_dir = path.join(args.persistent_path, config.get('global', 'log_dir'))
-
+    log_dir = path.join(global_dict['persistent_path'], global_dict['log_dir'])
     if not path.exists(log_dir):
         mkdir(log_dir)
-    logfile_prefix = config.get('global', 'logfile_prefix')
+    logfile_prefix = global_dict['logfile_prefix']
     logfile = f'{logfile_prefix}.{today.strftime("%Y-%m-%d")}.log'
 
     log_filename = path.join(log_dir, logfile)  # Full log filename path
@@ -114,33 +114,11 @@ if __name__ == '__main__':
     log.debug(f"IP Addr  : {sys_info['ip']}")
     log.debug(f"Op. Sys. : {sys_info['os']}")
 
-    cred_err = 0
-    vargs = vars(args)
-    for p in ['persistent_path', 'ldap_host', 'ldap_base_dn', 'ldap_user', 'ldap_password',
-              'grouper_host', 'grouper_base_path', 'grouper_user', 'grouper_password',
-              'grouper_figtest', 'batch_size', 'batch_timeout', 'batch_delay',
-              'portal', 'quota', 'portal_file', 'quota_file',
-              'test', 'test_reverse', 'org_codes',
-              'groups', 'sync_max', 'ci']:
+    protected_keys = ['ldap_user', 'ldap_password',
+                      'grouper_user', 'grouper_password']
+    cred_err = log_settings(vargs, config_dict, protected_keys, log=log)
 
-        if (p in vargs) and (vargs[p] is not None):
-            vargs[p] = vargs[p]
-        elif (p in config['global']) and (config['global'][p] is not None) and \
-                (config['global'][p] != "***override***"):
-            vargs[p] = config['global'][p]
-        else:
-            vargs[p] = '(unset)'
-
-        if p in ['ldap_user', 'ldap_password', 'grouper_user', 'grouper_password']:
-            if vargs[p] == '(unset)':
-                log.info('   {0: >17} = (unset)'.format(p))
-                cred_err += 1
-            else:
-                log.info('   {0: >17} = (set)'.format(p))
-        else:
-            log.info('   {0: >17} = {1:}'.format(p, vargs[p]))
-
-    if vargs['test'] and vargs['test_reverse']:
+    if extras_dict['test'] and extras_dict['test_reverse']:
         log.warning("Cannot provide --test and --test_reverse")
         log.warning("Exiting")
         raise ValueError
@@ -150,20 +128,16 @@ if __name__ == '__main__':
         log.warning("Exiting")
         raise ValueError
 
-    log.info('org_codes = %s', args.org_codes)
-    log.info('   groups = %s', args.groups)
-    log.info('     sync = %s', args.sync)
-    log.info('    debug = %s', args.debug)
-
     org_codes = None  # Initialize before --org_codes or --groups
-
-    if vargs['org_codes'] != "(unset)" and vargs['groups'] != "(unset)":
+    if (extras_dict['org_codes'] != "(unset)") and \
+            (extras_dict['groups'] != "(unset)"):
         log.warning("Cannot provide --org_codes and --groups")
         log.warning("Exiting")
         raise ValueError
 
     try:
-        mo = manual_override.ManualOverride(vargs['portal_file'], vargs['quota_file'],
+        mo = manual_override.ManualOverride(global_dict['portal_file'],
+                                            global_dict['quota_file'],
                                             log=log)
         mo_status = True
     except ValueError:
@@ -172,32 +146,27 @@ if __name__ == '__main__':
         mo_status = False
 
     # Initiate LDAP connection
-    ldc = ldap_query.LDAPConnection(ldap_host=vargs['ldap_host'],
-                                    ldap_base_dn=vargs['ldap_base_dn'],
-                                    ldap_user=vargs['ldap_user'],
-                                    ldap_password=vargs['ldap_password'],
-                                    log=log)
+    ldap_keys = [key for key in global_dict.keys() if 'ldap_' in key]
+    ldap_dict = {x: global_dict[x] for x in ldap_keys}
+    ldc = ldap_query.LDAPConnection(**ldap_dict, log=log)
 
-    grouper_dict = dict(grouper_host=vargs['grouper_host'],
-                        grouper_base_path=vargs['grouper_base_path'],
-                        grouper_user=vargs['grouper_user'],
-                        grouper_password=vargs['grouper_password'])
+    grouper_keys = ['grouper_'+suffix for
+                    suffix in ['host', 'base_path', 'user', 'password']]
+    grouper_dict = {x: global_dict[x] for x in grouper_keys}
 
-    delta_dict = dict(batch_size=int(vargs['batch_size']),
-                      batch_timeout=int(vargs['batch_timeout']),
-                      batch_delay=int(vargs['batch_delay']),
-                      sync_max=int(vargs['sync_max']))
+    delta_keys = ['batch_size', 'batch_timeout', 'batch_delay', 'sync_max']
+    delta_dict = {x: global_dict[x] for x in delta_keys}
 
     # This is for checking whether the group exists
-    grouper_production = True if not vargs['grouper_figtest'] else False
-    ga = GrouperAPI(**grouper_dict, grouper_production=True, log=log)
+    grouper_production = True if not extras_dict['grouper_figtest'] else False
+    ga = GrouperAPI(**grouper_dict, grouper_production=grouper_production, log=log)
 
     summary_dict = dict()  # Initialize
 
-    if not args.sync:
-        log.info("dry run, not creating figtest:group_active group")
-    else:
-        if vargs['org_codes'] != "(unset)" or vargs['groups'] != "(unset)":
+    if extras_dict['org_codes'] != "(unset)" or extras_dict['groups'] != "(unset)":
+        if not extras_dict['sync']:
+            log.info("dry run, not creating figtest:group_active group")
+        else:
             log.info("PROMPT: Do you want to create a new group_active group?...")
             group_prompt = input("PROMPT: Answer Yes/yes. Anything else results in skip ")
             log.info(f"RESPONSE: {group_prompt}")
@@ -218,33 +187,33 @@ if __name__ == '__main__':
 
                 create_active_group(group_name, grouper_dict,
                                     group_description=group_description,
-                                    log=log, add=args.sync)
+                                    log=log, add=extras_dict['sync'])
 
     # Perform EDS-Grouper synchronization for figshare research portals
-    if args.portal:
+    if extras_dict['portal']:
         log.info("STAGE: PORTAL")
         portal_timer = TimerClass()
         portal_timer._start()
 
         # Read in CSV file
-        csv_url = config.get('global', 'csv_url')
+        csv_url = global_dict['csv_url']
         df = pd.read_csv(csv_url)
 
-        if args.org_codes != "(unset)":
-            log.info(f"Filtering for org codes : {args.org_codes}")
-            org_codes = args.org_codes.split(',')
+        if extras_dict['org_codes'] != "(unset)":
+            log.info(f"Filtering for org codes : {extras_dict['org_codes']}")
+            org_codes = extras_dict['org_codes'].split(',')
             df = df[df['Org Code'].isin(org_codes)]
 
-        if args.groups != "(unset)":
-            log.info(f"Filtering for portals/themes : {args.groups}")
-            df = df[df['Sub-portals'].isin(args.groups.split(','))]
+        if extras_dict['groups'] != "(unset)":
+            log.info(f"Filtering for portals/themes : {extras_dict['groups']}")
+            df = df[df['Sub-portals'].isin(extras_dict['groups'].split(','))]
             org_codes = df['Org Code'].to_list()
 
         # Add to group_active group
-        if not args.sync:
-            log.info('dry run, not performing sync on figtest:group_active group')
-        else:
-            if vargs['org_codes'] != "(unset)" or vargs['groups'] != "(unset)":
+        if extras_dict['org_codes'] != "(unset)" or extras_dict['groups'] != "(unset)":
+            if not extras_dict['sync']:
+                log.info('dry run, not performing sync on figtest:group_active group')
+            else:
                 ldap_queries = ldap_query.ual_ldap_queries(org_codes)
                 ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
                 log.info(f" EDS size {len(ldap_members)}")
@@ -261,17 +230,20 @@ if __name__ == '__main__':
                                 **delta_dict,
                                 log=log)
 
-                log.info(f'ldap and grouper have {len(d.common)} members in common')
-                log.info(f'synchronization will drop {len(d.drops)} entries from grouper group')
-                if not vargs['ci']:
+                log.info(f"ldap and grouper have {len(d.common)} members in common")
+                log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
+                log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
+                if not extras_dict['ci']:
                     if (len(d.drops) < 20) and (len(d.drops) > 0):
-                        log.info(f'drops : {list(d.drops)}')
-                    log.info(f'synchronization will add {len(d.adds)} entries to grouper group')
+                        log.info(f"drops : {list(d.drops)}")
                     if (len(d.adds) < 20) and (len(d.adds) > 0):
-                        log.info(f'adds  : {list(d.adds)}')
+                        log.info(f"adds  : {list(d.adds)}")
 
-                log.info('synchronizing ...')
-                d.synchronize()
+                if len(d.drops) + len(d.adds) > 0:
+                    log.info('synchronizing ...')
+                    d.synchronize()
+                else:
+                    log.info("synchronizing not needed")
 
         if df.empty:
             log.warning("Empty portal DataFrame. Skipping portal!")
@@ -281,7 +253,7 @@ if __name__ == '__main__':
 
             # Loop over sub-portals
             for portal, portal_name in zip(unique_portals, unique_portals_name):
-                log.info("Working on {} ({}) portal".format(portal_name, portal))
+                log.info(f"Working on {portal_name} ({portal}) portal")
 
                 group_check = ga.check_group_exists(portal, 'portal')
                 if not group_check:  # Avoid execution
@@ -307,7 +279,7 @@ if __name__ == '__main__':
                 # Update based on CSV manual input files
                 if mo_status:
                     ldap_members = mo.identify_changes(ldap_members, portal, 'portal')
-                log.info(" EDS size {}".format(len(ldap_members)))
+                log.info(f" EDS size {len(ldap_members)}")
 
                 # Grouper query
                 grouper_portal = figshare_group(portal, 'portal',
@@ -315,7 +287,7 @@ if __name__ == '__main__':
                 log.info(f"Grouper group : {grouper_portal}")
                 gq = GrouperQuery(**grouper_dict, grouper_group=grouper_portal,
                                   log=log)
-                log.info(" Grouper size {}".format(len(gq.members)))
+                log.info(f" Grouper size {len(gq.members)}")
 
                 # For --org_codes or --groups, only add users
                 if not isinstance(org_codes, type(None)):
@@ -330,39 +302,42 @@ if __name__ == '__main__':
 
                 summary_dict[portal] = get_summary_dict(ldap_members, gq.members, d)
 
-                log.info('ldap and grouper have {} members in common'.format(len(d.common)))
-                log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
-                if not vargs['ci']:
+                log.info(f"ldap and grouper have {len(d.common)} members in common")
+                log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
+                log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
+                if not extras_dict['ci']:
                     if (len(d.drops) < 20) and (len(d.drops) > 0):
-                        log.info(f'drops : {list(d.drops)}')
-                    log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+                        log.info(f"drops : {list(d.drops)}")
                     if (len(d.adds) < 20) and (len(d.adds) > 0):
-                        log.info(f'adds  : {list(d.adds)}')
+                        log.info(f"adds  : {list(d.adds)}")
 
-                if args.sync:
-                    log.info('synchronizing ...')
-                    d.synchronize()
+                if extras_dict['sync']:
+                    if len(d.drops)+len(d.adds) > 0:
+                        log.info('synchronizing ...')
+                        d.synchronize()
+                    else:
+                        log.info("synchronizing not needed")
                 else:
                     log.info('dry run, not performing synchronization')
 
         portal_timer._stop()
-        log.info("PORTAL : " + portal_timer.format)
+        log.info(f"PORTAL : {portal_timer.format}")
 
     # Perform EDS-Grouper synchronization for figshare quota
-    if args.quota:
+    if extras_dict['quota']:
         log.info("STAGE: QUOTA")
         quota_timer = TimerClass()
         quota_timer._start()
 
-        quota_list  = ast.literal_eval(config['global']['quota_list'])
-        quota_class = ast.literal_eval(config['global']['quota_class'])
+        quota_list  = ast.literal_eval(global_dict['quota_list'])
+        quota_class = ast.literal_eval(global_dict['quota_class'])
 
         for q, c in zip(quota_list, quota_class):
             if 'ugrad' in c:
                 log.info(f"Quota execution not required for {c} group. Skipping...")
                 continue
 
-            log.info("Working on {} quota : {} bytes".format(c, q))
+            log.info(f"Working on {c} quota : {q} bytes")
 
             group_check = ga.check_group_exists(str(q), 'quota')
             if not group_check:  # Avoid execution
@@ -379,13 +354,13 @@ if __name__ == '__main__':
             # Update based on CSV manual input files
             if mo_status:
                 ldap_members = mo.identify_changes(ldap_members, q, 'quota')
-            log.info(" EDS size {}".format(len(ldap_members)))
+            log.info(f" EDS size {len(ldap_members)}")
 
             # Grouper query
             grouper_quota = figshare_group(q, 'quota', production=grouper_production)
             log.info(f"Grouper group : {grouper_quota}")
             gq = GrouperQuery(**grouper_dict, grouper_group=grouper_quota, log=log)
-            log.info(" Grouper size {}".format(len(gq.members)))
+            log.info(f" Grouper size {len(gq.members)}")
 
             # For --org_codes or --groups, only add users
             if not isinstance(org_codes, type(None)):
@@ -401,26 +376,29 @@ if __name__ == '__main__':
 
             summary_dict[q] = get_summary_dict(ldap_members, gq.members, d)
 
-            log.info('ldap and grouper have {} members in common'.format(len(d.common)))
-            log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
-            if not vargs['ci']:
+            log.info(f"ldap and grouper have {len(d.common)} members in common")
+            log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
+            log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
+            if not extras_dict['ci']:
                 if (len(d.drops) < 20) and (len(d.drops) > 0):
-                    log.info(f'drops : {list(d.drops)}')
-                log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+                    log.info(f"drops : {list(d.drops)}")
                 if (len(d.adds) < 20) and (len(d.adds) > 0):
-                    log.info(f'adds  : {list(d.adds)}')
+                    log.info(f"adds  : {list(d.adds)}")
 
-            if args.sync:
-                log.info('synchronizing ...')
-                d.synchronize()
+            if extras_dict['sync']:
+                if len(d.drops) + len(d.adds) > 0:
+                    log.info('synchronizing ...')
+                    d.synchronize()
+                else:
+                    log.info("synchronizing not needed")
             else:
                 log.info('dry run, not performing synchronization')
 
         quota_timer._stop()
-        log.info("QUOTA : "+quota_timer.format)
+        log.info(f"QUOTA : {quota_timer.format}")
 
     # Perform EDS-Grouper synchronization for simple test
-    if args.test or args.test_reverse:
+    if extras_dict['test'] or extras_dict['test_reverse']:
         log.info("STAGE: TEST")
         test_timer = TimerClass()
         test_timer._start()
@@ -428,51 +406,57 @@ if __name__ == '__main__':
         log.info("Working on test sync")
 
         # LDAP query to retrieve members
-        test_uid = config.get('global', 'uid')
+        test_uid = global_dict['uid']
         ldap_queries = ldap_query.uid_query(test_uid)
-        log.info(" test account : {}".format(test_uid))
+        log.info(f" test account : {test_uid}")
 
         ldap_members = set()
-        if args.test:
+        if extras_dict['test']:
             ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
-            log.info(" EDS size {}".format(len(ldap_members)))
-        if args.test_reverse:
+            log.info(f" EDS size {len(ldap_members)}")
+        if extras_dict['test_reverse']:
             log.info(" Providing empty member list")
 
         # Note testing is only performed on figshare:test and not figtest:test
         grouper_test = figshare_group('test', '')
         gq = GrouperQuery(**grouper_dict, grouper_group=grouper_test, log=log)
-        log.info(" Grouper size {}".format(len(gq.members)))
+        log.info(f" Grouper size {len(gq.members)}")
 
         # Delta between LDAP and Grouper
         d = delta.Delta(ldap_members=ldap_members, grouper_query_instance=gq,
                         **delta_dict, log=log)
 
-        log.info('ldap and grouper have {} members in common'.format(len(d.common)))
-        log.info('synchronization will drop {} entries from grouper group'.format(len(d.drops)))
-        if not vargs['ci']:
+        log.info(f"ldap and grouper have {len(d.common)} members in common")
+        log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
+        log.info(f"synchronization will add {len(d.adds)} entries to grouper group")
+        if not extras_dict['ci']:
             if (len(d.drops) < 20) and (len(d.drops) > 0):
-                log.info(f'drops : {list(d.drops)}')
-            log.info('synchronization will add {} entries to grouper group'.format(len(d.adds)))
+                log.info(f"drops : {list(d.drops)}")
             if (len(d.adds) < 20) and (len(d.adds) > 0):
-                log.info(f'adds  : {list(d.adds)}')
+                log.info(f"adds  : {list(d.adds)}")
 
-        if args.sync:
-            log.info('synchronizing ...')
-            d.synchronize()
+        if extras_dict['sync']:
+            if len(d.drops) + len(d.adds) > 0:
+                log.info('synchronizing ...')
+                d.synchronize()
+            else:
+                log.info("synchronizing not needed")
         else:
             log.info('dry run, not performing synchronization')
 
         test_timer._stop()
-        log.info("TEST_SYNC : "+test_timer.format)
+        log.info(f"TEST_SYNC : {test_timer.format}")
 
     main_timer._stop()
     log.info(main_timer.format)
 
     log.info("******************************")
-    log.info("SUMMARY DATA")
-    summary_df = pd.DataFrame.from_dict(summary_dict, orient='index')
-    pandas_write_buffer(summary_df, log_filename)
+    if extras_dict['portal'] or extras_dict['quota']:
+        log.info("SUMMARY DATA")
+        summary_df = pd.DataFrame.from_dict(summary_dict, orient='index')
+        pandas_write_buffer(summary_df, log_filename)
+    else:
+        log.info("NO SUMMARY DATA")
 
     log.info("******************************")
     log.info("Exit 0")

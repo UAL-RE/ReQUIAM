@@ -1,6 +1,8 @@
 # ![ReDATA EDS Query and Update for Identity and Access Management](ReQUIAM_full.png)
 
 [![Build Status](https://travis-ci.com/ualibraries/ReQUIAM.svg?branch=master)](https://travis-ci.com/ualibraries/ReQUIAM)
+
+[![GitHub build](https://github.com/ualibraries/ReQUIAM/workflows/Python%20package/badge.svg?)](https://github.com/ualibraries/ReQUIAM/actions?query=workflow%3A%22Python+package%22)
 ![GitHub top language](https://img.shields.io/github/languages/top/ualibraries/ReQUIAM)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ualibraries/ReQUIAM)
 ![GitHub](https://img.shields.io/github/license/ualibraries/ReQUIAM?color=blue)
@@ -15,6 +17,7 @@
     - [Manual Changes](#manual-changes)
     - [API Management of Grouper Groups](#api-management-of-grouper-groups)
 - [Versioning](#versioning)
+- [Continuous Integration](#continuous-integration)
 - [Changelog](#changelog)
 - [Authors](#authors)
 - [License](#license)
@@ -104,7 +107,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.14.0`.
+You should see that the version is `0.15.0`.
 
 ### Configuration Settings
 
@@ -272,14 +275,33 @@ flag to implement on the production stem, `figshare`.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the
-[tags on this repository](https://github.com/ualibraries/ReQUIAM/tags).
+We use [SemVer](http://semver.org/) for versioning. For the versions available,
+see the [tags on this repository](https://github.com/ualibraries/ReQUIAM/tags).
 
+## Continuous Integration
+
+Initially we started using [Travis CI](https://travis-ci.com); however, due
+to the change in
+[pricing for open-source repositories](https://travis-ci.community/t/org-com-migration-unexpectedly-comes-with-a-plan-change-for-oss-what-exactly-is-the-new-deal/10567),
+we decided to use
+[GitHub Actions](https://docs.github.com/en/free-pro-team@latest/actions).
+Currently, there are two GitHub Action workflows:
+1. A "Create release" workflow, [`create-release.yml`](.github/workflows/create-release.yml)
+   for new releases when a tag is pushed
+2. A "Python package" workflow, [`python-package.yml`](.github/workflows/python-package.yml)
+   for builds and tests
 
 ## Changelog
 
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
+
+v0.15.0:
+ * GitHub actions for CI #105
+ * Simplify scripts to use dictionary for configuration settings #104
+ * Improve verbosity of log messages #103
+ * Priority labels for project management #108
+ * Add/update GitHub issue templates #110
 
 v0.14.0:
  * Travis CI integration #91
