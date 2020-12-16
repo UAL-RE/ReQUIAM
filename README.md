@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/ualibraries/ReQUIAM.svg?branch=master)](https://travis-ci.com/ualibraries/ReQUIAM)
 
-[![GitHub build](https://github.com/ualibraries/ReQUIAM/workflows/Python%20package/badge.svg?branch=feature/gh_actions_build_test)](https://github.com/ualibraries/ReQUIAM/actions?query=workflow%3A%22Python+package%22)
+[![GitHub build](https://github.com/ualibraries/ReQUIAM/workflows/Python%20package/badge.svg?)](https://github.com/ualibraries/ReQUIAM/actions?query=workflow%3A%22Python+package%22)
 ![GitHub top language](https://img.shields.io/github/languages/top/ualibraries/ReQUIAM)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ualibraries/ReQUIAM)
 ![GitHub](https://img.shields.io/github/license/ualibraries/ReQUIAM?color=blue)
@@ -107,7 +107,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.14.0`.
+You should see that the version is `0.15.0`.
 
 ### Configuration Settings
 
@@ -295,6 +295,13 @@ Currently, there are two GitHub Action workflows:
 
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
+
+v0.15.0:
+ * GitHub actions for CI #105
+ * Simplify scripts to use dictionary for configuration settings #104
+ * Improve verbosity of log messages #103
+ * Priority labels for project management #108
+ * Add/update GitHub issue templates #110
 
 v0.14.0:
  * Travis CI integration #91
