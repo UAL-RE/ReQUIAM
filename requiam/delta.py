@@ -33,7 +33,7 @@ class Delta(object):
         self.log.debug('entered')
 
         self.ldap_members = ldap_members
-        self.gq = grouper_query_instance
+        self.grouper_qry = grouper_query_instance
         self.batch_size = batch_size
         self.batch_timeout = batch_timeout
         self.batch_delay = batch_delay
@@ -47,19 +47,19 @@ class Delta(object):
         return
 
     def _common(self):
-        common = self.ldap_members & self.gq.members
+        common = self.ldap_members & self.grouper_qry.members
 
         self.log.debug('finished common')
         return common
 
     def _adds(self):
-        adds = self.ldap_members - self.gq.members
+        adds = self.ldap_members - self.grouper_qry.members
 
         self.log.debug('finished adds')
         return adds
 
     def _drops(self):
-        drops = self.gq.members - self.ldap_members
+        drops = self.grouper_qry.members - self.ldap_members
 
         self.log.debug('finished drops')
         return drops
@@ -71,10 +71,10 @@ class Delta(object):
         if total_delta > self.sync_max:
             self.log.warning(f"total delta ({total_delta}) exceeds maximum " +
                              f"sync limit ({self.sync_max}), will not synchronize")
-            self.log.debug('returning')
+            self.log.debug('finished synchronize')
             return
 
-        self.log.info(f"synchronizing ldap query results to {self.gq.grouper_group}")
+        self.log.info(f"synchronizing ldap query results to {self.grouper_qry.grouper_group}")
         self.log.info(f"batch size = {self.batch_size}, " +
                       f"batch timeout = {self.batch_timeout} seconds, " +
                       f"batch delay = {self.batch_delay} seconds")
@@ -87,9 +87,9 @@ class Delta(object):
             n_batches += 1
 
             start_t = datetime.datetime.now()
-            rsp = requests.post(self.gq.grouper_group_members_url,
-                                auth=(self.gq.grouper_user,
-                                      self.gq.grouper_password),
+            rsp = requests.post(self.grouper_qry.grouper_group_members_url,
+                                auth=(self.grouper_qry.grouper_user,
+                                      self.grouper_qry.grouper_password),
                                 data=json.dumps({
                                     'WsRestDeleteMemberRequest': {
                                         'replaceAllExisting': 'F',
@@ -122,9 +122,9 @@ class Delta(object):
             n_batches += 1
 
             start_t = datetime.datetime.now()
-            rsp = requests.put(self.gq.grouper_group_members_url,
-                               auth=(self.gq.grouper_user,
-                                     self.gq.grouper_password),
+            rsp = requests.put(self.grouper_qry.grouper_group_members_url,
+                               auth=(self.grouper_qry.grouper_user,
+                                     self.grouper_qry.grouper_password),
                                data=json.dumps({
                                    'WsRestAddMemberRequest': {
                                        'replaceAllExisting': 'F',
