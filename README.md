@@ -107,7 +107,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.14.0`.
+You should see that the version is `0.15.0`.
 
 ### Configuration Settings
 
@@ -295,6 +295,13 @@ Currently, there are two GitHub Action workflows:
 
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
+
+v0.15.0:
+ * GitHub actions for CI #105
+ * Improve verbosity of log messages #103
+ * Priority labels for project management #108
+ * Update GitHub issue templates #110
+ * Simplify scripts to use dictionary for configuration settings #104
 
 v0.14.0:
  * Travis CI integration #91
