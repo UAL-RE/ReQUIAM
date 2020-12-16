@@ -298,10 +298,10 @@ List is sorted from moderate to minor revisions for reach release.
 
 v0.15.0:
  * GitHub actions for CI #105
+ * Simplify scripts to use dictionary for configuration settings #104
  * Improve verbosity of log messages #103
  * Priority labels for project management #108
- * Update GitHub issue templates #110
- * Simplify scripts to use dictionary for configuration settings #104
+ * Add/update GitHub issue templates #110
 
 v0.14.0:
  * Travis CI integration #91
