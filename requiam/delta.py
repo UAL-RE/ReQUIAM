@@ -143,7 +143,7 @@ class Delta(object):
             else:
                 self.log.info(f"added batch {n_batches}, " +
                               f"{len(batch)} entries, " +
-                              "{batch_t} seconds")
+                              f"{batch_t} seconds")
 
             if self.batch_delay > 0:
                 self.log.info(f"pausing for {self.batch_delay} seconds")
