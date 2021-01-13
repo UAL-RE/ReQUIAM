@@ -1,5 +1,5 @@
 from requiam import TimerClass
-from requiam.commons import figshare_stem
+from requiam.commons import figshare_stem, figshare_group
 
 from datetime import datetime, timedelta
 
@@ -41,3 +41,19 @@ def test_figshare_stem():
                f"{prod_stem}:{stem}"
         assert figshare_stem(stem=stem, production=False) == \
                f"{stage_stem}:{stem}"
+
+
+def test_figshare_group():
+
+    for group in ['astro', 'sci_math', 'test']:
+        f_group = figshare_group(group, 'portal', production=False)
+        assert f_group == f"{stage_stem}:portal:{group}"
+
+        f_group = figshare_group(group, 'portal', production=True)
+        assert f_group == f"{prod_stem}:portal:{group}"
+
+    for quota in [104857600, 536870912, 2147483648]:
+        f_group = figshare_group(quota, 'quota', production=False)
+        assert f_group == f"{stage_stem}:quota:{quota}"
+        f_group = figshare_group(quota, 'quota', production=True)
+        assert f_group == f"{prod_stem}:quota:{quota}"
