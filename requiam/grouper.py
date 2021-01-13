@@ -4,8 +4,7 @@ import pandas as pd
 
 from requests.exceptions import HTTPError
 
-from .commons import figshare_stem
-from .grouper_query import figshare_group
+from .commons import figshare_stem, figshare_group
 
 from .logger import log_stdout
 

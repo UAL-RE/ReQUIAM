@@ -3,7 +3,7 @@ import requests
 from os.path import join
 from .delta import Delta
 from .manual_override import update_entries
-from .commons import figshare_stem
+from .commons import figshare_group
 from .logger import log_stdout
 
 
@@ -58,39 +58,6 @@ class GrouperQuery(object):
     @property
     def members(self):
         return set(self._members)
-
-
-def figshare_group(group, root_stem, production=True):
-    """
-    Purpose:
-      Construct Grouper figshare groups
-
-    :param group: str or int of group name. Cannot be empty
-    :param root_stem: str of associated stem folder for [group]
-    :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
-
-    :return grouper_group: str containing full Grouper path
-
-    Usage:
-      For active group, call as: figshare_group('active', '')
-        > 'arizona.edu:dept:LBRY:figshare:active'
-
-      For a quota group, call as: figshare_group('2147483648', 'quota')
-        > 'arizona.edu:dept:LBRY:figshare:quota:2147483648'
-      Note: group can be specified as an integer for quota cases
-
-      For a portal group, call as: figshare_group('sci_math', 'portal')
-        > 'arizona.edu:dept:LBRY:figshare:portal:sci_math'
-    """
-
-    if not group:
-        raise ValueError("WARNING: Empty [group]")
-
-    stem_query = figshare_stem(stem=root_stem, production=production)
-
-    grouper_group = f'{stem_query}:{group}'
-
-    return grouper_group
 
 
 def grouper_delta_user(group, stem, netid, uaid, action, grouper_dict,

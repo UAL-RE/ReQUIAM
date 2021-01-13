@@ -12,14 +12,14 @@ import argparse
 import ast
 
 from requiam import ldap_query
-from requiam.grouper_query import GrouperQuery, figshare_group
+from requiam.grouper_query import GrouperQuery
 from requiam.grouper import Grouper, create_active_group
 from requiam import delta
 from requiam import quota
 from requiam.logger import LogClass, get_user_hostname, pandas_write_buffer, log_settings
 from requiam import TimerClass
 from requiam import manual_override
-from requiam.commons import dict_load, get_summary_dict
+from requiam.commons import dict_load, get_summary_dict, figshare_group
 
 # Version and branch info
 from requiam import __version__

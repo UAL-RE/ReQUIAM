@@ -1,4 +1,4 @@
-from requiam.grouper_query import figshare_group
+from requiam.commons import figshare_group
 
 prod_stem = 'arizona.edu:dept:LBRY:figshare'
 stage_stem = 'arizona.edu:dept:LBRY:figtest'
