@@ -13,7 +13,7 @@ import ast
 
 from requiam import ldap_query
 from requiam.grouper_query import GrouperQuery, figshare_group
-from requiam.grouper_admin import GrouperAPI, create_active_group
+from requiam.grouper import GrouperAPI, create_active_group
 from requiam import delta
 from requiam import quota
 from requiam.logger import LogClass, get_user_hostname, pandas_write_buffer, log_settings

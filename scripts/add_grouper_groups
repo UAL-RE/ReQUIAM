@@ -8,7 +8,7 @@ from datetime import date
 
 import argparse
 
-from requiam.grouper_admin import GrouperAPI, create_groups
+from requiam.grouper import GrouperAPI, create_groups
 from requiam.logger import LogClass, get_user_hostname, log_settings
 from requiam import TimerClass
 from requiam.commons import dict_load

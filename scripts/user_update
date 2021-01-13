@@ -13,7 +13,7 @@ from requiam.grouper_query import grouper_delta_user
 from requiam.logger import LogClass, get_user_hostname, log_settings
 from requiam import TimerClass
 from requiam.manual_override import ManualOverride, get_current_groups
-from requiam.grouper_admin import GrouperAPI, create_active_group
+from requiam.grouper import GrouperAPI, create_active_group
 
 # Version and branch info
 from requiam import __version__
