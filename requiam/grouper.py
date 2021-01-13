@@ -15,7 +15,7 @@ admins = figshare_group('GrouperAdmins', '', production=True)
 managers = figshare_group('GrouperManagers', '', production=True)
 
 
-class GrouperAPI:
+class Grouper:
     """
     Purpose:
       This class uses the Grouper API to retrieve and post a variety of
@@ -269,7 +269,7 @@ def create_groups(groups, group_type, group_descriptions, grouper_api, log0=None
     :param groups: str or list of str containing group names
     :param group_type: str. Either 'portal', 'quota', or 'test'
     :param group_descriptions: str or list of str containing description
-    :param grouper_api: GrouperAPI object
+    :param grouper_api: Grouper object
     :param log0: logging.getLogger() object
     :param add: boolean.  Indicate whether to perform update or dry run
     """
@@ -348,7 +348,7 @@ def create_active_group(group, grouper_dict, group_description=None, log=None, a
         log = log_stdout()
 
     # This is for figtest stem
-    ga_test = GrouperAPI(**grouper_dict, grouper_production=False, log=log)
+    ga_test = Grouper(**grouper_dict, grouper_production=False, log=log)
 
     if isinstance(group_description, type(None)):
         log.info("PROMPT: Provide description for group...")

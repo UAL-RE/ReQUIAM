@@ -13,7 +13,7 @@ import ast
 
 from requiam import ldap_query
 from requiam.grouper_query import GrouperQuery, figshare_group
-from requiam.grouper import GrouperAPI, create_active_group
+from requiam.grouper import Grouper, create_active_group
 from requiam import delta
 from requiam import quota
 from requiam.logger import LogClass, get_user_hostname, pandas_write_buffer, log_settings
@@ -159,7 +159,7 @@ if __name__ == '__main__':
 
     # This is for checking whether the group exists
     grouper_production = True if not extras_dict['grouper_figtest'] else False
-    ga = GrouperAPI(**grouper_dict, grouper_production=grouper_production, log=log)
+    ga = Grouper(**grouper_dict, grouper_production=grouper_production, log=log)
 
     summary_dict = dict()  # Initialize
 
