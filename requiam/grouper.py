@@ -1,4 +1,4 @@
-from os.path import dirname, join
+from os.path import join
 import requests
 import pandas as pd
 
@@ -6,7 +6,6 @@ from requests.exceptions import HTTPError
 
 from .commons import figshare_stem, figshare_group
 from .delta import Delta
-from .grouper_query import GrouperQuery
 
 from .logger import log_stdout
 
@@ -38,10 +37,11 @@ class Grouper:
     Attributes
     ----------
     grouper_host: str
-    grouper_base_dn: str
+    grouper_base_path: str
     grouper_user: str
     grouper_password: str
     grouper_production: bool
+    grouper_auth: tuple
 
     endpoint: str
       Grouper endpoint
@@ -52,6 +52,9 @@ class Grouper:
     -------
     url(endpoint)
       Return full Grouper URL endpoint
+
+    query(group)
+      Query Grouper for list of members in a group.
 
     get_group_list(group_type)
       Retrieve list of groups in a Grouper stem
@@ -96,11 +99,11 @@ class Grouper:
             self.log = log
 
         self.grouper_host = grouper_host
-        self.grouper_base_dn = grouper_base_path
+        self.grouper_base_path = grouper_base_path
         self.grouper_user = grouper_user
         self.grouper_password = grouper_password
         self.grouper_production = grouper_production
-
+        self.grouper_auth = (self.grouper_user, self.grouper_password)
         self.endpoint = f'https://{grouper_host}/{grouper_base_path}'
         self.headers = {'Content-Type': 'text/x-json'}
 
@@ -108,6 +111,30 @@ class Grouper:
         """Return full Grouper URL endpoint"""
 
         return join(self.endpoint, endpoint)
+
+    def query(self, group):
+        """
+        Query Grouper for list of members in a group.
+        Returns a dict with Grouper metadata
+        """
+
+        endpoint = self.url(f"groups/{group}/members")
+
+        rsp = requests.get(endpoint, auth=self.grouper_auth)
+
+        grouper_query_dict = vars(self)
+
+        # Append query specifics
+        grouper_query_dict['grouper_members_url'] = endpoint
+        grouper_query_dict['grouper_group'] = group
+
+        if 'wsSubjects' in rsp.json()['WsGetMembersLiteResult']:
+            grouper_query_dict['members'] = \
+                {s['id'] for s in rsp.json()['WsGetMembersLiteResult']['wsSubjects']}
+        else:
+            grouper_query_dict['members'] = set([])
+
+        return grouper_query_dict
 
     def get_group_list(self, group_type):
         """Retrieve list of groups in a Grouper stem"""
@@ -127,7 +154,7 @@ class Grouper:
         }
 
         rsp = requests.post(endpoint, json=params, headers=self.headers,
-                            auth=(self.grouper_user, self.grouper_password))
+                            auth=self.grouper_auth)
 
         return rsp.json()
 
@@ -144,7 +171,7 @@ class Grouper:
         }
 
         rsp = requests.post(endpoint, json=params, headers=self.headers,
-                            auth=(self.grouper_user, self.grouper_password))
+                            auth=self.grouper_auth)
 
         return rsp.json()['WsFindGroupsResults']['groupResults']
 
@@ -189,7 +216,7 @@ class Grouper:
 
         try:
             result = requests.post(endpoint, json=params, headers=self.headers,
-                                   auth=(self.grouper_user, self.grouper_password))
+                                   auth=self.grouper_auth)
 
             metadata = result.json()['WsGroupSaveResults']['resultMetadata']
 
@@ -254,7 +281,7 @@ class Grouper:
             for privilege in privileges:
                 params['WsRestAssignGrouperPrivilegesLiteRequest']['privilegeName'] = privilege
                 result = requests.post(endpoint, json=params, headers=self.headers,
-                                       auth=(self.grouper_user, self.grouper_password))
+                                       auth=self.grouper_auth)
                 metadata = result.json()['WsAssignGrouperPrivilegesLiteResult']['resultMetadata']
 
                 if metadata['resultCode'] not in ['SUCCESS_ALLOWED', 'SUCCESS_ALLOWED_ALREADY_EXISTED']:
@@ -399,17 +426,18 @@ def grouper_delta_user(group, stem, netid, uaid, action, grouper_dict,
         log = log_stdout()
 
     grouper_query = figshare_group(group, stem, production=production)
-    gq = GrouperQuery(**grouper_dict, grouper_group=grouper_query)
+    grouper = Grouper(**grouper_dict)
+    grouper_query_dict = grouper.query(grouper_query)
 
-    member_set = gq.members
     if not isinstance(netid, list):
         netid = [netid]
     if not isinstance(uaid, list):
         uaid = [uaid]
-    member_set = update_entries(member_set, netid, uaid, action, log=log)
+    member_set = update_entries(grouper_query_dict['members'],
+                                netid, uaid, action, log=log)
 
     d = Delta(ldap_members=member_set,
-              grouper_query_instance=gq,
+              grouper_query_dict=grouper_query_dict,
               **delta_dict,
               log=log)
 
