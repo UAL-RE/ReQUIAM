@@ -370,8 +370,6 @@ if __name__ == '__main__':
                                          ldap_members)
 
             # Delta between LDAP and Grouper
-            grouper_full_dict = grouper_dict
-            grouper_full_dict['grouper_group'] = group_name
             d = delta.Delta(ldap_members=ldap_members,
                             grouper_query_dict=grouper_query_dict,
                             **delta_dict,
