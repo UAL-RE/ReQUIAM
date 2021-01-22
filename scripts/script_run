@@ -12,14 +12,13 @@ import argparse
 import ast
 
 from requiam import ldap_query
-from requiam.grouper_query import GrouperQuery, figshare_group
-from requiam.grouper_admin import GrouperAPI, create_active_group
+from requiam.grouper import Grouper, create_active_group
 from requiam import delta
 from requiam import quota
 from requiam.logger import LogClass, get_user_hostname, pandas_write_buffer, log_settings
 from requiam import TimerClass
 from requiam import manual_override
-from requiam.commons import dict_load, get_summary_dict
+from requiam.commons import dict_load, get_summary_dict, figshare_group
 
 # Version and branch info
 from requiam import __version__
@@ -159,7 +158,7 @@ if __name__ == '__main__':
 
     # This is for checking whether the group exists
     grouper_production = True if not extras_dict['grouper_figtest'] else False
-    ga = GrouperAPI(**grouper_dict, grouper_production=grouper_production, log=log)
+    ga = Grouper(**grouper_dict, grouper_production=grouper_production, log=log)
 
     summary_dict = dict()  # Initialize
 
@@ -221,12 +220,12 @@ if __name__ == '__main__':
                 grouper_portal = figshare_group(group_name, 'group_active',
                                                 production=False)
                 log.info(f"Grouper group : {grouper_portal}")
-                gq = GrouperQuery(**grouper_dict, grouper_group=grouper_portal,
-                                  log=log)
-                log.info(f" Grouper size {len(gq.members)}")
+
+                grouper_query_dict = ga.query(grouper_portal)
+                log.info(f" Grouper size {len(grouper_query_dict['members'])}")
 
                 d = delta.Delta(ldap_members=ldap_members,
-                                grouper_query_instance=gq,
+                                grouper_query_dict=grouper_query_dict,
                                 **delta_dict,
                                 log=log)
 
@@ -285,22 +284,23 @@ if __name__ == '__main__':
                 grouper_portal = figshare_group(portal, 'portal',
                                                 production=grouper_production)
                 log.info(f"Grouper group : {grouper_portal}")
-                gq = GrouperQuery(**grouper_dict, grouper_group=grouper_portal,
-                                  log=log)
-                log.info(f" Grouper size {len(gq.members)}")
+                grouper_query_dict = ga.query(grouper_portal)
+                log.info(f" Grouper size {len(grouper_query_dict['members'])}")
 
                 # For --org_codes or --groups, only add users
                 if not isinstance(org_codes, type(None)):
                     log.info("Special mode with --org_codes --groups. Adding users only")
                     # Combine grouper members with new ldap members
-                    ldap_members = set.union(gq.members, ldap_members)
+                    ldap_members = set.union(grouper_query_dict['members'], ldap_members)
 
                 d = delta.Delta(ldap_members=ldap_members,
-                                grouper_query_instance=gq,
+                                grouper_query_dict=grouper_query_dict,
                                 **delta_dict,
                                 log=log)
 
-                summary_dict[portal] = get_summary_dict(ldap_members, gq.members, d)
+                summary_dict[portal] = \
+                    get_summary_dict(ldap_members, grouper_query_dict['members'],
+                                     d)
 
                 log.info(f"ldap and grouper have {len(d.common)} members in common")
                 log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
@@ -359,22 +359,25 @@ if __name__ == '__main__':
             # Grouper query
             grouper_quota = figshare_group(q, 'quota', production=grouper_production)
             log.info(f"Grouper group : {grouper_quota}")
-            gq = GrouperQuery(**grouper_dict, grouper_group=grouper_quota, log=log)
-            log.info(f" Grouper size {len(gq.members)}")
+            grouper_query_dict = ga.query(grouper_quota)
+            log.info(f" Grouper size {len(grouper_query_dict['members'])}")
 
             # For --org_codes or --groups, only add users
             if not isinstance(org_codes, type(None)):
                 log.info("Special mode with --org_codes --groups. Adding users only")
                 # Combine grouper members with new ldap members
-                ldap_members = set.union(gq.members, ldap_members)
+                ldap_members = set.union(grouper_query_dict['members'],
+                                         ldap_members)
 
             # Delta between LDAP and Grouper
             d = delta.Delta(ldap_members=ldap_members,
-                            grouper_query_instance=gq,
+                            grouper_query_dict=grouper_query_dict,
                             **delta_dict,
                             log=log)
 
-            summary_dict[q] = get_summary_dict(ldap_members, gq.members, d)
+            summary_dict[q] = \
+                get_summary_dict(ldap_members,
+                                 grouper_query_dict['members'], d)
 
             log.info(f"ldap and grouper have {len(d.common)} members in common")
             log.info(f"synchronization will drop {len(d.drops)} entries from grouper group")
@@ -419,11 +422,12 @@ if __name__ == '__main__':
 
         # Note testing is only performed on figshare:test and not figtest:test
         grouper_test = figshare_group('test', '')
-        gq = GrouperQuery(**grouper_dict, grouper_group=grouper_test, log=log)
-        log.info(f" Grouper size {len(gq.members)}")
+        grouper_query_dict = ga.query(grouper_test)
+        log.info(f" Grouper size {len(grouper_query_dict['members'])}")
 
         # Delta between LDAP and Grouper
-        d = delta.Delta(ldap_members=ldap_members, grouper_query_instance=gq,
+        d = delta.Delta(ldap_members=ldap_members,
+                        grouper_query_dict=grouper_query_dict,
                         **delta_dict, log=log)
 
         log.info(f"ldap and grouper have {len(d.common)} members in common")

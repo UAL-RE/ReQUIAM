@@ -9,11 +9,10 @@ import argparse
 
 from requiam import ldap_query
 from requiam.commons import dict_load, figshare_stem
-from requiam.grouper_query import grouper_delta_user
 from requiam.logger import LogClass, get_user_hostname, log_settings
 from requiam import TimerClass
 from requiam.manual_override import ManualOverride, get_current_groups
-from requiam.grouper_admin import GrouperAPI, create_active_group
+from requiam.grouper import Grouper, create_active_group, grouper_delta_user
 
 # Version and branch info
 from requiam import __version__
@@ -164,8 +163,8 @@ if __name__ == '__main__':
 
     # Grouper API tool
     grouper_production = True if not extras_dict['grouper_figtest'] else False
-    ga = GrouperAPI(**grouper_dict, log=log,
-                    grouper_production=grouper_production)
+    ga = Grouper(**grouper_dict, log=log,
+                 grouper_production=grouper_production)
 
     # Check to see if portal exists on Grouper before proceeding
     portal_check = True
