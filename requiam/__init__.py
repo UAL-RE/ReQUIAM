@@ -44,4 +44,4 @@ class TimerClass(object):
         HH = int(sec // 3600)
         MM = int((sec // 60) - (HH * 60))
         SS = sec - (HH * 3600) - (MM * 60)
-        self.format = "Total time: {0: 02d} hours  {1: 02d} minutes  {2: .2f} seconds".format(HH, MM, SS)
+        self.format = f"Total time: {HH: 02d} hours  {MM: 02d} minutes  {SS: .2f} seconds"
