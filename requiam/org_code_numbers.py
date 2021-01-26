@@ -44,10 +44,10 @@ def get_numbers(lc, org_url, log_func):
         lib_dcc     = np.zeros(n_org_codes, dtype=int)
 
         # Query based on Library patron group for set logic
-        faculty_query = ['({})'.format(ual_grouper_base('ual-faculty'))]
-        staff_query   = ['({})'.format(ual_grouper_base('ual-staff'))]
-        student_query = ['({})'.format(ual_grouper_base('ual-students'))]
-        dcc_query     = ['({})'.format(ual_grouper_base('ual-dcc'))]
+        faculty_query = [f"({ual_grouper_base('ual-faculty')})"]
+        staff_query   = [f"({ual_grouper_base('ual-staff')})"]
+        student_query = [f"({ual_grouper_base('ual-students')})"]
+        dcc_query     = [f"({ual_grouper_base('ual-dcc')})"]
 
         log_func.info("Getting faculty, staff, student, and dcc members ... ")
         faculty_members = ldap_search(lc, faculty_query)
@@ -59,7 +59,7 @@ def get_numbers(lc, org_url, log_func):
         for org_code, ii in zip(org_codes, range(n_org_codes)):
 
             if ii % round(n_org_codes/10) == 0 or ii == n_org_codes-1:
-                log_func.info("{0: >3}% completed ...".format(round((ii+1)/n_org_codes * 100)))
+                log_func.info(f"{round((ii + 1) / n_org_codes * 100): >3}% completed ...")
 
             total_members   = ldap_search(lc, ual_ldap_query(org_code,
                                                              classification='none'))
