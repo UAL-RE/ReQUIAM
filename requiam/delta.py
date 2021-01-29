@@ -89,16 +89,17 @@ class Delta(object):
                       i in range(0, len(list_of_drops), self.batch_size)]:
             n_batches += 1
 
+            data = dict()
+            data['WsRestDeleteMemberRequest'] = {
+                'replaceAllExisting': 'F',
+                'subjectLookups': [{'subjectId': entry} for entry in batch]
+            }
+
             start_t = datetime.datetime.now()
             rsp = requests.post(self.grouper_query_dict['grouper_members_url'],
                                 auth=(self.grouper_query_dict['grouper_user'],
                                       self.grouper_query_dict['grouper_password']),
-                                data=json.dumps({
-                                    'WsRestDeleteMemberRequest': {
-                                        'replaceAllExisting': 'F',
-                                        'subjectLookups': [{'subjectId': entry} for entry in batch]
-                                    }
-                                }),
+                                data=json.dumps(data),
                                 headers={'Content-type': 'text/x-json'},
                                 timeout=self.batch_timeout)
             end_t = datetime.datetime.now()
@@ -124,16 +125,17 @@ class Delta(object):
                       i in range(0, len(list_of_adds), self.batch_size)]:
             n_batches += 1
 
+            data = dict()
+            data['WsRestAddMemberRequest'] = {
+                'replaceAllExisting': 'F',
+                'subjectLookups': [{'subjectId': entry} for entry in batch]
+            }
+
             start_t = datetime.datetime.now()
             rsp = requests.put(self.grouper_query_dict['grouper_members_url'],
                                auth=(self.grouper_query_dict['grouper_user'],
                                      self.grouper_query_dict['grouper_password']),
-                               data=json.dumps({
-                                   'WsRestAddMemberRequest': {
-                                       'replaceAllExisting': 'F',
-                                       'subjectLookups': [{'subjectId': entry} for entry in batch]
-                                   }
-                               }),
+                               data=json.dumps(data),
                                headers={'Content-type': 'text/x-json'},
                                timeout=self.batch_timeout)
             end_t = datetime.datetime.now()
