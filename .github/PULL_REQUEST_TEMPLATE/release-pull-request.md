@@ -1,5 +1,5 @@
 ---
-name: Pull request - release
+name: Release
 about: Provide specifics about a pull request for releases
 title: 'PR - release: ____(provide a descriptive name)'
 labels: release
@@ -8,7 +8,7 @@ assignees: ''
 ---
 <!-- IMPORTANT: Please do not create a Pull Request without creating an issue first. -->
 
-<!--Fields in **bold** are REQUIRED, fields in *italics* are OPTIONAL -->
+<!-- Fields in **bold** are REQUIRED, fields in *italics* are OPTIONAL. -->
 
 **Description**
 <!-- A clear and concise description of the updates contained in this release. Example:  -->
@@ -20,10 +20,10 @@ assignees: ''
 - Fixes #
 
 *Screenshots or additional context*
-<!-- Add any other context about the problem here and/or screenshots to help explain your problem. -->
+<!-- Add any other context about this release. -->
 
 **Bump version information**
-Bump version: v0.xx.xx -> v0.xx.x
+Bump version: v0.xx.x -> v0.xx.x
 
 Bumped in:
 - [ ] README.md, [installation instructions](https://github.com/ualibraries/ReQUIAM#installation-instructions)
