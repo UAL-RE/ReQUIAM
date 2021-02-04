@@ -11,13 +11,13 @@ assignees: ''
 <!--Fields in **bold** are REQUIRED, fields in *italics* are OPTIONAL -->
 
 **Description**
-<!-- A clear and concise description of the updates contained in this release. We usually use a list. -->
+<!-- A clear and concise description of the updates contained in this release. Example:  -->
+<!-- Incorporates Travis CI feature #91, summary for script_run #99, and root portal handling #88 -->
 
-Improvements include:
-- A #issue
-- B #issue
-- C #issue
-- n  
+- Fixes #
+- Fixes #
+- Fixes #
+- Fixes #
 
 *Screenshots or additional context*
 <!-- Add any other context about the problem here and/or screenshots to help explain your problem. -->
@@ -28,4 +28,4 @@ Bump version: v0.xx.xx -> v0.xx.x
 Bumped in:
 - [ ] README.md, [installation instructions](https://github.com/ualibraries/ReQUIAM#installation-instructions)
 - [ ] [setup.py](https://github.com/ualibraries/ReQUIAM/blob/master/setup.py)
-- [ ] [requiam/__init__.py](https://github.com/ualibraries/ReQUIAM/blob/master/requiam/__init__.py)
+- [ ] [requiam/\_\_init\_\_.py](https://github.com/ualibraries/ReQUIAM/blob/master/requiam/__init__.py)

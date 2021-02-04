@@ -27,7 +27,7 @@ See #
 
 **Test plan (If applicable)**
 <!-- Explain how you tested this feature so that others can replicate it -->
-<!--  Example: The exact commands you ran and their output, screenshots / videos if the pull request changes UI. -->
+<!-- Example: The exact commands you ran and their output, screenshots / videos if the pull request changes UI. -->
 
 *Resources*
 <!-- Links to blog posts, StackOverflow, libraries or add-ons used to solve this problem -->
