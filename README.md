@@ -107,7 +107,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.15.1`.
+You should see that the version is `0.16.0`.
 
 ### Configuration Settings
 
@@ -295,6 +295,12 @@ Currently, there are two GitHub Action workflows:
 
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
+
+v0.16.0:
+ * Merges GrouperAPI and GrouperQuery #87
+ * Entire adoption of f-strings #118,
+ * New pull request templates #120
+ * CI testing for Python 3.9 #121
 
 v0.15.0:
  * GitHub actions for CI #105
