@@ -2,7 +2,6 @@
 name: Release
 about: Provide specifics about a PR for a release
 title: 'PR/Release: ____(provide a descriptive name)'
-labels: release
 assignees: ''
 
 ---
@@ -20,7 +19,7 @@ Closes #
 <!-- Add any other context about this release. -->
 
 **Bump version information**
-Bump version: v0.xx.x -> v0.xx.x
+Bump version: v0.xx.x -> v0.xx.0
 
 Bumped in:
 - [ ] README.md, [installation instructions](../../README.md#installation-instructions)
