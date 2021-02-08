@@ -23,5 +23,6 @@ Bump version: v0.xx.x -> v0.xx.0
 
 Bumped in:
 - [ ] README.md, [installation instructions](../../README.md#installation-instructions)
+- [ ] README.md, [changelog](../../README.md#changelog)
 - [ ] [`setup.py`](../../setup.py)
 - [ ] [`requiam/__init__.py`](../../requiam/__init__.py)
