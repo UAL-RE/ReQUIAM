@@ -302,12 +302,13 @@ v0.16.0:
  * New pull request templates #120
  * CI build testing for Python 3.9 #121
 
-v0.15.0:
+v0.15.0 - v0.15.1:
  * GitHub actions for CI #105
  * Simplify scripts to use dictionary for configuration settings #104
  * Improve verbosity of log messages #103
  * Priority labels for project management #108
  * Add/update GitHub issue templates #110
+ * Bug: Fix f-string typo with batch load information #114
 
 v0.14.0:
  * Travis CI integration #91
