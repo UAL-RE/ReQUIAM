@@ -16,16 +16,27 @@ assignees: ''
 <!-- Add any linked issue(s) -->
 Fixes #
 
-*Screenshots or additional context*
-<!-- Add any other context about the problem here and/or screenshots to help explain the problem. -->
 
-*Testing (if applicable)*
-<!-- Explain how you tested this bug fix so that others can replicate it. -->
-<!-- Example: The exact commands you ran and their output. -->
+**Update Changelog**
+<!-- Be brief, use imperative mood or simple noun phrases and add linked issues -->
+<!-- Examples: Improve verbosity of log messages #103 | GitHub actions for CI #105 -->
 
-**Bump version information**
-Bump version: v0.xx.x -> v0.xx.x
+- [ ] README.md, [changelog](../../README.md#changelog) <!-- update changelog here -->
+
+
+**Bump version**
+
+v0.xx.x -> v0.xx.x
 
 - [ ] README.md, [installation instructions](../../README.md#installation-instructions)
 - [ ] [`setup.py`](../../setup.py)
 - [ ] [`requiam/__init__.py`](../../requiam/__init__.py)
+
+
+*Screenshots or additional context*
+<!-- Add any other context about the problem here and/or screenshots to help explain the problem. -->
+
+
+*Testing (if applicable)*
+<!-- Explain how you tested this bug fix so that others can replicate it. -->
+<!-- Example: The exact commands you ran and their output. -->

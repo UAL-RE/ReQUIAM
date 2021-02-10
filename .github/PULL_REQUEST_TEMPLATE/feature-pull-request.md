@@ -16,8 +16,6 @@ assignees: ''
 <!-- Add any linked issue(s) -->
 See #
 
-*Screenshots or additional context*
-<!-- Add any other context about the problem here and/or screenshots to help explain the problem. -->
 
 **ToDo List**
 
@@ -26,9 +24,22 @@ See #
  - [ ] ToDo -->
  - [ ] ToDo -->
 
-**Test plan (if applicable)**
+
+**Test plan**
 <!-- Explain how you tested this feature so that others can replicate it. -->
 <!-- Example: The exact commands you ran and their output, screenshots. -->
 
+
+**Update Changelog**
+<!-- Be brief, use imperative mood or simple noun phrases and add linked issues -->
+<!-- Examples: Improve verbosity of log messages #103 | GitHub actions for CI #105 -->
+
+- [ ] README.md, [changelog](../../README.md#changelog) <!-- update changelog here -->
+
+
 *Resources*
 <!-- Links to blog posts, StackOverflow, libraries or add-ons used to solve this problem. -->
+
+
+*Screenshots or additional context*
+<!-- Add any other context about the problem here and/or screenshots to help explain the problem. -->

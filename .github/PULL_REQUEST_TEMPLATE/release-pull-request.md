@@ -2,7 +2,6 @@
 name: Release
 about: Provide specifics about a PR for a release
 title: 'PR/Release: ____(provide a descriptive name)'
-labels: release
 assignees: ''
 
 ---
@@ -16,13 +15,22 @@ assignees: ''
 
 Closes #
 
-*Screenshots or additional context*
-<!-- Add any other context about this release. -->
 
-**Bump version information**
-Bump version: v0.xx.x -> v0.xx.x
+**Update Changelog**
+<!-- List changes: be brief, use imperative mood or simple noun phrases and add linked issues -->
+<!-- Examples: Improve verbosity of log messages #103 | GitHub actions for CI #105 -->
 
-Bumped in:
+- [ ] README.md, [changelog](../../README.md#changelog) <!-- update changelog here -->
+
+
+**Bump version**
+
+v0.xx.x -> v0.xx.0
+
 - [ ] README.md, [installation instructions](../../README.md#installation-instructions)
 - [ ] [`setup.py`](../../setup.py)
 - [ ] [`requiam/__init__.py`](../../requiam/__init__.py)
+
+
+*Screenshots or additional context*
+<!-- Add any other context about this release. -->
