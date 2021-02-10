@@ -22,8 +22,9 @@ class Delta(object):
 
     """
 
-    def __init__(self, ldap_members, grouper_query_instance, batch_size,
-                 batch_timeout, batch_delay, sync_max, log=None):
+    def __init__(self, ldap_members, grouper_query_dict,
+                 batch_size, batch_timeout, batch_delay, sync_max,
+                 log=None):
 
         if isinstance(log, type(None)):
             self.log = log_stdout()
@@ -33,7 +34,8 @@ class Delta(object):
         self.log.debug('entered')
 
         self.ldap_members = ldap_members
-        self.grouper_qry = grouper_query_instance
+        self.grouper_query_dict = grouper_query_dict
+        self.grouper_members = grouper_query_dict['members']
         self.batch_size = batch_size
         self.batch_timeout = batch_timeout
         self.batch_delay = batch_delay
@@ -47,19 +49,19 @@ class Delta(object):
         return
 
     def _common(self):
-        common = self.ldap_members & self.grouper_qry.members
+        common = self.ldap_members & self.grouper_members
 
         self.log.debug('finished common')
         return common
 
     def _adds(self):
-        adds = self.ldap_members - self.grouper_qry.members
+        adds = self.ldap_members - self.grouper_members
 
         self.log.debug('finished adds')
         return adds
 
     def _drops(self):
-        drops = self.grouper_qry.members - self.ldap_members
+        drops = self.grouper_members - self.ldap_members
 
         self.log.debug('finished drops')
         return drops
@@ -74,7 +76,8 @@ class Delta(object):
             self.log.debug('finished synchronize')
             return
 
-        self.log.info(f"synchronizing ldap query results to {self.grouper_qry.grouper_group}")
+        self.log.info("synchronizing ldap query results to " +
+                      f"{self.grouper_query_dict['grouper_group']}")
         self.log.info(f"batch size = {self.batch_size}, " +
                       f"batch timeout = {self.batch_timeout} seconds, " +
                       f"batch delay = {self.batch_delay} seconds")
@@ -87,9 +90,9 @@ class Delta(object):
             n_batches += 1
 
             start_t = datetime.datetime.now()
-            rsp = requests.post(self.grouper_qry.grouper_group_members_url,
-                                auth=(self.grouper_qry.grouper_user,
-                                      self.grouper_qry.grouper_password),
+            rsp = requests.post(self.grouper_query_dict['grouper_members_url'],
+                                auth=(self.grouper_query_dict['grouper_user'],
+                                      self.grouper_query_dict['grouper_password']),
                                 data=json.dumps({
                                     'WsRestDeleteMemberRequest': {
                                         'replaceAllExisting': 'F',
@@ -122,9 +125,9 @@ class Delta(object):
             n_batches += 1
 
             start_t = datetime.datetime.now()
-            rsp = requests.put(self.grouper_qry.grouper_group_members_url,
-                               auth=(self.grouper_qry.grouper_user,
-                                     self.grouper_qry.grouper_password),
+            rsp = requests.put(self.grouper_query_dict['grouper_members_url'],
+                               auth=(self.grouper_query_dict['grouper_user'],
+                                     self.grouper_query_dict['grouper_password']),
                                data=json.dumps({
                                    'WsRestAddMemberRequest': {
                                        'replaceAllExisting': 'F',

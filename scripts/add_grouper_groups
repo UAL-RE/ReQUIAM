@@ -8,7 +8,7 @@ from datetime import date
 
 import argparse
 
-from requiam.grouper_admin import GrouperAPI, create_groups
+from requiam.grouper import Grouper, create_groups
 from requiam.logger import LogClass, get_user_hostname, log_settings
 from requiam import TimerClass
 from requiam.commons import dict_load
@@ -107,8 +107,8 @@ if __name__ == '__main__':
     else:
         grouper_production = False
 
-    ga = GrouperAPI(**grouper_dict, grouper_production=grouper_production,
-                    log=log)
+    ga = Grouper(**grouper_dict, grouper_production=grouper_production,
+                 log=log)
 
     # Main portals / Overall Research Themes
     if extras_dict['main_themes']:

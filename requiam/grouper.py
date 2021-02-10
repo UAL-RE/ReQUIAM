@@ -1,21 +1,23 @@
-from os.path import dirname, join
+from os.path import join
 import requests
 import pandas as pd
 
 from requests.exceptions import HTTPError
 
-from .commons import figshare_stem
-from .grouper_query import figshare_group
+from .commons import figshare_stem, figshare_group
+from .delta import Delta
 
 from .logger import log_stdout
 
 # Administrative groups
+from .manual_override import update_entries
+
 superadmins = figshare_group('GrouperSuperAdmins', '', production=True)
 admins = figshare_group('GrouperAdmins', '', production=True)
 managers = figshare_group('GrouperManagers', '', production=True)
 
 
-class GrouperAPI:
+class Grouper:
     """
     Purpose:
       This class uses the Grouper API to retrieve and post a variety of
@@ -35,10 +37,11 @@ class GrouperAPI:
     Attributes
     ----------
     grouper_host: str
-    grouper_base_dn: str
+    grouper_base_path: str
     grouper_user: str
     grouper_password: str
     grouper_production: bool
+    grouper_auth: tuple
 
     endpoint: str
       Grouper endpoint
@@ -49,6 +52,9 @@ class GrouperAPI:
     -------
     url(endpoint)
       Return full Grouper URL endpoint
+
+    query(group)
+      Query Grouper for list of members in a group.
 
     get_group_list(group_type)
       Retrieve list of groups in a Grouper stem
@@ -93,11 +99,11 @@ class GrouperAPI:
             self.log = log
 
         self.grouper_host = grouper_host
-        self.grouper_base_dn = grouper_base_path
+        self.grouper_base_path = grouper_base_path
         self.grouper_user = grouper_user
         self.grouper_password = grouper_password
         self.grouper_production = grouper_production
-
+        self.grouper_auth = (self.grouper_user, self.grouper_password)
         self.endpoint = f'https://{grouper_host}/{grouper_base_path}'
         self.headers = {'Content-Type': 'text/x-json'}
 
@@ -105,6 +111,30 @@ class GrouperAPI:
         """Return full Grouper URL endpoint"""
 
         return join(self.endpoint, endpoint)
+
+    def query(self, group):
+        """
+        Query Grouper for list of members in a group.
+        Returns a dict with Grouper metadata
+        """
+
+        endpoint = self.url(f"groups/{group}/members")
+
+        rsp = requests.get(endpoint, auth=self.grouper_auth)
+
+        grouper_query_dict = vars(self)
+
+        # Append query specifics
+        grouper_query_dict['grouper_members_url'] = endpoint
+        grouper_query_dict['grouper_group'] = group
+
+        if 'wsSubjects' in rsp.json()['WsGetMembersLiteResult']:
+            grouper_query_dict['members'] = \
+                {s['id'] for s in rsp.json()['WsGetMembersLiteResult']['wsSubjects']}
+        else:
+            grouper_query_dict['members'] = set([])
+
+        return grouper_query_dict
 
     def get_group_list(self, group_type):
         """Retrieve list of groups in a Grouper stem"""
@@ -124,7 +154,7 @@ class GrouperAPI:
         }
 
         rsp = requests.post(endpoint, json=params, headers=self.headers,
-                            auth=(self.grouper_user, self.grouper_password))
+                            auth=self.grouper_auth)
 
         return rsp.json()
 
@@ -141,7 +171,7 @@ class GrouperAPI:
         }
 
         rsp = requests.post(endpoint, json=params, headers=self.headers,
-                            auth=(self.grouper_user, self.grouper_password))
+                            auth=self.grouper_auth)
 
         return rsp.json()['WsFindGroupsResults']['groupResults']
 
@@ -186,7 +216,7 @@ class GrouperAPI:
 
         try:
             result = requests.post(endpoint, json=params, headers=self.headers,
-                                   auth=(self.grouper_user, self.grouper_password))
+                                   auth=self.grouper_auth)
 
             metadata = result.json()['WsGroupSaveResults']['resultMetadata']
 
@@ -251,7 +281,7 @@ class GrouperAPI:
             for privilege in privileges:
                 params['WsRestAssignGrouperPrivilegesLiteRequest']['privilegeName'] = privilege
                 result = requests.post(endpoint, json=params, headers=self.headers,
-                                       auth=(self.grouper_user, self.grouper_password))
+                                       auth=self.grouper_auth)
                 metadata = result.json()['WsAssignGrouperPrivilegesLiteResult']['resultMetadata']
 
                 if metadata['resultCode'] not in ['SUCCESS_ALLOWED', 'SUCCESS_ALLOWED_ALREADY_EXISTED']:
@@ -269,7 +299,7 @@ def create_groups(groups, group_type, group_descriptions, grouper_api, log0=None
     :param groups: str or list of str containing group names
     :param group_type: str. Either 'portal', 'quota', or 'test'
     :param group_descriptions: str or list of str containing description
-    :param grouper_api: GrouperAPI object
+    :param grouper_api: Grouper object
     :param log0: logging.getLogger() object
     :param add: boolean.  Indicate whether to perform update or dry run
     """
@@ -348,7 +378,7 @@ def create_active_group(group, grouper_dict, group_description=None, log=None, a
         log = log_stdout()
 
     # This is for figtest stem
-    ga_test = GrouperAPI(**grouper_dict, grouper_production=False, log=log)
+    ga_test = Grouper(**grouper_dict, grouper_production=False, log=log)
 
     if isinstance(group_description, type(None)):
         log.info("PROMPT: Provide description for group...")
@@ -357,3 +387,76 @@ def create_active_group(group, grouper_dict, group_description=None, log=None, a
 
     create_groups(group, 'group_active', group_description, ga_test,
                   log0=log, add=add)
+
+
+def grouper_delta_user(group, stem, netid, uaid, action, grouper_dict,
+                       delta_dict, mo=None, sync=False, log=None,
+                       production=True):
+    """
+    Purpose:
+      Construct a Delta object for addition/deletion based for a specified
+      user. This is designed primarily for the user_update script
+
+    :param group: str
+      The Grouper group to update
+    :param stem: str
+      The Grouper stem (e.g., 'portal', 'quota')
+    :param netid: str
+      The User NetID
+    :param uaid: str
+      The User UA ID
+    :param action: str
+      The action to perform. 'add' or 'remove'
+    :param grouper_dict: dict
+      Dictionary containing grouper settings
+    :param delta_dict:
+      Dictionary containing delta settings
+    :param mo: ManualOverride object
+      For implementing change to CSV files. Default: None
+    :param sync: bool
+      Indicate whether to sync. Default: False
+    :param log: LogClass object
+      For logging
+    :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
+
+    :return d: Delta object class
+    """
+
+    if isinstance(log, type(None)):
+        log = log_stdout()
+
+    grouper_query = figshare_group(group, stem, production=production)
+    grouper = Grouper(**grouper_dict)
+    grouper_query_dict = grouper.query(grouper_query)
+
+    if not isinstance(netid, list):
+        netid = [netid]
+    if not isinstance(uaid, list):
+        uaid = [uaid]
+    member_set = update_entries(grouper_query_dict['members'],
+                                netid, uaid, action, log=log)
+
+    d = Delta(ldap_members=member_set,
+              grouper_query_dict=grouper_query_dict,
+              **delta_dict,
+              log=log)
+
+    log.info(f"ldap and grouper have {len(d.common)} members in common")
+    log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {group} group")
+    log.info(f"synchronization will add {len(d.adds)} entries to Grouper {group} group")
+
+    if sync:
+        log.info('synchronizing ...')
+        d.synchronize()
+
+        # Update manual CSV file
+        if not isinstance(mo, type(None)):
+            if production:
+                mo.update_dataframe(netid, uaid, group, stem)
+            else:
+                log.info("Working with figtest stem. Not updating dataframe")
+    else:
+        log.info('dry run, not performing synchronization')
+        log.info('dry run, not updating dataframe')
+
+    return d
