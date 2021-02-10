@@ -23,10 +23,17 @@ Fixes #
 <!-- Explain how you tested this bug fix so that others can replicate it. -->
 <!-- Example: The exact commands you ran and their output. -->
 
+**Changelog information**
+<!-- Be brief, use imperative mood or simple noun phrases and add linked issues -->
+<!-- Examples: Improve verbosity of log messages #103 | GitHub actions for CI #105 -->
+
+ * Description #
+
+- [ ] README.md, [changelog](../../README.md#changelog) <!-- update changelog here -->
+
 **Bump version information**
 Bump version: v0.xx.x -> v0.xx.x
 
 - [ ] README.md, [installation instructions](../../README.md#installation-instructions)
-- [ ] README.md, [changelog](../../README.md#changelog)
 - [ ] [`setup.py`](../../setup.py)
 - [ ] [`requiam/__init__.py`](../../requiam/__init__.py)
