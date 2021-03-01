@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 
 from os import path
-from os import mkdir
 
 import pandas as pd
-
-from datetime import date
 
 import argparse
 
@@ -15,7 +12,7 @@ from requiam import ldap_query
 from requiam.grouper import Grouper, create_active_group
 from requiam import delta
 from requiam import quota
-from requiam.logger import LogClass, LogCommons, pandas_write_buffer, log_settings
+from requiam.logger import LogCommons, log_setup, pandas_write_buffer, log_settings
 from requiam import TimerClass
 from requiam import manual_override
 from requiam.commons import dict_load, get_summary_dict, figshare_group
@@ -25,7 +22,6 @@ from requiam import __version__
 from requiam.git_info import get_active_branch_name, get_latest_commit
 from requiam import __file__ as library_path
 
-today = date.today()
 
 library_root_path = path.dirname(path.dirname(library_path))  # Retrieve parent directory to requiam
 
@@ -92,13 +88,8 @@ if __name__ == '__main__':
 
     # Define logfile
     log_dir = path.join(global_dict['persistent_path'], global_dict['log_dir'])
-    if not path.exists(log_dir):
-        mkdir(log_dir)
     logfile_prefix = global_dict['logfile_prefix']
-    logfile = f'{logfile_prefix}.{today.strftime("%Y-%m-%d")}.log'
-
-    log_filename = path.join(log_dir, logfile)  # Full log filename path
-    log = LogClass(log_dir, logfile).get_logger()
+    log, log_filename = log_setup(log_dir, logfile_prefix)
 
     lc = LogCommons(log, 'script_run')
 
@@ -458,4 +449,4 @@ if __name__ == '__main__':
 
     lc.script_end()
 
-    lc.log_permission(path.join(log_dir, logfile))
+    lc.log_permission(log_filename)
