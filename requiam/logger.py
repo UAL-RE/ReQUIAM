@@ -74,11 +74,11 @@ def log_stdout():
     return log
 
 
-def get_user_hostname():
+def get_user_hostname() -> dict:
     """
-    Purpose:
-      Retrieve user, hostname, IP, and OS configuration
-    :return sys_info: dictionary with 'user' 'hostname' and 'ip' dictionary
+    Retrieve user, hostname, IP, and OS configuration
+
+    :return: dictionary with 'user', 'hostname' and 'ip' dictionaries
     """
 
     sys_info = dict()
