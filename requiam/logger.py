@@ -1,7 +1,6 @@
 import sys
 import io
-from os.path import join, exists
-from os import uname, chmod, mkdir
+from os import path, uname, chmod, mkdir
 from typing import Tuple
 
 from datetime import date
@@ -41,7 +40,7 @@ class LogClass:
     """
 
     def __init__(self, log_dir, logfile):
-        self.LOG_FILENAME = join(log_dir, logfile)
+        self.LOG_FILENAME = path.join(log_dir, logfile)
 
     def get_logger(self):
         file_log_level = logging.DEBUG  # This is for file logging
@@ -79,11 +78,11 @@ def log_stdout():
 
 
 def log_setup(log_dir: str, logfile_prefix: str) -> Tuple[logging.Logger, str]:
-    if not exists(log_dir):
+    if not path.exists(log_dir):
         mkdir(log_dir)
     logfile = f'{logfile_prefix}.{today.strftime("%Y-%m-%d")}.log'
 
-    log_filename = join(log_dir, logfile)  # Full log filename path
+    log_filename = path.join(log_dir, logfile)  # Full log filename path
     log = LogClass(log_dir, logfile).get_logger()
 
     return log, log_filename
