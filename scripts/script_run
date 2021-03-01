@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from os import path, chmod
+from os import path
 from os import mkdir
 
 import pandas as pd
@@ -15,7 +15,7 @@ from requiam import ldap_query
 from requiam.grouper import Grouper, create_active_group
 from requiam import delta
 from requiam import quota
-from requiam.logger import LogClass, get_user_hostname, pandas_write_buffer, log_settings
+from requiam.logger import LogClass, LogCommons, pandas_write_buffer, log_settings
 from requiam import TimerClass
 from requiam import manual_override
 from requiam.commons import dict_load, get_summary_dict, figshare_group
@@ -100,18 +100,12 @@ if __name__ == '__main__':
     log_filename = path.join(log_dir, logfile)  # Full log filename path
     log = LogClass(log_dir, logfile).get_logger()
 
-    log.info("******************************")
-    log.info("Started script_run script ... ")
-    log.debug(f"ReQUIAM active branch: {branch_name}")
-    log.debug(f"ReQUIAM version: {__version__} ({git_short_commit})")
-    log.debug(f"ReQUIAM commit hash: {git_commit}")
+    lc = LogCommons(log)
+
+    lc.script_start('script_run', branch_name, git_short_commit, git_commit)
 
     # Retrieve username, hostname, IP
-    sys_info = get_user_hostname()
-    log.debug(f"username : {sys_info['user']}")
-    log.debug(f"hostname : {sys_info['hostname']}")
-    log.debug(f"IP Addr  : {sys_info['ip']}")
-    log.debug(f"Op. Sys. : {sys_info['os']}")
+    lc.script_sys_info()
 
     protected_keys = ['ldap_user', 'ldap_password',
                       'grouper_user', 'grouper_password']
@@ -462,7 +456,6 @@ if __name__ == '__main__':
     else:
         log.info("NO SUMMARY DATA")
 
-    log.info("******************************")
-    log.info("Exit 0")
+    lc.script_end()
 
-    chmod(path.join(log_dir, logfile), mode=0o666)
+    lc.log_permission(path.join(log_dir, logfile))
