@@ -1,14 +1,20 @@
 import sys
 import io
-from os.path import join
-from os import uname
+from os.path import join, dirname
+from os import uname, chmod
+
+import logging
 
 # User and hostname
 from getpass import getuser
 from socket import gethostname
 from requests import get
 
-import logging
+from .git_info import get_active_branch_name, get_latest_commit
+from requiam import __file__ as library_path, __version__
+
+library_root_path = dirname(dirname(library_path))  # Retrieve parent directory to requiam
+
 formatter = logging.Formatter('%(asctime)s - %(levelname)8s: %(message)s', "%H:%M:%S")
 
 file_formatter = logging.Formatter('%(asctime)s %(levelname)8s - %(module)20s %(funcName)30s : %(message)s',
@@ -86,6 +92,35 @@ def get_user_hostname():
     sys_info['os'] = f"{os_name[0]} {os_name[2]} {os_name[3]}"
 
     return sys_info
+
+
+class LogCommons:
+    def __init__(self, log: logging.Logger):
+        self.log = log
+        self.sys_info = get_user_hostname()
+
+    def script_start(self, script_name: str, branch_name: str,
+                     git_short_commit: str, git_commit: str):
+        start_text = f"Started {script_name} script ... "
+        self.log.info(f"*"*len(start_text))
+        self.log.info(start_text)
+        self.log.debug(f"ReQUIAM active branch: {branch_name}")
+        self.log.debug(f"ReQUIAM version: {__version__} ({git_short_commit})")
+        self.log.debug(f"ReQUIAM commit hash: {git_commit}")
+
+    def script_sys_info(self):
+        self.log.debug(f"username : {self.sys_info['user']}")
+        self.log.debug(f"hostname : {self.sys_info['hostname']}")
+        self.log.debug(f"IP Addr  : {self.sys_info['ip']}")
+        self.log.debug(f"Op. Sys. : {self.sys_info['os']}")
+
+    def script_end(self):
+        self.log.info("******************************")
+        self.log.info("Exit 0")
+
+    def log_permission(self, log_file):
+        self.log.debug(f"Changing permissions for {log_file}")
+        chmod(log_file, mode=0o666)
 
 
 def pandas_write_buffer(df, log_filename):
