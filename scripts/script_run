@@ -100,9 +100,9 @@ if __name__ == '__main__':
     log_filename = path.join(log_dir, logfile)  # Full log filename path
     log = LogClass(log_dir, logfile).get_logger()
 
-    lc = LogCommons(log)
+    lc = LogCommons(log, 'script_run')
 
-    lc.script_start('script_run', branch_name, git_short_commit, git_commit)
+    lc.script_start(branch_name, git_short_commit, git_commit)
 
     # Retrieve username, hostname, IP
     lc.script_sys_info()

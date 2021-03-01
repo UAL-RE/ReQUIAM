@@ -94,15 +94,17 @@ def get_user_hostname():
 
 
 class LogCommons:
-    def __init__(self, log: logging.Logger):
+    def __init__(self, log: logging.Logger, script_name: str):
         self.log = log
         self.sys_info = get_user_hostname()
+        self.script_name = script_name
+        self.start_text = f"Started {script_name} script ... "
+        self.asterisk = "*" * len(self.start_text)
 
-    def script_start(self, script_name: str, branch_name: str,
+    def script_start(self, branch_name: str,
                      git_short_commit: str, git_commit: str):
-        start_text = f"Started {script_name} script ... "
-        self.log.info(f"*"*len(start_text))
-        self.log.info(start_text)
+        self.log.info(self.asterisk)
+        self.log.info(self.start_text)
         self.log.debug(f"ReQUIAM active branch: {branch_name}")
         self.log.debug(f"ReQUIAM version: {__version__} ({git_short_commit})")
         self.log.debug(f"ReQUIAM commit hash: {git_commit}")
@@ -114,7 +116,7 @@ class LogCommons:
         self.log.debug(f"Op. Sys. : {self.sys_info['os']}")
 
     def script_end(self):
-        self.log.info("******************************")
+        self.log.info(self.asterisk)
         self.log.info("Exit 0")
 
     def log_permission(self, log_file):
