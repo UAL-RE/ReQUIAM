@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from os import path
-from os import mkdir
 
 from datetime import date
 
@@ -14,7 +13,7 @@ from requiam.ldap_query import LDAPConnection
 from requiam.org_code_numbers import get_numbers
 
 # Logging
-from requiam.logger import LogClass, LogCommons, log_settings
+from requiam.logger import LogCommons, log_setup, log_settings
 from requiam import TimerClass
 from requiam.commons import dict_load
 
@@ -65,12 +64,8 @@ if __name__ == '__main__':
 
     # Define logfile
     log_dir = path.join(global_dict['persistent_path'], global_dict['log_dir'])
-
-    if not path.exists(log_dir):
-        mkdir(log_dir)
-    logfile = f"org_code_numbers.{today.strftime('%Y-%m-%d')}.log"
-
-    log = LogClass(log_dir, logfile).get_logger()
+    logfile_prefix = 'org_code_numbers'
+    log, log_filename = log_setup(log_dir, logfile_prefix)
 
     lc = LogCommons(log, 'get_org_code_numbers')
     lc.script_start(branch_name, git_short_commit, git_commit)
@@ -97,4 +92,4 @@ if __name__ == '__main__':
 
     lc.script_end()
 
-    lc.log_permission(path.join(log_dir, logfile))
+    lc.log_permission(log_filename)
