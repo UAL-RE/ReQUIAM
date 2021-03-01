@@ -1,18 +1,14 @@
-from requiam.git_info import get_active_branch_name, get_latest_commit
+from requiam.git_info import GitInfo
 
 
-def test_get_active_branch_name():
+def test_GitInfo():
+    gi = GitInfo()
 
-    assert isinstance(get_active_branch_name(), str)
+    assert isinstance(gi.branch, str)
 
-
-def test_get_latest_commit():
-    git_commit, git_short_commit = get_latest_commit()
-
-    assert isinstance(git_commit, str)
-    assert isinstance(git_short_commit, str)
-
-    if not git_short_commit:  # Empty string
-        assert len(git_short_commit) == 0
+    assert isinstance(gi.commit, str)
+    assert isinstance(gi.short_commit, str)
+    if not gi.short_commit:  # Empty string
+        assert len(gi.short_commit) == 0
     else:
-        assert len(git_short_commit) == 7
+        assert len(gi.short_commit) == 7
