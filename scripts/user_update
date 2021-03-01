@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from os import path, chmod
+from os import path
 from os import mkdir
 
 from datetime import date
@@ -9,7 +9,7 @@ import argparse
 
 from requiam import ldap_query
 from requiam.commons import dict_load, figshare_stem
-from requiam.logger import LogClass, get_user_hostname, log_settings
+from requiam.logger import LogClass, LogCommons, log_settings
 from requiam import TimerClass
 from requiam.manual_override import ManualOverride, get_current_groups
 from requiam.grouper import Grouper, create_active_group, grouper_delta_user
@@ -91,18 +91,12 @@ if __name__ == '__main__':
 
     log = LogClass(log_dir, logfile).get_logger()
 
-    log.info("*******************************")
-    log.info("Started user_update script ... ")
-    log.debug(f"ReQUIAM active branch: {branch_name}")
-    log.debug(f"ReQUIAM version: {__version__} ({git_short_commit})")
-    log.debug(f"ReQUIAM commit hash: {git_commit}")
+    lc = LogCommons(log, 'user_update')
+
+    lc.script_start(branch_name, git_short_commit, git_commit)
 
     # Retrieve username, hostname, IP
-    sys_info = get_user_hostname()
-    log.debug(f"username : {sys_info['user']}")
-    log.debug(f"hostname : {sys_info['hostname']}")
-    log.debug(f"IP Addr  : {sys_info['ip']}")
-    log.debug(f"Op. Sys. : {sys_info['os']}")
+    lc.script_sys_info()
 
     protected_keys = ['ldap_user', 'ldap_password',
                       'grouper_user', 'grouper_password']
@@ -403,7 +397,6 @@ if __name__ == '__main__':
     main_timer._stop()
     log.info(main_timer.format)
 
-    log.info("*******************************")
-    log.info("Exit 0")
+    lc.script_end()
 
-    chmod(path.join(log_dir, logfile), mode=0o666)
+    lc.log_permission(path.join(log_dir, logfile))
