@@ -1,6 +1,6 @@
 import sys
 import io
-from os.path import join, dirname, exists
+from os.path import join, exists
 from os import uname, chmod, mkdir
 from typing import Tuple
 
@@ -14,11 +14,9 @@ from socket import gethostname
 
 from requests import get
 
-from requiam import __file__ as library_path, __version__
+from requiam import __version__
 
 today = date.today()
-
-library_root_path = dirname(dirname(library_path))  # Retrieve parent directory to requiam
 
 formatter = logging.Formatter('%(asctime)s - %(levelname)8s: %(message)s', "%H:%M:%S")
 
