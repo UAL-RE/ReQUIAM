@@ -1,4 +1,4 @@
-from requiam import logger
+from requiam import logger, git_info
 
 from os.path import join
 import logging
@@ -41,6 +41,21 @@ def test_get_hostname():
 
     for key in ['user', 'hostname', 'ip', 'os']:
         assert key in sys_info.keys()
+
+
+def test_log_setup_LogCommons():
+    logfile_prefix = 'test'
+
+    log0, log_filename = logger.log_setup('temp/', logfile_prefix)
+
+    gi = git_info.GitInfo()
+
+    lc = logger.LogCommons(log0, 'test', gi)
+
+    lc.script_start()
+    lc.script_sys_info()
+    lc.script_end()
+    lc.log_permission(log_filename)
 
 
 def test_pandas_write_buffer():
