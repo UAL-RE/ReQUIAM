@@ -25,8 +25,7 @@ file_formatter = logging.Formatter('%(asctime)s %(levelname)8s - %(module)20s %(
 
 class LogClass:
     """
-    Purpose:
-      Main class to log information to stdout and ASCII logfile
+    Main class to log information to stdout and ASCII logfile
 
     Note: This code is identical to the one used in DataRepository_research_themes:
       https://github.com/ualibraries/DataRepository_research_themes
@@ -78,6 +77,13 @@ def log_stdout():
 
 
 def log_setup(log_dir: str, logfile_prefix: str) -> Tuple[logging.Logger, str]:
+    """
+    Create Logger object ("log") for stdout and file logging
+
+    :param log_dir: Directory for logs
+    :param logfile_prefix: Log file prefix
+    :return: Logger object and full filename for log
+    """
     if not path.exists(log_dir):
         mkdir(log_dir)
     logfile = f'{logfile_prefix}.{today.strftime("%Y-%m-%d")}.log'
@@ -108,6 +114,13 @@ def get_user_hostname() -> dict:
 
 
 class LogCommons:
+    """
+    Common methods used when logging
+
+    :param log: Logging object
+    :param script_name: Name of script for log messages
+    """
+
     def __init__(self, log: logging.Logger, script_name: str):
         self.log = log
         self.sys_info = get_user_hostname()
@@ -117,6 +130,7 @@ class LogCommons:
 
     def script_start(self, branch_name: str,
                      git_short_commit: str, git_commit: str):
+        """Log start of script"""
         self.log.info(self.asterisk)
         self.log.info(self.start_text)
         self.log.debug(f"ReQUIAM active branch: {branch_name}")
@@ -124,16 +138,19 @@ class LogCommons:
         self.log.debug(f"ReQUIAM commit hash: {git_commit}")
 
     def script_sys_info(self):
+        """Log system info"""
         self.log.debug(f"username : {self.sys_info['user']}")
         self.log.debug(f"hostname : {self.sys_info['hostname']}")
         self.log.debug(f"IP Addr  : {self.sys_info['ip']}")
         self.log.debug(f"Op. Sys. : {self.sys_info['os']}")
 
     def script_end(self):
+        """Log end of script"""
         self.log.info(self.asterisk)
         self.log.info("Exit 0")
 
     def log_permission(self, log_file):
+        """Change permission for log"""
         self.log.debug(f"Changing permissions for {log_file}")
         chmod(log_file, mode=0o666)
 
@@ -158,8 +175,7 @@ def pandas_write_buffer(df, log_filename):
 
 def log_settings(vargs, config_dict, protected_keys, log=None):
     """
-    Purpose:
-      Log parsed arguments settings for scripts
+    Log parsed arguments settings for scripts
 
     :param vargs: dict of parsed arguments
     :param config_dict: dict containing configuration settings. See commons.dict_load
