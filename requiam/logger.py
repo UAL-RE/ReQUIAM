@@ -10,7 +10,6 @@ from getpass import getuser
 from socket import gethostname
 from requests import get
 
-from .git_info import get_active_branch_name, get_latest_commit
 from requiam import __file__ as library_path, __version__
 
 library_root_path = dirname(dirname(library_path))  # Retrieve parent directory to requiam
