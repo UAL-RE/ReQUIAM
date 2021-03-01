@@ -1,16 +1,22 @@
 import sys
 import io
-from os.path import join, dirname
-from os import uname, chmod
+from os.path import join, dirname, exists
+from os import uname, chmod, mkdir
+from typing import Tuple
+
+from datetime import date
 
 import logging
 
 # User and hostname
 from getpass import getuser
 from socket import gethostname
+
 from requests import get
 
 from requiam import __file__ as library_path, __version__
+
+today = date.today()
 
 library_root_path = dirname(dirname(library_path))  # Retrieve parent directory to requiam
 
@@ -72,6 +78,17 @@ def log_stdout():
         log.handler_set = True
         log.propagate = False
     return log
+
+
+def log_setup(log_dir: str, logfile_prefix: str) -> Tuple[logging.Logger, str]:
+    if not exists(log_dir):
+        mkdir(log_dir)
+    logfile = f'{logfile_prefix}.{today.strftime("%Y-%m-%d")}.log'
+
+    log_filename = join(log_dir, logfile)  # Full log filename path
+    log = LogClass(log_dir, logfile).get_logger()
+
+    return log, log_filename
 
 
 def get_user_hostname() -> dict:
