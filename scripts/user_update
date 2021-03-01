@@ -15,7 +15,7 @@ from requiam.grouper import Grouper, create_active_group, grouper_delta_user
 
 # Version and branch info
 from requiam import __version__
-from requiam.git_info import get_active_branch_name, get_latest_commit
+from requiam.git_info import GitInfo
 from requiam import __file__ as library_path
 
 today = date.today()
@@ -60,15 +60,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
     vargs = vars(args)
 
-    branch_name = get_active_branch_name(library_root_path)
-    git_commit, git_short_commit = get_latest_commit(library_root_path)
+    gi = GitInfo(input_path=library_root_path)
 
     banner_message = f"""
     This is the command-line tool that enable manual updates to Grouper membership.
 
-    ReQUIAM active branch: {branch_name}
+    ReQUIAM active branch: {gi.branch}
     ReQUIAM version: {__version__}
-    ReQUIAM commit hash: {git_short_commit}
+    ReQUIAM commit hash: {gi.short_commit}
     Created by Chun Ly
     Issues? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new
     """
@@ -86,9 +85,9 @@ if __name__ == '__main__':
     logfile_prefix = 'user_update'
     log, logfile_prefix = log_setup(log_dir, logfile_prefix)
 
-    lc = LogCommons(log, 'user_update')
+    lc = LogCommons(log, 'user_update', gi)
 
-    lc.script_start(branch_name, git_short_commit, git_commit)
+    lc.script_start()
 
     # Retrieve username, hostname, IP
     lc.script_sys_info()

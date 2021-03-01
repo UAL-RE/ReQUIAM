@@ -15,7 +15,7 @@ from requiam.commons import dict_load
 
 # Version and branch info
 from requiam import __version__
-from requiam.git_info import get_active_branch_name, get_latest_commit
+from requiam.git_info import GitInfo
 from requiam import __file__ as library_path
 
 today = date.today()
@@ -43,8 +43,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     vargs = vars(args)
 
-    branch_name = get_active_branch_name(library_root_path)
-    git_commit, git_short_commit = get_latest_commit(library_root_path)
+    gi = GitInfo(input_path=library_root_path)
 
     banner_message = f"""
     This is the command-line tool to create Grouper groups for main themes, sub-portals, and quotas.
@@ -53,9 +52,9 @@ if __name__ == '__main__':
      2. Create the group
      3. Set permissions for GrouperSuperAdmins and GrouperAdmins
 
-    ReQUIAM active branch: {branch_name}
+    ReQUIAM active branch: {gi.branch}
     ReQUIAM version: {__version__}
-    ReQUIAM commit hash: {git_short_commit}
+    ReQUIAM commit hash: {gi.short_commit}
     Created by Chun Ly
     Issues/Suggestions? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new/choose
     """
@@ -73,8 +72,8 @@ if __name__ == '__main__':
     logfile_prefix = 'add_grouper_groups'
     log, log_filename = log_setup(log_dir, logfile_prefix)
 
-    lc = LogCommons(log, 'add_grouper_group')
-    lc.script_start(branch_name, git_short_commit, git_commit)
+    lc = LogCommons(log, 'add_grouper_group', gi)
+    lc.script_start()
 
     # Retrieve username, hostname, IP
     lc.script_sys_info()

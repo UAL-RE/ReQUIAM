@@ -14,6 +14,7 @@ from socket import gethostname
 from requests import get
 
 from requiam import __version__
+from .git_info import GitInfo
 
 today = date.today()
 
@@ -119,23 +120,25 @@ class LogCommons:
 
     :param log: Logging object
     :param script_name: Name of script for log messages
+    :param: gi: Object containing git info
     """
 
-    def __init__(self, log: logging.Logger, script_name: str):
+    def __init__(self, log: logging.Logger, script_name: str, gi: GitInfo):
         self.log = log
-        self.sys_info = get_user_hostname()
         self.script_name = script_name
+        self.gi = gi
+
         self.start_text = f"Started {script_name} script ... "
         self.asterisk = "*" * len(self.start_text)
+        self.sys_info = get_user_hostname()
 
-    def script_start(self, branch_name: str,
-                     git_short_commit: str, git_commit: str):
+    def script_start(self):
         """Log start of script"""
         self.log.info(self.asterisk)
         self.log.info(self.start_text)
-        self.log.debug(f"ReQUIAM active branch: {branch_name}")
-        self.log.debug(f"ReQUIAM version: {__version__} ({git_short_commit})")
-        self.log.debug(f"ReQUIAM commit hash: {git_commit}")
+        self.log.debug(f"ReQUIAM active branch: {self.gi.branch}")
+        self.log.debug(f"ReQUIAM version: {__version__} ({self.gi.short_commit})")
+        self.log.debug(f"ReQUIAM commit hash: {self.gi.commit}")
 
     def script_sys_info(self):
         """Log system info"""
