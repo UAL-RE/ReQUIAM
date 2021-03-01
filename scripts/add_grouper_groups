@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from os import path, mkdir
+from os import path
 
 import pandas as pd
 
@@ -9,7 +9,7 @@ from datetime import date
 import argparse
 
 from requiam.grouper import Grouper, create_groups
-from requiam.logger import LogClass, LogCommons, log_settings
+from requiam.logger import LogCommons, log_setup, log_settings
 from requiam import TimerClass
 from requiam.commons import dict_load
 
@@ -70,12 +70,8 @@ if __name__ == '__main__':
 
     # Define logfile
     log_dir = path.join(global_dict['persistent_path'], global_dict['log_dir'])
-
-    if not path.exists(log_dir):
-        mkdir(log_dir)
-    logfile = f"add_grouper_groups.{today.strftime('%Y-%m-%d')}.log"
-
-    log = LogClass(log_dir, logfile).get_logger()
+    logfile_prefix = 'add_grouper_groups'
+    log, log_filename = log_setup(log_dir, logfile_prefix)
 
     lc = LogCommons(log, 'add_grouper_group')
     lc.script_start(branch_name, git_short_commit, git_commit)
@@ -214,4 +210,4 @@ if __name__ == '__main__':
 
     lc.script_end()
 
-    lc.log_permission(path.join(log_dir, logfile))
+    lc.log_permission(log_filename)
