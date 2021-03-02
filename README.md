@@ -42,7 +42,7 @@ The Grouper memberships are as follow:
 
 For the latter, these portals and their association with University
 organization code(s) are defined within this
-[CSV file](https://raw.githubusercontent.com/ualibraries/ReQUIAM_csv/master/requiam_csv/data/research_themes.csv).
+[CSV file](https://raw.githubusercontent.com/UAL-ODIS/ReQUIAM_csv/master/requiam_csv/data/research_themes.csv).
 
 Note that access is granted to the service through membership in a Grouper
 `figshare:active` group.  These memberships are done indirectly based on
