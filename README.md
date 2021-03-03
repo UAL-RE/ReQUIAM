@@ -42,7 +42,7 @@ The Grouper memberships are as follow:
 
 For the latter, these portals and their association with University
 organization code(s) are defined within this
-[CSV file](https://raw.githubusercontent.com/ualibraries/ReQUIAM_csv/master/requiam_csv/data/research_themes.csv).
+[CSV file](https://raw.githubusercontent.com/UAL-ODIS/ReQUIAM_csv/master/requiam_csv/data/research_themes.csv).
 
 Note that access is granted to the service through membership in a Grouper
 `figshare:active` group.  These memberships are done indirectly based on
@@ -64,7 +64,7 @@ These instructions will have the code running on your local or virtual machine.
 
 You will need the following to have a working copy of this software. See
 [installation](#installation-instructions) steps:
-1. Python (3.7.5)
+1. Python (>=3.7.9)
 2. [`pandas`](https://pandas.pydata.org/) ([0.25.3](https://pandas.pydata.org/pandas-docs/version/0.25.3/))
 3. [`ldap3`](https://ldap3.readthedocs.io/en/latest/) (2.6.1)
 4. [`requests`](https://requests.readthedocs.io/en/master/) (2.22.0)
@@ -74,14 +74,14 @@ You will need the following to have a working copy of this software. See
 
 #### Python and setting up a `conda` environment
 
-First, install a working version of Python (v3.7.5).  We recommend using the
+First, install a working version of Python (>=3.7.9).  We recommend using the
 [Anaconda](https://www.anaconda.com/distribution/) package installer.
 
 After you have Anaconda installed, you will want to create a separate `conda` environment
 and activate it:
 
 ```
-$ (sudo) conda create -n figshare_patrons python=3.7.5
+$ (sudo) conda create -n figshare_patrons python=3.7
 $ conda activate figshare_patrons
 ```
 
@@ -107,7 +107,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.15.1`.
+You should see that the version is `0.16.1`.
 
 ### Configuration Settings
 
@@ -296,12 +296,20 @@ Currently, there are two GitHub Action workflows:
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
-v0.15.0:
+v0.16.0 - v0.16.1:
+ * Merge `grouper_admin` and `grouper_query` modules #87
+ * Complete adoption of f-strings #118
+ * New pull request templates #120
+ * CI build testing for Python 3.9 #121
+ * Update files to reflect ReQUIAM_csv org change #137
+
+v0.15.0 - v0.15.1:
  * GitHub actions for CI #105
  * Simplify scripts to use dictionary for configuration settings #104
  * Improve verbosity of log messages #103
  * Priority labels for project management #108
  * Add/update GitHub issue templates #110
+ * Bug: Fix f-string typo with batch load information #114
 
 v0.14.0:
  * Travis CI integration #91

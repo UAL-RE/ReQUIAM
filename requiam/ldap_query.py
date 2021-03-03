@@ -41,9 +41,9 @@ class LDAPConnection(object):
         self.ldap_user = ldap_user
         self.ldap_password = ldap_password
 
-        self.ldap_bind_host = 'ldaps://' + ldap_host
-        self.ldap_bind_dn = 'uid=' + ldap_user + ',ou=app users,' + ldap_base_dn
-        self.ldap_search_dn = 'ou=people,' + ldap_base_dn
+        self.ldap_bind_host = f"ldaps://{ldap_host}"
+        self.ldap_bind_dn = f"uid={ldap_user},ou=app users,{ldap_base_dn}"
+        self.ldap_search_dn = f"ou=people,{ldap_base_dn}"
         self.ldap_attribs = ['uaid']
 
         #
@@ -68,7 +68,7 @@ def uid_query(uid):
     :return ldap_query: list containing the str
     """
 
-    ldap_query = '(uid={})'.format(uid)
+    ldap_query = f"(uid={uid})"
 
     return [ldap_query]
 
@@ -96,7 +96,7 @@ def ual_grouper_base(basename):
     :return: str with ismemberof attribute
     """
 
-    return 'ismemberof=arizona.edu:dept:LBRY:pgrps:{}'.format(basename)
+    return f"ismemberof=arizona.edu:dept:LBRY:pgrps:{basename}"
 
 
 def ual_ldap_query(org_code, classification='all'):
@@ -126,9 +126,9 @@ def ual_ldap_query(org_code, classification='all'):
     """
 
     if classification == 'none':
-        ldap_query = '(employeePrimaryDept={})'.format(org_code)
+        ldap_query = f"(employeePrimaryDept={org_code})"
     else:
-        ldap_query = '(& (employeePrimaryDept={}) (| '.format(org_code)
+        ldap_query = f"(& (employeePrimaryDept={org_code}) (| "
 
         classification_list = ['all', 'faculty', 'staff', 'students', 'dcc']
         if classification not in classification_list:
@@ -136,11 +136,13 @@ def ual_ldap_query(org_code, classification='all'):
 
         if classification == 'all':
             for member in classification_list[1:]:
-                ldap_query += '({}) '.format(ual_grouper_base(f'ual-{member}'))
+                group_str = ual_grouper_base(f"ual-{member}")
+                ldap_query += f"({group_str}) "
         else:
-            ldap_query += '({}) '.format(ual_grouper_base(f'ual-{classification}'))
+            group_str = ual_grouper_base(f"ual-{classification}")
+            ldap_query += f"({group_str}) "
 
-        ldap_query += ') )'
+        ldap_query += ") )"
 
     return [ldap_query]
 
