@@ -70,7 +70,7 @@ if __name__ == '__main__':
     # Define logfile
     log_dir = path.join(global_dict['persistent_path'], global_dict['log_dir'])
     logfile_prefix = 'add_grouper_groups'
-    log, log_filename = log_setup(log_dir, logfile_prefix)
+    log = log_setup(log_dir, logfile_prefix)
 
     lc = LogCommons(log, 'add_grouper_group', gi)
     lc.script_start()
@@ -209,4 +209,4 @@ if __name__ == '__main__':
 
     lc.script_end()
 
-    lc.log_permission(log_filename)
+    lc.log_permission()

@@ -1,7 +1,6 @@
 import sys
 import io
 from os import path, uname, chmod, mkdir
-from typing import Tuple
 
 from datetime import date
 
@@ -77,7 +76,7 @@ def log_stdout():
     return log
 
 
-def log_setup(log_dir: str, logfile_prefix: str) -> Tuple[logging.Logger, str]:
+def log_setup(log_dir: str, logfile_prefix: str) -> logging.Logger:
     """
     Create Logger object ("log") for stdout and file logging
 
@@ -89,10 +88,9 @@ def log_setup(log_dir: str, logfile_prefix: str) -> Tuple[logging.Logger, str]:
         mkdir(log_dir)
     logfile = f'{logfile_prefix}.{today.strftime("%Y-%m-%d")}.log'
 
-    log_filename = path.join(log_dir, logfile)  # Full log filename path
     log = LogClass(log_dir, logfile).get_logger()
 
-    return log, log_filename
+    return log
 
 
 def get_user_hostname() -> dict:

@@ -46,7 +46,7 @@ def test_get_hostname():
 def test_log_setup_LogCommons():
     logfile_prefix = 'testlog'
 
-    log0, log_filename = logger.log_setup(getcwd(), logfile_prefix)
+    log0 = logger.log_setup(getcwd(), logfile_prefix)
 
     gi = git_info.GitInfo()
 
@@ -55,7 +55,7 @@ def test_log_setup_LogCommons():
     lc.script_start()
     lc.script_sys_info()
     lc.script_end()
-    lc.log_permission(log_filename)
+    lc.log_permission()
 
 
 def test_pandas_write_buffer():

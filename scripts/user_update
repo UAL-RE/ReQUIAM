@@ -83,7 +83,7 @@ if __name__ == '__main__':
     # Define logfile
     log_dir = path.join(global_dict['persistent_path'], global_dict['log_dir'])
     logfile_prefix = 'user_update'
-    log, logfile_prefix = log_setup(log_dir, logfile_prefix)
+    log = log_setup(log_dir, logfile_prefix)
 
     lc = LogCommons(log, 'user_update', gi)
 
@@ -393,4 +393,4 @@ if __name__ == '__main__':
 
     lc.script_end()
 
-    lc.log_permission(logfile_prefix)
+    lc.log_permission()
