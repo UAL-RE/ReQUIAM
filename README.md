@@ -296,6 +296,8 @@ Currently, there are two GitHub Action workflows:
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
+ * Refactor: Block of codes in scripts using `LogCommons`, `log_setup` and `get_log_file` #133
+
 v0.16.0:
  * Merge `grouper_admin` and `grouper_query` modules #87
  * Complete adoption of f-strings #118
