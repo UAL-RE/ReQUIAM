@@ -114,6 +114,13 @@ def get_user_hostname() -> dict:
     return sys_info
 
 
+def get_log_file(log_handler):
+    log_file = ''
+    if isinstance(log_handler, logging.FileHandler):
+        log_file = log_handler.baseFilename
+    return log_file
+
+
 class LogCommons:
     """
     Common methods used when logging
@@ -152,10 +159,13 @@ class LogCommons:
         self.log.info(self.asterisk)
         self.log.info("Exit 0")
 
-    def log_permission(self, log_file):
-        """Change permission for log"""
-        self.log.debug(f"Changing permissions for {log_file}")
-        chmod(log_file, mode=0o666)
+    def log_permission(self):
+        """Change permission for file logs"""
+        for handler in self.log.handlers:
+            log_file = get_log_file(handler)
+            if log_file:
+                self.log.debug(f"Changing permissions for {log_file}")
+                chmod(log_file, mode=0o666)
 
 
 def pandas_write_buffer(df, log_filename):
