@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+import os
+from requiam.grouper import create_groups, Grouper
+from requiam.commons import dict_load
+
+
+if __name__ == '__main__':
+
+    config_dict = dict_load('../config/figshare_grouper25.ini')
+    eds_pass = os.environ.get('eds_pass')
+    config_dict['global']['grouper_password'] = eds_pass
+
+    grouper_keys = ['grouper_'+suffix for
+                    suffix in ['host', 'base_path', 'user', 'password']]
+    grouper_dict = {x: config_dict['global'][x] for x in grouper_keys}
+
+    group_type = 'test'
+    groups = 'grouper25'
+    group_description = 'Test for grouper creation'
+    grouper_api = Grouper(**grouper_dict, grouper_production=False)
+
+    create_groups(groups, group_type, group_description, grouper_api, add=True)
