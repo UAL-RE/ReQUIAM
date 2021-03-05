@@ -42,7 +42,7 @@ The Grouper memberships are as follow:
 
 For the latter, these portals and their association with University
 organization code(s) are defined within this
-[CSV file](https://raw.githubusercontent.com/ualibraries/ReQUIAM_csv/master/requiam_csv/data/research_themes.csv).
+[CSV file](https://raw.githubusercontent.com/UAL-ODIS/ReQUIAM_csv/master/requiam_csv/data/research_themes.csv).
 
 Note that access is granted to the service through membership in a Grouper
 `figshare:active` group.  These memberships are done indirectly based on
@@ -107,7 +107,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.16.0`.
+You should see that the version is `0.16.1`.
 
 ### Configuration Settings
 
@@ -299,11 +299,12 @@ List is sorted from moderate to minor revisions for reach release.
 v0.17.0 (release candidate):
  * Refactor: Block of codes in scripts using `LogCommons`, `log_setup` and `get_log_file` #133
 
-v0.16.0:
+v0.16.0 - v0.16.1:
  * Merge `grouper_admin` and `grouper_query` modules #87
  * Complete adoption of f-strings #118
  * New pull request templates #120
  * CI build testing for Python 3.9 #121
+ * Update files to reflect ReQUIAM_csv org change #137
 
 v0.15.0 - v0.15.1:
  * GitHub actions for CI #105
