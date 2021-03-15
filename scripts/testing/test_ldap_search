@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+
+import os
+from requiam.commons import dict_load
+from requiam import ldap_query
+
+
+if __name__ == '__main__':
+
+    eds_pass = os.environ.get('eds_pass')
+
+    config_dict = dict_load('../../config/figshare_grouper25.ini')
+    config_dict['global']['ldap_password'] = eds_pass
+
+    global_dict = config_dict['global']
+    ldap_keys = [key for key in global_dict.keys() if 'ldap_' in key]
+    ldap_dict = {x: global_dict[x] for x in ldap_keys}
+
+    ldc = ldap_query.LDAPConnection(**ldap_dict)
+
+    ldap_queries = ldap_query.ual_ldap_query('0404', classification='all')
+    print(ldap_queries)
+    ldap_members = ldap_query.ldap_search(ldc, ldap_queries)
+    print(len(ldap_members))
+
+    # Query for just EDS info (no ismemberof)
+    eds_basic_query = ldap_query.ual_ldap_query('0404', classification='none')  # ['(employeePrimaryDept=0404)']
+    print(eds_basic_query)
+    ldap_members = ldap_query.ldap_search(ldc, eds_basic_query)
+    print('basic query', len(ldap_members))
