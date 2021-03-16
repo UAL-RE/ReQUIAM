@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from os import path, mkdir
+from os import path
 
 import pandas as pd
 
@@ -9,13 +9,13 @@ from datetime import date
 import argparse
 
 from requiam.grouper import Grouper, create_groups
-from requiam.logger import LogClass, get_user_hostname, log_settings
+from requiam.logger import LogCommons, log_setup, log_settings
 from requiam import TimerClass
 from requiam.commons import dict_load
 
 # Version and branch info
 from requiam import __version__
-from requiam.git_info import get_active_branch_name, get_latest_commit
+from requiam.git_info import GitInfo
 from requiam import __file__ as library_path
 
 today = date.today()
@@ -43,8 +43,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     vargs = vars(args)
 
-    branch_name = get_active_branch_name(library_root_path)
-    git_commit, git_short_commit = get_latest_commit(library_root_path)
+    gi = GitInfo(input_path=library_root_path)
 
     banner_message = f"""
     This is the command-line tool to create Grouper groups for main themes, sub-portals, and quotas.
@@ -53,9 +52,9 @@ if __name__ == '__main__':
      2. Create the group
      3. Set permissions for GrouperSuperAdmins and GrouperAdmins
 
-    ReQUIAM active branch: {branch_name}
+    ReQUIAM active branch: {gi.branch}
     ReQUIAM version: {__version__}
-    ReQUIAM commit hash: {git_short_commit}
+    ReQUIAM commit hash: {gi.short_commit}
     Created by Chun Ly
     Issues/Suggestions? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new/choose
     """
@@ -70,25 +69,14 @@ if __name__ == '__main__':
 
     # Define logfile
     log_dir = path.join(global_dict['persistent_path'], global_dict['log_dir'])
+    logfile_prefix = 'add_grouper_groups'
+    log = log_setup(log_dir, logfile_prefix)
 
-    if not path.exists(log_dir):
-        mkdir(log_dir)
-    logfile = f"add_grouper_groups.{today.strftime('%Y-%m-%d')}.log"
-
-    log = LogClass(log_dir, logfile).get_logger()
-
-    log.info("*************************************")
-    log.info("Started add_grouper_group script ... ")
-    log.debug(f"ReQUIAM active branch: {branch_name}")
-    log.debug(f"ReQUIAM version: {__version__} ({git_short_commit})")
-    log.debug(f"ReQUIAM commit hash: {git_commit}")
+    lc = LogCommons(log, 'add_grouper_group', gi)
+    lc.script_start()
 
     # Retrieve username, hostname, IP
-    sys_info = get_user_hostname()
-    log.debug(f"username : {sys_info['user']}")
-    log.debug(f"hostname : {sys_info['hostname']}")
-    log.debug(f"IP Addr  : {sys_info['ip']}")
-    log.debug(f"Op. Sys. : {sys_info['os']}")
+    lc.script_sys_info()
 
     protected_keys = ['grouper_user', 'grouper_password']
     cred_err = log_settings(vargs, config_dict, protected_keys, log=log)
@@ -219,5 +207,6 @@ if __name__ == '__main__':
     main_timer._stop()
     log.info(main_timer.format)
 
-    log.info("*************************************")
-    log.info("Exit 0")
+    lc.script_end()
+
+    lc.log_permission()
