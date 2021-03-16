@@ -1,7 +1,8 @@
 import configparser
+from requiam.delta import Delta
+from typing import Dict, Optional
 
-
-def figshare_stem(stem='', production=True):
+def figshare_stem(stem: str = '', production: bool = True) -> str:
     """
     Purpose:
       Construct Grouper figshare stems
@@ -34,7 +35,7 @@ def figshare_stem(stem='', production=True):
     return stem_query
 
 
-def figshare_group(group, root_stem, production=True):
+def figshare_group(group: str, root_stem: str, production: bool = True) -> str:
     """
     Purpose:
       Construct Grouper figshare groups
@@ -67,7 +68,8 @@ def figshare_group(group, root_stem, production=True):
     return grouper_group
 
 
-def dict_load(config_file, vargs=None):
+def dict_load(config_file: str, vargs: Optional[Dict[str, str]] = None)  \
+                -> dict:
     """
     Purpose:
       Read in a config INI file using configparser and return a dictionary
@@ -120,7 +122,8 @@ def dict_load(config_file, vargs=None):
     return config_dict
 
 
-def get_summary_dict(ldap_members, grouper_members, delta):
+def get_summary_dict(ldap_members: set, grouper_members: set, delta: Delta) \
+                      -> Dict[str, int]:
     """
     Purpose:
       Return a dict containing summary data for EDS and Grouper queries
