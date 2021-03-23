@@ -2,10 +2,10 @@
 
 [![Build Status](https://travis-ci.com/ualibraries/ReQUIAM.svg?branch=master)](https://travis-ci.com/ualibraries/ReQUIAM)
 
-[![GitHub build](https://github.com/ualibraries/ReQUIAM/workflows/Python%20package/badge.svg?)](https://github.com/ualibraries/ReQUIAM/actions?query=workflow%3A%22Python+package%22)
-![GitHub top language](https://img.shields.io/github/languages/top/ualibraries/ReQUIAM)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/ualibraries/ReQUIAM)
-![GitHub](https://img.shields.io/github/license/ualibraries/ReQUIAM?color=blue)
+[![GitHub build](https://github.com/UAL-ODIS/ReQUIAM/workflows/Python%20package/badge.svg?)](https://github.com/UAL-ODIS/ReQUIAM/actions?query=workflow%3A%22Python+package%22)
+![GitHub top language](https://img.shields.io/github/languages/top/UAL-ODIS/ReQUIAM)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/UAL-ODIS/ReQUIAM)
+![GitHub](https://img.shields.io/github/license/UAL-ODIS/ReQUIAM?color=blue)
 
 - [Overview](#overview)
 - [Getting Started](#getting-started)
@@ -89,7 +89,7 @@ Next, clone this repository into a parent folder:
 
 ```
 (figshare_patrons) $ cd /path/to/parent/folder
-(figshare_patrons) $ git clone https://github.com/ualibraries/ReQUIAM.git
+(figshare_patrons) $ git clone https://github.com/UAL-ODIS/ReQUIAM.git
 ```
 
 With the activated `conda` environment, you can install with the `setup.py` script:
@@ -276,7 +276,7 @@ flag to implement on the production stem, `figshare`.
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available,
-see the [tags on this repository](https://github.com/ualibraries/ReQUIAM/tags).
+see the [tags on this repository](https://github.com/UAL-ODIS/ReQUIAM/tags).
 
 ## Continuous Integration
 
@@ -393,7 +393,7 @@ v0.1.0:
 * Damian Romero ([@damian-romero](https://www.github.com/damian-romero)) - [University of Arizona Libraries](https://github.com/ualibraries), [Office of Digital Innovation and Stewardship](https://github.com/UAL-ODIS)
 
 See also the list of
-[contributors](https://github.com/ualibraries/ReQUIAM/contributors) who participated in this project.
+[contributors](https://github.com/UAL-ODIS/ReQUIAM/contributors) who participated in this project.
 
 
 ## License
