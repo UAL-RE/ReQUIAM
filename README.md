@@ -1,7 +1,5 @@
 # ![ReDATA EDS Query and Update for Identity and Access Management](ReQUIAM_full.png)
 
-[![Build Status](https://travis-ci.com/ualibraries/ReQUIAM.svg?branch=master)](https://travis-ci.com/ualibraries/ReQUIAM)
-
 [![GitHub build](https://github.com/UAL-ODIS/ReQUIAM/workflows/Python%20package/badge.svg?)](https://github.com/UAL-ODIS/ReQUIAM/actions?query=workflow%3A%22Python+package%22)
 ![GitHub top language](https://img.shields.io/github/languages/top/UAL-ODIS/ReQUIAM)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/UAL-ODIS/ReQUIAM)
