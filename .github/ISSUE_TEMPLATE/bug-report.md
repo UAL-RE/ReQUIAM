@@ -6,26 +6,32 @@ labels: bug, p1
 assignees: ''
 
 ---
+<!--Fields in **bold** are REQUIRED, fields in *italics* are OPTIONAL -->
 
-**Describe the bug (REQUIRED)**
-A clear and concise description of what the bug is.
+**Describe the bug**
+<!-- A clear and concise description of what the bug is. -->
 
-**Version information (please complete the following, default in brackets): (REQUIRED)**
- - ReQUIAM version: [e.g. `0.14.0`]
- - ReQUIAM branch info: [e.g., `master`]
- - `pandas` version: [e.g., 1.1.0]
- - `requests` version: [e.g., 2.22.0]
- - `numpy` version: [e.g., 1.18.0]
+**Reproduction Steps**
+<!-- Steps to reproduce the behavior -->
 
-**Reproduction Steps (REQUIRED)**
-Steps to reproduce the behavior:
-1. Typed the following: '...'
+**Outputted Messages**
+<!-- Provide the full message log if possible or a subset that includes a few lines before the failure -->
 
-**Expected behavior (Optional)**
-A clear and concise description of what you expected to happen.
+**Version information**
+- ReQUIAM version: [e.g. `0.16.2`] 
+- ReQUIAM branch info: [e.g., `master`]
+<!-- Update with tagged version or branch full name-->
+[`requirements`](https://github.com/ualibraries/ReQUIAM/blob/v<version>/requirements.txt)
+[`requirements`](https://github.com/ualibraries/ReQUIAM/blob/<branch>/requirements.txt)
 
-**Screenshots (Optional)**
-If applicable, add screenshots to help explain your problem.
+*Expected behavior*
+<!-- A clear and concise description of what you expected to happen. -->
 
-**Additional context (Optional)**
-Add any other context about the problem here.
+*Screenshots*
+<!-- If applicable, add screenshots to help explain your problem. -->
+
+*Additional context*
+<!-- Add any other context about the problem here. -->
+
+<!--Branch info-->
+**Implemented in**: TBD <!--`hotfix/vX.XX.X` #(PR No) --> 
