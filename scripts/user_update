@@ -69,7 +69,7 @@ if __name__ == '__main__':
     ReQUIAM version: {__version__}
     ReQUIAM commit hash: {gi.short_commit}
     Created by Chun Ly
-    Issues? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new
+    Issues? Submit a GitHub ticket: https://github.com/UAL-ODIS/ReQUIAM/issues/new
     """
     print(banner_message)
 

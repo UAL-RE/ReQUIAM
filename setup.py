@@ -9,8 +9,9 @@ with open("requirements.txt", "r") as fr:
 setup(
     name='requiam',
     version='v0.16.2',
+    version='v0.16.3',
     packages=['requiam'],
-    url='https://github.com/ualibraries/ReQUIAM',
+    url='https://github.com/UAL-ODIS/ReQUIAM',
     license='MIT License',
     author='Chun Ly',
     author_email='astro.chun@gmail.com',
