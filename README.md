@@ -107,7 +107,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.16.1`.
+You should see that the version is `0.16.2`.
 
 ### Configuration Settings
 
@@ -296,12 +296,13 @@ Currently, there are two GitHub Action workflows:
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
-v0.16.0 - v0.16.1:
+v0.16.0 - v0.16.2:
  * Merge `grouper_admin` and `grouper_query` modules #87
  * Complete adoption of f-strings #118
  * New pull request templates #120
  * CI build testing for Python 3.9 #121
  * Update files to reflect ReQUIAM_csv org change #137
+ * Minor: Update bug report template #131
 
 v0.15.0 - v0.15.1:
  * GitHub actions for CI #105
