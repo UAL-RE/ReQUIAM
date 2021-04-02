@@ -8,7 +8,6 @@ with open("requirements.txt", "r") as fr:
 
 setup(
     name='requiam',
-    version='v0.16.2',
     version='v0.16.3',
     packages=['requiam'],
     url='https://github.com/UAL-ODIS/ReQUIAM',
