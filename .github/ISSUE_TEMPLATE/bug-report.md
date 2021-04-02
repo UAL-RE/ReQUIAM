@@ -19,11 +19,10 @@ assignees: ''
 
 **Version information**
 - ReQUIAM version: [e.g. `0.16.2`] 
+- ReQUIAM branch info: [e.g., `master`]
 <!-- Update with tagged version or branch full name-->
 [`requirements`](https://github.com/ualibraries/ReQUIAM/blob/v<version>/requirements.txt)
 [`requirements`](https://github.com/ualibraries/ReQUIAM/blob/<branch>/requirements.txt)
-[`__init__.py`](https://github.com/ualibraries/ReQUIAM/blob/v<version>/requiam/__init__.py)
-[`__init__.py`](https://github.com/ualibraries/ReQUIAM/blob/<branch>/requiam/__init__.py)
 
 *Expected behavior*
 <!-- A clear and concise description of what you expected to happen. -->
