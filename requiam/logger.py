@@ -21,7 +21,7 @@ class LogClass:
       Main class to log information to stdout and ASCII logfile
 
     Note: This code is identical to the one used in DataRepository_research_themes:
-      https://github.com/ualibraries/DataRepository_research_themes
+      https://github.com/UAL-ODIS/ReQUIAM_csv
 
     To use:
     log = LogClass(log_dir, logfile).get_logger()
