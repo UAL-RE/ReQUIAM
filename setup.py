@@ -8,7 +8,7 @@ with open("requirements.txt", "r") as fr:
 
 setup(
     name='requiam',
-    version='v0.16.3',
+    version='v0.16.4',
     packages=['requiam'],
     url='https://github.com/UAL-ODIS/ReQUIAM',
     license='MIT License',
