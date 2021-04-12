@@ -1,5 +1,2 @@
-pandas==1.2.1
-tabulate==0.8.3
 ldap3==2.6.1
-requests==2.22.0
-numpy==1.19.5
+redata==0.3.0
