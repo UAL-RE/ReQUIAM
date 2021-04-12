@@ -19,7 +19,7 @@ from requiam.commons import dict_load
 
 # Version and branch info
 from requiam import __version__
-from requiam.git_info import GitInfo
+from redata.commons.git_info import GitInfo
 from requiam import __file__ as library_path
 
 today = date.today()
