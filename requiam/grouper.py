@@ -1,4 +1,6 @@
+from logging import Logger
 from os.path import join
+from typing import Any, Dict, List, Optional, Union
 import requests
 import pandas as pd
 
@@ -10,7 +12,7 @@ from .delta import Delta
 from .logger import log_stdout
 
 # Administrative groups
-from .manual_override import update_entries
+from .manual_override import ManualOverride, update_entries
 
 superadmins = figshare_group('GrouperSuperAdmins', '', production=True)
 admins = figshare_group('GrouperAdmins', '', production=True)
@@ -90,29 +92,31 @@ class Grouper:
       See: https://spaces.at.internet2.edu/display/Grouper/Add+or+remove+grouper+privileges
     """
 
-    def __init__(self, grouper_host, grouper_base_path, grouper_user,
-                 grouper_password, grouper_production=False, log=None):
+    def __init__(self, grouper_host: str, grouper_base_path: str,
+                 grouper_user: str, grouper_password: str,
+                 grouper_production: bool = False,
+                 log: Optional[Logger] = None):
 
         if isinstance(log, type(None)):
             self.log = log_stdout()
         else:
             self.log = log
 
-        self.grouper_host = grouper_host
-        self.grouper_base_path = grouper_base_path
-        self.grouper_user = grouper_user
-        self.grouper_password = grouper_password
-        self.grouper_production = grouper_production
-        self.grouper_auth = (self.grouper_user, self.grouper_password)
-        self.endpoint = f'https://{grouper_host}/{grouper_base_path}'
-        self.headers = {'Content-Type': 'text/x-json'}
+        self.grouper_host: str = grouper_host
+        self.grouper_base_path: str = grouper_base_path
+        self.grouper_user: str = grouper_user
+        self.grouper_password: str = grouper_password
+        self.grouper_production: bool = grouper_production
+        self.grouper_auth: tuple = (self.grouper_user, self.grouper_password)
+        self.endpoint: str = f'https://{grouper_host}/{grouper_base_path}'
+        self.headers: dict = {'Content-Type': 'text/x-json'}
 
-    def url(self, endpoint):
+    def url(self, endpoint: str) -> str:
         """Return full Grouper URL endpoint"""
 
         return join(self.endpoint, endpoint)
 
-    def query(self, group):
+    def query(self, group: str) -> Dict[str, Any]:
         """
         Query Grouper for list of members in a group.
         Returns a dict with Grouper metadata
@@ -136,7 +140,7 @@ class Grouper:
 
         return grouper_query_dict
 
-    def get_group_list(self, group_type):
+    def get_group_list(self, group_type: str) -> Any:
         """Retrieve list of groups in a Grouper stem"""
 
         if group_type not in ['portal', 'quota', 'test', 'group_active', '']:
@@ -158,7 +162,7 @@ class Grouper:
 
         return rsp.json()
 
-    def get_group_details(self, group):
+    def get_group_details(self, group:str) -> Any:
         """Retrieve group details. The full path is needed"""
 
         endpoint = self.url('groups')
@@ -175,7 +179,7 @@ class Grouper:
 
         return rsp.json()['WsFindGroupsResults']['groupResults']
 
-    def check_group_exists(self, group, group_type):
+    def check_group_exists(self, group: str, group_type: str) -> bool:
         """Check whether a Grouper group exists within a Grouper stem"""
 
         if group_type not in ['portal', 'quota', 'test', 'group_active', '']:
@@ -193,7 +197,8 @@ class Grouper:
         except KeyError:
             raise KeyError("Stem is empty")
 
-    def add_group(self, group, group_type, description):
+    def add_group(self, group: str, group_type: str,
+                  description: Union[str, List[str]]) -> None:
         """Create Grouper group within a Grouper stem"""
 
         endpoint = self.url("groups")
@@ -228,7 +233,11 @@ class Grouper:
         except requests.exceptions.HTTPError:
             raise requests.exceptions.HTTPError
 
-    def add_privilege(self, access_group, target_group, target_group_type, privileges):
+    def add_privilege(self,
+                      access_group: str,
+                      target_group: str, 
+                      target_group_type: str,
+                      privileges: Union[str, List[str]]) -> bool:
         """
         Purpose:
           Add privilege(s) for a Grouper group to access target
@@ -290,7 +299,12 @@ class Grouper:
         return True
 
 
-def create_groups(groups, group_type, group_descriptions, grouper_api, log0=None, add=False):
+def create_groups(groups: Union[str, List[str]],
+                  group_type: str,
+                  group_descriptions: Union[str, List[str]],
+                  grouper_api: Grouper,
+                  log0: Optional[Logger] = None,
+                  add: bool = False) -> None:
     """
     Purpose:
       Process through a list of Grouper groups and add them if they don't exist
@@ -362,7 +376,11 @@ def create_groups(groups, group_type, group_descriptions, grouper_api, log0=None
             log0.info('dry run, not performing privilege add')
 
 
-def create_active_group(group, grouper_dict, group_description=None, log=None, add=False):
+def create_active_group(group: str,
+                        grouper_dict: dict,
+                        group_description: Optional[str] = None,
+                        log: Optional[Logger] = None,
+                        add: bool = False) -> None:
     """
     Purpose:
       Create a temporary group for figshare:active indirect membership
@@ -389,9 +407,17 @@ def create_active_group(group, grouper_dict, group_description=None, log=None, a
                   log0=log, add=add)
 
 
-def grouper_delta_user(group, stem, netid, uaid, action, grouper_dict,
-                       delta_dict, mo=None, sync=False, log=None,
-                       production=True):
+def grouper_delta_user(group: str,
+                       stem: str,
+                       netid: Union[str, List[str]],
+                       uaid: Union[str, List[str]],
+                       action: str,
+                       grouper_dict: Dict[str, Any],
+                       delta_dict: Dict[str, Any],
+                       mo: Optional[ManualOverride] = None,
+                       sync: bool = False,
+                       log: Optional[Logger] = None,
+                       production: bool = True) -> Delta:
     """
     Purpose:
       Construct a Delta object for addition/deletion based for a specified
@@ -439,7 +465,7 @@ def grouper_delta_user(group, stem, netid, uaid, action, grouper_dict,
     d = Delta(ldap_members=member_set,
               grouper_query_dict=grouper_query_dict,
               **delta_dict,
-              log=log)
+              log: Logger = log)
 
     log.info(f"ldap and grouper have {len(d.common)} members in common")
     log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {group} group")
