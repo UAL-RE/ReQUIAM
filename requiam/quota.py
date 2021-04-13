@@ -1,7 +1,9 @@
+from typing import Optional
 from .ldap_query import ual_grouper_base
 
 
-def ual_ldap_quota_query(ual_class, org_codes=None):
+def ual_ldap_quota_query(ual_class: str,
+                         org_codes: Optional[list] = None) -> list:
     """
     Purpose:
       Construct RFC 4512-compatible LDAP query to search for those within
