@@ -1,3 +1,4 @@
+from logging import Logger
 from os import path
 from os import mkdir
 
@@ -7,14 +8,14 @@ import numpy as np
 from urllib.error import URLError
 
 # For LDAP query
-from .ldap_query import ual_grouper_base, ual_ldap_query, ldap_search
+from .ldap_query import LDAPConnection, ual_grouper_base, ual_ldap_query, ldap_search
 
 from datetime import date
 
 today = date.today()
 
 
-def get_numbers(lc, org_url, log_func):
+def get_numbers(lc: LDAPConnection, org_url: str, log_func: Logger) -> None:
     """
     Purpose:
       Determine number of individuals in each organization code with
