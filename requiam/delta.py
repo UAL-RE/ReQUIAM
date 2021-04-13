@@ -1,12 +1,14 @@
 import datetime
 import json
+from logging import Logger
 import requests
 import time
+from typing import Any, Dict, Optional
 
 from .logger import log_stdout
 
 
-class Delta(object):
+class Delta:
     """
     Purpose:
       This class compares results from an LDAP query and a Grouper query
@@ -22,9 +24,9 @@ class Delta(object):
 
     """
 
-    def __init__(self, ldap_members, grouper_query_dict,
-                 batch_size, batch_timeout, batch_delay, sync_max,
-                 log=None):
+    def __init__(self, ldap_members: set, grouper_query_dict: Dict[str, Any],
+                 batch_size: int, batch_timeout: int, batch_delay: int,
+                 sync_max: int, log: Optional[Logger] = None) -> None:
 
         if isinstance(log, type(None)):
             self.log = log_stdout()
@@ -33,13 +35,13 @@ class Delta(object):
 
         self.log.debug('entered')
 
-        self.ldap_members = ldap_members
-        self.grouper_query_dict = grouper_query_dict
-        self.grouper_members = grouper_query_dict['members']
-        self.batch_size = batch_size
-        self.batch_timeout = batch_timeout
-        self.batch_delay = batch_delay
-        self.sync_max = sync_max
+        self.ldap_members: set = ldap_members
+        self.grouper_query_dict: Dict[str, Any] = grouper_query_dict
+        self.grouper_members: set = grouper_query_dict['members']
+        self.batch_size: int = batch_size
+        self.batch_timeout: int = batch_timeout
+        self.batch_delay: int = batch_delay
+        self.sync_max: int = sync_max
 
         self.drops = self._drops()
         self.adds = self._adds()
@@ -48,25 +50,25 @@ class Delta(object):
         self.log.debug('returning')
         return
 
-    def _common(self):
+    def _common(self) -> set:
         common = self.ldap_members & self.grouper_members
 
         self.log.debug('finished common')
         return common
 
-    def _adds(self):
+    def _adds(self) -> set:
         adds = self.ldap_members - self.grouper_members
 
         self.log.debug('finished adds')
         return adds
 
-    def _drops(self):
+    def _drops(self) -> set:
         drops = self.grouper_members - self.ldap_members
 
         self.log.debug('finished drops')
         return drops
 
-    def synchronize(self):
+    def synchronize(self) -> None:
         self.log.debug('entered')
 
         total_delta = len(list(self.adds)) + len(list(self.drops))
