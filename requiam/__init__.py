@@ -1,7 +1,10 @@
 __version__ = "0.16.1"
 
 
-class TimerClass(object):
+from datetime import datetime
+
+
+class TimerClass:
     """
     Purpose:
       Define timer object that records elapsed time
@@ -28,16 +31,16 @@ class TimerClass(object):
 
     from datetime import datetime as dt
 
-    def __init__(self):
-        self.start = 0
-        self.stop = 0
-        self.delta = 0
-        self.format = ""
+    def __init__(self) -> None:
+        self.start: int = 0
+        self.stop: int = 0
+        self.delta: int = 0
+        self.format: str = ""
 
-    def _start(self):
+    def _start(self) -> None:
         self.start = self.dt.now()
 
-    def _stop(self):
+    def _stop(self) -> None:
         self.stop = self.dt.now()
         self.delta = self.stop - self.start
         sec = self.delta.seconds + self.delta.microseconds / 1e6
