@@ -69,7 +69,7 @@ def figshare_group(group: str, root_stem: str, production: bool = True) -> str:
 
 
 def dict_load(config_file: str, vargs: Optional[Dict[str, str]] = None)  \
-                -> dict:
+              -> dict:
     """
     Purpose:
       Read in a config INI file using configparser and return a dictionary
@@ -123,7 +123,7 @@ def dict_load(config_file: str, vargs: Optional[Dict[str, str]] = None)  \
 
 
 def get_summary_dict(ldap_members: set, grouper_members: set, delta: Delta) \
-                      -> Dict[str, int]:
+                     -> Dict[str, int]:
     """
     Purpose:
       Return a dict containing summary data for EDS and Grouper queries
