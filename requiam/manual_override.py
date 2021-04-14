@@ -157,7 +157,7 @@ class ManualOverride:
 
         return new_ldap_set
 
-    def update_dataframe(self, netid: str, uaid: str,
+    def update_dataframe(self, netid: list, uaid: list,
                          group: str, group_type: str) -> None:
         """Update pandas DataFrame with necessary changes"""
 

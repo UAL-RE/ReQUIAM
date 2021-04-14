@@ -162,7 +162,7 @@ class Grouper:
 
         return rsp.json()
 
-    def get_group_details(self, group:str) -> Any:
+    def get_group_details(self, group: str) -> Any:
         """Retrieve group details. The full path is needed"""
 
         endpoint = self.url('groups')
@@ -198,7 +198,7 @@ class Grouper:
             raise KeyError("Stem is empty")
 
     def add_group(self, group: str, group_type: str,
-                  description: Union[str, List[str]]) -> None:
+                  description: Union[str, List[str]]) -> Union[bool, str]:
         """Create Grouper group within a Grouper stem"""
 
         endpoint = self.url("groups")
@@ -464,8 +464,7 @@ def grouper_delta_user(group: str,
 
     d = Delta(ldap_members=member_set,
               grouper_query_dict=grouper_query_dict,
-              **delta_dict,
-              log: Logger = log)
+              **delta_dict, log=log)
 
     log.info(f"ldap and grouper have {len(d.common)} members in common")
     log.info(f"synchronization will drop {len(d.drops)} entries to Grouper {group} group")
