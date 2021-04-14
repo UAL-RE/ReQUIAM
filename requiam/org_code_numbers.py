@@ -1,6 +1,4 @@
 from logging import Logger
-from os import path
-from os import mkdir
 
 # For database/CSV
 import pandas as pd
@@ -15,7 +13,7 @@ from datetime import date
 today = date.today()
 
 
-def get_numbers(lc: LDAPConnection, org_url: str, log_func: Logger) -> None:
+def get_numbers(lc: LDAPConnection, org_url: str, log: Logger) -> None:
     """
     Purpose:
       Determine number of individuals in each organization code with
@@ -23,16 +21,14 @@ def get_numbers(lc: LDAPConnection, org_url: str, log_func: Logger) -> None:
 
     :param lc: LDAPConnection() object
     :param org_url: URL that provides CSV
-    :param log_func: LogClass object for logging
-
-    :return ldc:
+    :param log: LogClass object for logging
     """
 
     try:
         df = pd.read_csv(org_url)
 
         n_org_codes = df.shape[0]
-        log_func.info(f"Number of organizational codes : {n_org_codes}")
+        log.info(f"Number of organizational codes : {n_org_codes}")
 
         org_codes = df['Organization Code'].values
 
@@ -50,17 +46,17 @@ def get_numbers(lc: LDAPConnection, org_url: str, log_func: Logger) -> None:
         student_query = [f"({ual_grouper_base('ual-students')})"]
         dcc_query     = [f"({ual_grouper_base('ual-dcc')})"]
 
-        log_func.info("Getting faculty, staff, student, and dcc members ... ")
+        log.info("Getting faculty, staff, student, and dcc members ... ")
         faculty_members = ldap_search(lc, faculty_query)
         staff_members   = ldap_search(lc, staff_query)
         student_members = ldap_search(lc, student_query)
         dcc_members     = ldap_search(lc, dcc_query)
-        log_func.info("Completed faculty, staff, student, and dcc queries")
+        log.info("Completed faculty, staff, student, and dcc queries")
 
         for org_code, ii in zip(org_codes, range(n_org_codes)):
 
             if ii % round(n_org_codes/10) == 0 or ii == n_org_codes-1:
-                log_func.info(f"{round((ii + 1) / n_org_codes * 100): >3}% completed ...")
+                log.info(f"{round((ii + 1) / n_org_codes * 100): >3}% completed ...")
 
             total_members   = ldap_search(lc, ual_ldap_query(org_code,
                                                              classification='none'))
@@ -83,9 +79,8 @@ def get_numbers(lc: LDAPConnection, org_url: str, log_func: Logger) -> None:
 
         df_sort = df.sort_values(by='Organization Code')
         df_sort.to_csv('org_code_numbers.csv', index=False)
-
     except URLError:
-        log_func.info("Unable to retrieve data from URL !")
-        log_func.info("Please check your internet connection !")
-        log_func.info("create_csv terminating !")
+        log.info("Unable to retrieve data from URL !")
+        log.info("Please check your internet connection !")
+        log.info("create_csv terminating !")
         raise URLError("Unable to retrieve Google Sheet")
