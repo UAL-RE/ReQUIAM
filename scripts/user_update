@@ -8,14 +8,14 @@ import argparse
 
 from requiam import ldap_query
 from requiam.commons import dict_load, figshare_stem
-from requiam.logger import LogCommons, log_setup, log_settings
+from redata.commons import logger
 from requiam import TimerClass
 from requiam.manual_override import ManualOverride, get_current_groups
 from requiam.grouper import Grouper, create_active_group, grouper_delta_user
 
 # Version and branch info
 from requiam import __version__
-from requiam.git_info import GitInfo
+from redata.commons.git_info import GitInfo
 from requiam import __file__ as library_path
 
 today = date.today()
@@ -83,9 +83,9 @@ if __name__ == '__main__':
     # Define logfile
     log_dir = path.join(global_dict['persistent_path'], global_dict['log_dir'])
     logfile_prefix = 'user_update'
-    log = log_setup(log_dir, logfile_prefix)
+    log = logger.log_setup(log_dir, logfile_prefix)
 
-    lc = LogCommons(log, 'user_update', gi)
+    lc = logger.LogCommons(log, 'user_update', gi)
 
     lc.script_start()
 
@@ -94,7 +94,8 @@ if __name__ == '__main__':
 
     protected_keys = ['ldap_user', 'ldap_password',
                       'grouper_user', 'grouper_password']
-    cred_err = log_settings(vargs, config_dict, protected_keys, log=log)
+    cred_err = logger.log_settings(vargs, config_dict, protected_keys,
+                                   log=log)
 
     if cred_err:
         log.warning("Not all credentials available!")

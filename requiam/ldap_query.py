@@ -1,6 +1,6 @@
 import ldap3
 
-from .logger import log_stdout
+from redata.commons.logger import log_stdout
 
 
 class LDAPConnection(object):
