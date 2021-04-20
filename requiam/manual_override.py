@@ -1,5 +1,8 @@
+from logging import Logger
 import pandas as pd
 from os.path import exists, join, islink, dirname
+
+from pandas import DataFrame
 
 from .ldap_query import LDAPConnection
 from .commons import figshare_stem
@@ -51,11 +54,10 @@ class ManualOverride:
     update_dataframe(netid, uaid, group, group_type):
       Update pandas DataFrame with necessary changes
     """
-    def __init__(self, portal_file, quota_file, log=None, root_add=False):
-        if isinstance(log, type(None)):
-            self.log = log_stdout()
-        else:
-            self.log = log
+    def __init__(self, portal_file: str, quota_file: str,
+                 log: Logger = log_stdout(), root_add: bool = False) -> None:
+
+        self.log = log
 
         # If files exist use, otherwise, use available templates
         if self.file_checks(portal_file):
@@ -82,7 +84,7 @@ class ManualOverride:
         # portal association
         self.root_add = root_add
 
-    def file_checks(self, input_file):
+    def file_checks(self, input_file: str) -> bool:
         """Checks to see if manual CSV file exists. If not return a False boolean"""
         file_pass = True
         if not exists(input_file):
@@ -93,7 +95,7 @@ class ManualOverride:
                 self.log.info(f"{input_file} is symbolic link")
         return file_pass
 
-    def read_manual_file(self, group_type):
+    def read_manual_file(self, group_type: str) -> DataFrame:
         """Return a pandas DataFrame containing the manual override file"""
 
         if group_type not in ['portal', 'quota']:
@@ -118,7 +120,8 @@ class ManualOverride:
         except FileNotFoundError:
             self.log.info(f"File not found! : {input_file}")
 
-    def identify_changes(self, ldap_set, group, group_type):
+    def identify_changes(self, ldap_set: set,
+                         group: str, group_type: str) -> set:
         """Identify changes to call update_entries accordingly"""
 
         if group_type not in ['portal', 'quota']:
@@ -154,12 +157,14 @@ class ManualOverride:
 
         return new_ldap_set
 
-    def update_dataframe(self, netid, uaid, group, group_type):
+    def update_dataframe(self, netid: list, uaid: list,
+                         group: str, group_type: str) -> None:
         """Update pandas DataFrame with necessary changes"""
 
         if group_type not in ['portal', 'quota']:
             raise ValueError("Incorrect [group_type] input")
 
+        revised_df = pd.DataFrame()
         if group_type == 'portal':
             revised_df = self.portal_df
         if group_type == 'quota':
@@ -205,14 +210,14 @@ class ManualOverride:
             self.quota_df.to_csv(f, index=False)
 
 
-def csv_commented_header(input_file):
+def csv_commented_header(input_file: str) -> list:
     """
     Purpose:
       Read in the comment header in CSV files to re-populate later
 
     :param input_file: full filename
 
-    :return: header: list of strings
+    :return: header: List of strings
     """
 
     f = open(input_file, 'r')
@@ -223,7 +228,8 @@ def csv_commented_header(input_file):
     return header
 
 
-def update_entries(ldap_set, netid, uaid, action, log=None):
+def update_entries(ldap_set: set, netid: list, uaid: list, action: str,
+                   log: Logger = log_stdout()) -> set:
     """
     Purpose:
       Add/remove entries from a set
@@ -236,9 +242,6 @@ def update_entries(ldap_set, netid, uaid, action, log=None):
     :param log: LogClass object
     :return new_ldap_set: Updated set of uaid values
     """
-
-    if isinstance(log, type(None)):
-        log = log_stdout()
 
     if action not in ['remove', 'add']:
         raise ValueError("Incorrect [action] input")
@@ -268,7 +271,8 @@ def update_entries(ldap_set, netid, uaid, action, log=None):
     return new_ldap_set
 
 
-def get_current_groups(uid, ldap_dict, production=False, log=None, verbose=True):
+def get_current_groups(uid: str, ldap_dict: dict, production: bool = False,
+                       log: Logger = log_stdout(), verbose: bool = True) -> dict:
     """
     Purpose:
       Retrieve current Figshare ismemberof association
@@ -280,9 +284,6 @@ def get_current_groups(uid, ldap_dict, production=False, log=None, verbose=True)
     :param verbose: bool flag to provide information about each user
     :return figshare_dict: dict containing current Figshare portal and quota
     """
-
-    if isinstance(log, type(None)):
-        log = log_stdout()
 
     mo_ldc = LDAPConnection(**ldap_dict)
     mo_ldc.ldap_attribs = ['ismemberof']
