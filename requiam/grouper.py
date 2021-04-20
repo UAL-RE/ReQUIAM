@@ -102,11 +102,12 @@ class Grouper:
         else:
             self.log = log
 
-        self.grouper_host: str = grouper_host
-        self.grouper_base_path: str = grouper_base_path
-        self.grouper_user: str = grouper_user
-        self.grouper_password: str = grouper_password
-        self.grouper_production: bool = grouper_production
+        self.grouper_host = grouper_host
+        self.grouper_base_path = grouper_base_path
+        self.grouper_user = grouper_user
+        self.grouper_password = grouper_password
+        self.grouper_production = grouper_production
+
         self.grouper_auth: tuple = (self.grouper_user, self.grouper_password)
         self.endpoint: str = f'https://{grouper_host}/{grouper_base_path}'
         self.headers: dict = {'Content-Type': 'text/x-json'}
@@ -197,8 +198,8 @@ class Grouper:
         except KeyError:
             raise KeyError("Stem is empty")
 
-    def add_group(self, group: str, group_type: str,
-                  description: Union[str, List[str]]) -> Union[bool, str]:
+    def add_group(self, group: str, group_type: str, description: str) \
+            -> bool:
         """Create Grouper group within a Grouper stem"""
 
         endpoint = self.url("groups")
