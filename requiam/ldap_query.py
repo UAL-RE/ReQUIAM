@@ -36,10 +36,10 @@ class LDAPConnection:
         #
         # set properties
 
-        self.ldap_host: str = ldap_host
-        self.ldap_base_dn: str = ldap_base_dn
-        self.ldap_user: str = ldap_user
-        self.ldap_password: str = ldap_password
+        self.ldap_host = ldap_host
+        self.ldap_base_dn = ldap_base_dn
+        self.ldap_user = ldap_user
+        self.ldap_password = ldap_password
 
         self.ldap_bind_host: str = f"ldaps://{ldap_host}"
         self.ldap_bind_dn: str = f"uid={ldap_user},ou=app users,{ldap_base_dn}"
@@ -99,7 +99,7 @@ def ual_grouper_base(basename: str) -> str:
     return f"ismemberof=arizona.edu:dept:LBRY:pgrps:{basename}"
 
 
-def ual_ldap_query(org_code: str, classification: str='all') -> list:
+def ual_ldap_query(org_code: str, classification: str = 'all') -> list:
     """
     Purpose:
       Construct RFC 4512-compatible LDAP query to search for those with UA
