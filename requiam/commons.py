@@ -2,6 +2,7 @@ import configparser
 from requiam.delta import Delta
 from typing import Dict, Optional
 
+
 def figshare_stem(stem: str = '', production: bool = True) -> str:
     """
     Purpose:
@@ -68,8 +69,8 @@ def figshare_group(group: str, root_stem: str, production: bool = True) -> str:
     return grouper_group
 
 
-def dict_load(config_file: str, vargs: Optional[Dict[str, str]] = None)  \
-              -> dict:
+def dict_load(config_file: str, vargs: Optional[Dict[str, str]] = None) \
+        -> dict:
     """
     Purpose:
       Read in a config INI file using configparser and return a dictionary
