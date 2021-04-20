@@ -2,7 +2,7 @@ from logging import Logger
 import pandas as pd
 from os.path import exists, join, islink, dirname
 
-from pandas.core.frame import DataFrame
+from pandas import DataFrame
 
 from .ldap_query import LDAPConnection
 from .commons import figshare_stem
@@ -61,28 +61,28 @@ class ManualOverride:
 
         # If files exist use, otherwise, use available templates
         if self.file_checks(portal_file):
-            self.portal_file: str = portal_file
+            self.portal_file = portal_file
         else:
-            self.portal_file: str  = portal_template_file
+            self.portal_file = portal_template_file
             self.log.info(f"Using: {self.portal_file}")
 
         if self.file_checks(quota_file):
-            self.quota_file: str  = quota_file
+            self.quota_file = quota_file
         else:
-            self.quota_file: str  = quota_template_file
+            self.quota_file = quota_template_file
             self.log.info(f"Using: {self.quota_file}")
 
         # Read in CSV as pandas DataFrame
-        self.portal_df: DataFrame = self.read_manual_file('portal')
-        self.quota_df: DataFrame = self.read_manual_file('quota')
+        self.portal_df = self.read_manual_file('portal')
+        self.quota_df = self.read_manual_file('quota')
 
         # Read in CSV headers
-        self.portal_header: list = csv_commented_header(self.portal_file)
-        self.quota_header: list = csv_commented_header(self.quota_file)
+        self.portal_header = csv_commented_header(self.portal_file)
+        self.quota_header = csv_commented_header(self.quota_file)
 
         # This flag it to indicate whether root should be included for
         # portal association
-        self.root_add: bool = root_add
+        self.root_add = root_add
 
     def file_checks(self, input_file: str) -> bool:
         """Checks to see if manual CSV file exists. If not return a False boolean"""
@@ -164,6 +164,7 @@ class ManualOverride:
         if group_type not in ['portal', 'quota']:
             raise ValueError("Incorrect [group_type] input")
 
+        revised_df = pd.DataFrame()
         if group_type == 'portal':
             revised_df = self.portal_df
         if group_type == 'quota':
@@ -216,7 +217,7 @@ def csv_commented_header(input_file: str) -> list:
 
     :param input_file: full filename
 
-    :return: header: list of strings
+    :return: header: List of strings
     """
 
     f = open(input_file, 'r')
