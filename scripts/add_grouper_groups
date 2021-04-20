@@ -72,7 +72,8 @@ if __name__ == '__main__':
     logfile_prefix = 'add_grouper_groups'
     log = logger.log_setup(log_dir, logfile_prefix)
 
-    lc = logger.LogCommons(log, 'add_grouper_group', gi)
+    lc = logger.LogCommons(log, 'add_grouper_group', gi,
+                           code_name='ReQUIAM', version=__version__)
     lc.script_start()
 
     # Retrieve username, hostname, IP

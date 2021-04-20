@@ -66,7 +66,8 @@ if __name__ == '__main__':
     logfile_prefix = 'org_code_numbers'
     log = logger.log_setup(log_dir, logfile_prefix)
 
-    lc = logger.LogCommons(log, 'get_org_code_numbers', gi)
+    lc = logger.LogCommons(log, 'get_org_code_numbers', gi,
+                           code_name='ReQUIAM', version=__version__)
     lc.script_start()
 
     # Retrieve username, hostname, IP
