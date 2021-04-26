@@ -298,7 +298,7 @@ v0.17.0 (release candidate):
  * Refactor: Block of codes in scripts using `LogCommons`, `log_setup` and `get_log_file` #133
  * Refactor: Use `redata` commons sub-package #145
 
-v0.16.0 - v0.16.4:
+v0.16.0 - v0.16.5:
  * Merge `grouper_admin` and `grouper_query` modules #87
  * Complete adoption of f-strings #118
  * New pull request templates #120
