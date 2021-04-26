@@ -191,7 +191,7 @@ class Grouper:
         try:
             group_df = pd.DataFrame(result['WsFindGroupsResults']['groupResults'])
 
-            df_query = group_df.loc[group_df['displayExtension'] == group]
+            df_query = group_df.loc[group_df['displayExtension'] == str(group)]
 
             status = True if not df_query.empty else False
             return status
