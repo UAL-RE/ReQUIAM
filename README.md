@@ -105,7 +105,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.16.4`.
+You should see that the version is `0.16.5`.
 
 ### Configuration Settings
 
