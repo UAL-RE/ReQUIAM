@@ -8,6 +8,7 @@ from datetime import date
 
 import argparse
 
+from requiam import CODE_NAME
 from requiam.grouper import Grouper, create_groups
 from redata.commons import logger
 from requiam import TimerClass
@@ -52,9 +53,9 @@ if __name__ == '__main__':
      2. Create the group
      3. Set permissions for GrouperSuperAdmins and GrouperAdmins
 
-    ReQUIAM active branch: {gi.branch}
-    ReQUIAM version: {__version__}
-    ReQUIAM commit hash: {gi.short_commit}
+    {CODE_NAME} active branch: {gi.branch}
+    {CODE_NAME} version: {__version__}
+    {CODE_NAME} commit hash: {gi.short_commit}
     Created by Chun Ly
     Issues/Suggestions? Submit a GitHub ticket: https://github.com/UAL-ODIS/ReQUIAM/issues/new/choose
     """
@@ -72,7 +73,8 @@ if __name__ == '__main__':
     logfile_prefix = 'add_grouper_groups'
     log = logger.log_setup(log_dir, logfile_prefix)
 
-    lc = logger.LogCommons(log, 'add_grouper_group', gi)
+    lc = logger.LogCommons(log, 'add_grouper_group', gi,
+                           code_name=CODE_NAME, version=__version__)
     lc.script_start()
 
     # Retrieve username, hostname, IP

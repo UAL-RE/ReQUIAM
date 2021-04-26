@@ -105,7 +105,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.16.5`.
+You should see that the version is `0.17.0`.
 
 ### Configuration Settings
 
@@ -294,9 +294,9 @@ Currently, there are two GitHub Action workflows:
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
-v0.17.0 (release candidate):
- * Refactor: Block of codes in scripts using `LogCommons`, `log_setup` and `get_log_file` #133
- * Refactor: Use `redata` commons sub-package #145
+v0.17.0:
+ * Chore: Refactor commonly set of codes in scripts #133
+ * Chore: Refactor using `redata-commons` package #145
 
 v0.16.0 - v0.16.5:
  * Merge `grouper_admin` and `grouper_query` modules #87
