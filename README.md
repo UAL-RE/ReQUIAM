@@ -105,7 +105,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.16.4`.
+You should see that the version is `0.16.5`.
 
 ### Configuration Settings
 
@@ -298,7 +298,7 @@ v0.17.0:
  * Chore: Refactor commonly set of codes in scripts #133
  * Chore: Refactor using `redata-commons` package #145
 
-v0.16.0 - v0.16.4:
+v0.16.0 - v0.16.5:
  * Merge `grouper_admin` and `grouper_query` modules #87
  * Complete adoption of f-strings #118
  * New pull request templates #120
@@ -307,6 +307,7 @@ v0.16.0 - v0.16.4:
  * Minor: Update bug report template #131
  * Update URLs for organization migration #132
  * Bug: Argument parsing does not properly handle integer input for comparison #143
+ * Bug: int vs float parsing for Grouper settings #150
 
 v0.15.0 - v0.15.1:
  * GitHub actions for CI #105
