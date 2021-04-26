@@ -3,7 +3,7 @@ import json
 import requests
 import time
 
-from .logger import log_stdout
+from redata.commons.logger import log_stdout
 
 
 class Delta(object):

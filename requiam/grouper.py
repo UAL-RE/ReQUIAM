@@ -7,7 +7,7 @@ from requests.exceptions import HTTPError
 from .commons import figshare_stem, figshare_group
 from .delta import Delta
 
-from .logger import log_stdout
+from redata.commons.logger import log_stdout
 
 # Administrative groups
 from .manual_override import update_entries

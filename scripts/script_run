@@ -1,31 +1,29 @@
 #!/usr/bin/env python
 
-from os import path, chmod
-from os import mkdir
+from os import path
 
 import pandas as pd
-
-from datetime import date
 
 import argparse
 
 import ast
 
+from requiam import CODE_NAME
+
 from requiam import ldap_query
 from requiam.grouper import Grouper, create_active_group
 from requiam import delta
 from requiam import quota
-from requiam.logger import LogClass, get_user_hostname, pandas_write_buffer, log_settings
+from redata.commons import logger
 from requiam import TimerClass
 from requiam import manual_override
 from requiam.commons import dict_load, get_summary_dict, figshare_group
 
 # Version and branch info
 from requiam import __version__
-from requiam.git_info import get_active_branch_name, get_latest_commit
+from redata.commons.git_info import GitInfo
 from requiam import __file__ as library_path
 
-today = date.today()
 
 library_root_path = path.dirname(path.dirname(library_path))  # Retrieve parent directory to requiam
 
@@ -66,8 +64,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     vargs = vars(args)
 
-    branch_name = get_active_branch_name(library_root_path)
-    git_commit, git_short_commit = get_latest_commit(library_root_path)
+    gi = GitInfo(input_path=library_root_path)
 
     banner_message = f"""
     This is the command-line tool that automates Grouper patron management.
@@ -75,9 +72,9 @@ if __name__ == '__main__':
      1. figshare:portal (--portal set) and
      2. figshare:quota  (--quota set)
 
-    ReQUIAM active branch: {branch_name}
-    ReQUIAM version: {__version__}
-    ReQUIAM commit hash: {git_short_commit}
+    {CODE_NAME} active branch: {gi.branch}
+    {CODE_NAME} version: {__version__}
+    {CODE_NAME} commit hash: {gi.short_commit}
     Created by Chun Ly
     Issues? Submit a GitHub ticket: https://github.com/UAL-ODIS/ReQUIAM/issues/new
     """
@@ -92,30 +89,22 @@ if __name__ == '__main__':
 
     # Define logfile
     log_dir = path.join(global_dict['persistent_path'], global_dict['log_dir'])
-    if not path.exists(log_dir):
-        mkdir(log_dir)
     logfile_prefix = global_dict['logfile_prefix']
-    logfile = f'{logfile_prefix}.{today.strftime("%Y-%m-%d")}.log'
+    log = logger.log_setup(log_dir, logfile_prefix)
+    log_filename = logger.get_log_file(log.handlers[-1])
 
-    log_filename = path.join(log_dir, logfile)  # Full log filename path
-    log = LogClass(log_dir, logfile).get_logger()
+    lc = logger.LogCommons(log, 'script_run', gi,
+                           code_name=CODE_NAME, version=__version__)
 
-    log.info("******************************")
-    log.info("Started script_run script ... ")
-    log.debug(f"ReQUIAM active branch: {branch_name}")
-    log.debug(f"ReQUIAM version: {__version__} ({git_short_commit})")
-    log.debug(f"ReQUIAM commit hash: {git_commit}")
+    lc.script_start()
 
     # Retrieve username, hostname, IP
-    sys_info = get_user_hostname()
-    log.debug(f"username : {sys_info['user']}")
-    log.debug(f"hostname : {sys_info['hostname']}")
-    log.debug(f"IP Addr  : {sys_info['ip']}")
-    log.debug(f"Op. Sys. : {sys_info['os']}")
+    lc.script_sys_info()
 
     protected_keys = ['ldap_user', 'ldap_password',
                       'grouper_user', 'grouper_password']
-    cred_err = log_settings(vargs, config_dict, protected_keys, log=log)
+    cred_err = logger.log_settings(vargs, config_dict, protected_keys,
+                                   log=log)
 
     if extras_dict['test'] and extras_dict['test_reverse']:
         log.warning("Cannot provide --test and --test_reverse")
@@ -462,7 +451,6 @@ if __name__ == '__main__':
     else:
         log.info("NO SUMMARY DATA")
 
-    log.info("******************************")
-    log.info("Exit 0")
+    lc.script_end()
 
-    chmod(path.join(log_dir, logfile), mode=0o666)
+    lc.log_permission()

@@ -1,4 +1,6 @@
-__version__ = "0.16.5"
+__version__ = "0.17.0"
+
+CODE_NAME = 'ReQUIAM'
 
 
 class TimerClass(object):
