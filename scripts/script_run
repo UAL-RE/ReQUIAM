@@ -252,7 +252,7 @@ if __name__ == '__main__':
 
                 df_sub = df.loc[df['Sub-portals'] == portal]
 
-                pandas_write_buffer(df_sub, log_filename)
+                logger.pandas_write_buffer(df_sub, log_filename)
 
                 # Get list of org codes for [portal]
                 org_code_list = df_sub['Org Code']
@@ -447,7 +447,7 @@ if __name__ == '__main__':
     if extras_dict['portal'] or extras_dict['quota']:
         log.info("SUMMARY DATA")
         summary_df = pd.DataFrame.from_dict(summary_dict, orient='index')
-        pandas_write_buffer(summary_df, log_filename)
+        logger.pandas_write_buffer(summary_df, log_filename)
     else:
         log.info("NO SUMMARY DATA")
 
