@@ -10,7 +10,7 @@ setup(
     name='requiam',
     version='v0.17.1',
     packages=['requiam'],
-    url='https://github.com/UAL-ODIS/ReQUIAM',
+    url='https://github.com/UAL-RE/ReQUIAM',
     license='MIT License',
     author='Chun Ly',
     author_email='astro.chun@gmail.com',
