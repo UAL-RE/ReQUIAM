@@ -5,7 +5,7 @@ import requests
 import time
 from typing import Any, Dict, Optional
 
-from .logger import log_stdout
+from redata.commons.logger import log_stdout
 
 
 class Delta:

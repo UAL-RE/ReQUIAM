@@ -69,6 +69,14 @@ def figshare_group(group: str, root_stem: str, production: bool = True) -> str:
     return grouper_group
 
 
+def int_conversion(string):
+    try:
+        value = int(string)
+    except ValueError:
+        value = string
+    return value
+
+
 def dict_load(config_file: str, vargs: Optional[Dict[str, str]] = None) \
         -> dict:
     """
@@ -108,13 +116,13 @@ def dict_load(config_file: str, vargs: Optional[Dict[str, str]] = None) \
             if vargs[p] is not None:
                 if p in config_dict['global']:
                     # If input argument is set, override global settings
-                    config_dict['global'][p] = vargs[p]
+                    config_dict['global'][p] = int_conversion(vargs[p])
                 else:
                     if p in config_dict['google']:
-                        config_dict['google'][p] = vargs[p]
+                        config_dict['google'][p] = int_conversion(vargs[p])
                     else:
                         # Add to extras dictionary
-                        config_dict['extras'][p] = vargs[p]
+                        config_dict['extras'][p] = int_conversion(vargs[p])
             else:
                 if (p not in config_dict['global']) and \
                         (p not in config_dict['google']):

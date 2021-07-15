@@ -9,7 +9,7 @@ from requests.exceptions import HTTPError
 from .commons import figshare_stem, figshare_group
 from .delta import Delta
 
-from .logger import log_stdout
+from redata.commons.logger import log_stdout
 
 # Administrative groups
 from .manual_override import ManualOverride, update_entries
@@ -191,7 +191,7 @@ class Grouper:
         try:
             group_df = pd.DataFrame(result['WsFindGroupsResults']['groupResults'])
 
-            df_query = group_df.loc[group_df['displayExtension'] == group]
+            df_query = group_df.loc[group_df['displayExtension'] == str(group)]
 
             status = True if not df_query.empty else False
             return status

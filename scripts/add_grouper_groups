@@ -8,14 +8,15 @@ from datetime import date
 
 import argparse
 
+from requiam import CODE_NAME
 from requiam.grouper import Grouper, create_groups
-from requiam.logger import LogCommons, log_setup, log_settings
+from redata.commons import logger
 from requiam import TimerClass
 from requiam.commons import dict_load
 
 # Version and branch info
 from requiam import __version__
-from requiam.git_info import GitInfo
+from redata.commons.git_info import GitInfo
 from requiam import __file__ as library_path
 
 today = date.today()
@@ -52,11 +53,11 @@ if __name__ == '__main__':
      2. Create the group
      3. Set permissions for GrouperSuperAdmins and GrouperAdmins
 
-    ReQUIAM active branch: {gi.branch}
-    ReQUIAM version: {__version__}
-    ReQUIAM commit hash: {gi.short_commit}
+    {CODE_NAME} active branch: {gi.branch}
+    {CODE_NAME} version: {__version__}
+    {CODE_NAME} commit hash: {gi.short_commit}
     Created by Chun Ly
-    Issues/Suggestions? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new/choose
+    Issues/Suggestions? Submit a GitHub ticket: https://github.com/UAL-RE/ReQUIAM/issues/new/choose
     """
     print(banner_message)
 
@@ -70,16 +71,18 @@ if __name__ == '__main__':
     # Define logfile
     log_dir = path.join(global_dict['persistent_path'], global_dict['log_dir'])
     logfile_prefix = 'add_grouper_groups'
-    log = log_setup(log_dir, logfile_prefix)
+    log = logger.log_setup(log_dir, logfile_prefix)
 
-    lc = LogCommons(log, 'add_grouper_group', gi)
+    lc = logger.LogCommons(log, 'add_grouper_group', gi,
+                           code_name=CODE_NAME, version=__version__)
     lc.script_start()
 
     # Retrieve username, hostname, IP
     lc.script_sys_info()
 
     protected_keys = ['grouper_user', 'grouper_password']
-    cred_err = log_settings(vargs, config_dict, protected_keys, log=log)
+    cred_err = logger.log_settings(vargs, config_dict, protected_keys,
+                                   log=log)
 
     if cred_err:
         log.warning("Not all credentials available!")

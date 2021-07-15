@@ -6,7 +6,7 @@ from pandas import DataFrame
 
 from .ldap_query import LDAPConnection
 from .commons import figshare_stem
-from .logger import log_stdout
+from redata.commons.logger import log_stdout
 
 root_dir = dirname(dirname(__file__))
 portal_template_file = join(root_dir, 'config/portal_manual_template.csv')

@@ -8,18 +8,20 @@ import argparse
 
 import ast
 
+from requiam import CODE_NAME
+
 from requiam import ldap_query
 from requiam.grouper import Grouper, create_active_group
 from requiam import delta
 from requiam import quota
-from requiam.logger import LogCommons, log_setup, get_log_file, pandas_write_buffer, log_settings
+from redata.commons import logger
 from requiam import TimerClass
 from requiam import manual_override
 from requiam.commons import dict_load, get_summary_dict, figshare_group
 
 # Version and branch info
 from requiam import __version__
-from requiam.git_info import GitInfo
+from redata.commons.git_info import GitInfo
 from requiam import __file__ as library_path
 
 
@@ -70,11 +72,11 @@ if __name__ == '__main__':
      1. figshare:portal (--portal set) and
      2. figshare:quota  (--quota set)
 
-    ReQUIAM active branch: {gi.branch}
-    ReQUIAM version: {__version__}
-    ReQUIAM commit hash: {gi.short_commit}
+    {CODE_NAME} active branch: {gi.branch}
+    {CODE_NAME} version: {__version__}
+    {CODE_NAME} commit hash: {gi.short_commit}
     Created by Chun Ly
-    Issues? Submit a GitHub ticket: https://github.com/ualibraries/ReQUIAM/issues/new
+    Issues? Submit a GitHub ticket: https://github.com/UAL-RE/ReQUIAM/issues/new
     """
     print(banner_message)
 
@@ -88,10 +90,11 @@ if __name__ == '__main__':
     # Define logfile
     log_dir = path.join(global_dict['persistent_path'], global_dict['log_dir'])
     logfile_prefix = global_dict['logfile_prefix']
-    log = log_setup(log_dir, logfile_prefix)
-    log_filename = get_log_file(log.handlers[-1])
+    log = logger.log_setup(log_dir, logfile_prefix)
+    log_filename = logger.get_log_file(log.handlers[-1])
 
-    lc = LogCommons(log, 'script_run', gi)
+    lc = logger.LogCommons(log, 'script_run', gi,
+                           code_name=CODE_NAME, version=__version__)
 
     lc.script_start()
 
@@ -100,7 +103,8 @@ if __name__ == '__main__':
 
     protected_keys = ['ldap_user', 'ldap_password',
                       'grouper_user', 'grouper_password']
-    cred_err = log_settings(vargs, config_dict, protected_keys, log=log)
+    cred_err = logger.log_settings(vargs, config_dict, protected_keys,
+                                   log=log)
 
     if extras_dict['test'] and extras_dict['test_reverse']:
         log.warning("Cannot provide --test and --test_reverse")
@@ -248,7 +252,7 @@ if __name__ == '__main__':
 
                 df_sub = df.loc[df['Sub-portals'] == portal]
 
-                pandas_write_buffer(df_sub, log_filename)
+                logger.pandas_write_buffer(df_sub, log_filename)
 
                 # Get list of org codes for [portal]
                 org_code_list = df_sub['Org Code']
@@ -443,7 +447,7 @@ if __name__ == '__main__':
     if extras_dict['portal'] or extras_dict['quota']:
         log.info("SUMMARY DATA")
         summary_df = pd.DataFrame.from_dict(summary_dict, orient='index')
-        pandas_write_buffer(summary_df, log_filename)
+        logger.pandas_write_buffer(summary_df, log_filename)
     else:
         log.info("NO SUMMARY DATA")
 

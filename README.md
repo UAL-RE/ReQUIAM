@@ -1,11 +1,9 @@
 # ![ReDATA EDS Query and Update for Identity and Access Management](ReQUIAM_full.png)
 
-[![Build Status](https://travis-ci.com/ualibraries/ReQUIAM.svg?branch=master)](https://travis-ci.com/ualibraries/ReQUIAM)
-
-[![GitHub build](https://github.com/ualibraries/ReQUIAM/workflows/Python%20package/badge.svg?)](https://github.com/ualibraries/ReQUIAM/actions?query=workflow%3A%22Python+package%22)
-![GitHub top language](https://img.shields.io/github/languages/top/ualibraries/ReQUIAM)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/ualibraries/ReQUIAM)
-![GitHub](https://img.shields.io/github/license/ualibraries/ReQUIAM?color=blue)
+[![GitHub build](https://github.com/UAL-RE/ReQUIAM/workflows/Python%20package/badge.svg?)](https://github.com/UAL-RE/ReQUIAM/actions?query=workflow%3A%22Python+package%22)
+![GitHub top language](https://img.shields.io/github/languages/top/UAL-RE/ReQUIAM)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/UAL-RE/ReQUIAM)
+![GitHub](https://img.shields.io/github/license/UAL-RE/ReQUIAM?color=blue)
 
 - [Overview](#overview)
 - [Getting Started](#getting-started)
@@ -42,7 +40,7 @@ The Grouper memberships are as follow:
 
 For the latter, these portals and their association with University
 organization code(s) are defined within this
-[CSV file](https://raw.githubusercontent.com/UAL-ODIS/ReQUIAM_csv/master/requiam_csv/data/research_themes.csv).
+[CSV file](https://raw.githubusercontent.com/UAL-RE/ReQUIAM_csv/master/requiam_csv/data/research_themes.csv).
 
 Note that access is granted to the service through membership in a Grouper
 `figshare:active` group.  These memberships are done indirectly based on
@@ -89,7 +87,7 @@ Next, clone this repository into a parent folder:
 
 ```
 (figshare_patrons) $ cd /path/to/parent/folder
-(figshare_patrons) $ git clone https://github.com/ualibraries/ReQUIAM.git
+(figshare_patrons) $ git clone https://github.com/UAL-RE/ReQUIAM.git
 ```
 
 With the activated `conda` environment, you can install with the `setup.py` script:
@@ -107,7 +105,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.16.1`.
+You should see that the version is `0.17.1`.
 
 ### Configuration Settings
 
@@ -276,7 +274,7 @@ flag to implement on the production stem, `figshare`.
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available,
-see the [tags on this repository](https://github.com/ualibraries/ReQUIAM/tags).
+see the [tags on this repository](https://github.com/UAL-RE/ReQUIAM/tags).
 
 ## Continuous Integration
 
@@ -296,15 +294,21 @@ Currently, there are two GitHub Action workflows:
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
-v0.17.0 (release candidate):
- * Refactor: Block of codes in scripts using `LogCommons`, `log_setup` and `get_log_file` #133
+v0.17.0 - v0.17.1:
+ * Chore: Refactor commonly set of codes in scripts #133
+ * Chore: Refactor using `redata-commons` package #145
+ * Bug: Regression from v0.17.0 with pandas_write_buffer #152
 
-v0.16.0 - v0.16.1:
+v0.16.0 - v0.16.5:
  * Merge `grouper_admin` and `grouper_query` modules #87
  * Complete adoption of f-strings #118
  * New pull request templates #120
  * CI build testing for Python 3.9 #121
  * Update files to reflect ReQUIAM_csv org change #137
+ * Minor: Update bug report template #131
+ * Update URLs for organization migration #132
+ * Bug: Argument parsing does not properly handle integer input for comparison #143
+ * Bug: int vs float parsing for Grouper settings #150
 
 v0.15.0 - v0.15.1:
  * GitHub actions for CI #105
@@ -391,12 +395,12 @@ v0.1.0:
 
 ## Authors
 
-* Chun Ly, Ph.D. ([@astrochun](http://www.github.com/astrochun)) - [University of Arizona Libraries](https://github.com/ualibraries), [Office of Digital Innovation and Stewardship](https://github.com/UAL-ODIS)
+* Chun Ly, Ph.D. ([@astrochun](http://www.github.com/astrochun)) - [University of Arizona Libraries](https://github.com/ualibraries), [Research Engagement](https://github.com/UAL-RE)
 
-* Damian Romero ([@damian-romero](https://www.github.com/damian-romero)) - [University of Arizona Libraries](https://github.com/ualibraries), [Office of Digital Innovation and Stewardship](https://github.com/UAL-ODIS)
+* Damian Romero ([@damian-romero](https://www.github.com/damian-romero)) - [University of Arizona Libraries](https://github.com/ualibraries), [Research Engagement](https://github.com/UAL-RE)
 
 See also the list of
-[contributors](https://github.com/ualibraries/ReQUIAM/contributors) who participated in this project.
+[contributors](https://github.com/UAL-RE/ReQUIAM/contributors) who participated in this project.
 
 
 ## License
