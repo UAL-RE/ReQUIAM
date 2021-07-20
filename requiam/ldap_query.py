@@ -1,9 +1,10 @@
+from logging import Logger
 import ldap3
 
 from redata.commons.logger import log_stdout
 
 
-class LDAPConnection(object):
+class LDAPConnection:
     """
     Purpose:
       This class initializes a connection to a specified LDAP server.
@@ -26,10 +27,9 @@ class LDAPConnection(object):
         members = ldap_query.ldap_search(ldc, portal_query)
     """
 
-    def __init__(self, ldap_host, ldap_base_dn, ldap_user, ldap_password, log=None):
-
-        if isinstance(log, type(None)):
-            log = log_stdout()
+    def __init__(self, ldap_host: str, ldap_base_dn: str,
+                 ldap_user: str, ldap_password: str,
+                 log: Logger = log_stdout()) -> None:
 
         log.debug('entered')
         
@@ -41,10 +41,10 @@ class LDAPConnection(object):
         self.ldap_user = ldap_user
         self.ldap_password = ldap_password
 
-        self.ldap_bind_host = f"ldaps://{ldap_host}"
-        self.ldap_bind_dn = f"uid={ldap_user},ou=app users,{ldap_base_dn}"
-        self.ldap_search_dn = f"ou=people,{ldap_base_dn}"
-        self.ldap_attribs = ['uaid']
+        self.ldap_bind_host: str = f"ldaps://{ldap_host}"
+        self.ldap_bind_dn: str = f"uid={ldap_user},ou=app users,{ldap_base_dn}"
+        self.ldap_search_dn: str = f"ou=people,{ldap_base_dn}"
+        self.ldap_attribs: list = ['uaid']
 
         #
         # execute ldap query and populate members property
@@ -55,7 +55,7 @@ class LDAPConnection(object):
         log.debug('returning')
 
 
-def uid_query(uid):
+def uid_query(uid: str) -> list:
     """
     Purpose:
       Construct RFC 4512-compatible LDAP query for a single NetID account
@@ -73,7 +73,7 @@ def uid_query(uid):
     return [ldap_query]
 
 
-def ual_grouper_base(basename):
+def ual_grouper_base(basename: str) -> str:
     """
     Purpose:
       Returns a string to use in LDAP queries that provide the Grouper
@@ -99,7 +99,7 @@ def ual_grouper_base(basename):
     return f"ismemberof=arizona.edu:dept:LBRY:pgrps:{basename}"
 
 
-def ual_ldap_query(org_code, classification='all'):
+def ual_ldap_query(org_code: str, classification: str = 'all') -> list:
     """
     Purpose:
       Construct RFC 4512-compatible LDAP query to search for those with UA
@@ -147,7 +147,7 @@ def ual_ldap_query(org_code, classification='all'):
     return [ldap_query]
 
 
-def ual_ldap_queries(org_codes):
+def ual_ldap_queries(org_codes: list) -> list:
     """
     Purpose:
       Construct *multiple* RFC 4512-compatible LDAP queries to search for
@@ -170,7 +170,7 @@ def ual_ldap_queries(org_codes):
     return ldap_queries
 
 
-def ldap_search(ldapconnection, ldap_query):
+def ldap_search(ldapconnection: LDAPConnection, ldap_query: list) -> set:
     """
     Purpose:
       Function that queries a define LDAP connection and retrieve members

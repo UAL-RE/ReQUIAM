@@ -1,9 +1,12 @@
-__version__ = "0.17.1"
+from typing import Union
+from datetime import datetime
+
+__version__ = "0.18.0"
 
 CODE_NAME = 'ReQUIAM'
 
 
-class TimerClass(object):
+class TimerClass:
     """
     Purpose:
       Define timer object that records elapsed time
@@ -28,19 +31,17 @@ class TimerClass(object):
             Time difference
     """
 
-    from datetime import datetime as dt
-
     def __init__(self):
-        self.start = 0
-        self.stop = 0
-        self.delta = 0
-        self.format = ""
+        self.start: Union[int, datetime] = 0
+        self.stop: Union[int, datetime] = 0
+        self.delta: Union[int, datetime] = 0
+        self.format: str = ""
 
-    def _start(self):
-        self.start = self.dt.now()
+    def _start(self) -> None:
+        self.start = datetime.now()
 
-    def _stop(self):
-        self.stop = self.dt.now()
+    def _stop(self) -> None:
+        self.stop = datetime.now()
         self.delta = self.stop - self.start
         sec = self.delta.seconds + self.delta.microseconds / 1e6
         HH = int(sec // 3600)

@@ -1,7 +1,9 @@
+from typing import Optional
 from .ldap_query import ual_grouper_base
 
 
-def ual_ldap_quota_query(ual_class, org_codes=None):
+def ual_ldap_quota_query(ual_class: str,
+                         org_codes: Optional[list] = None) -> Optional[list]:
     """
     Purpose:
       Construct RFC 4512-compatible LDAP query to search for those within
@@ -22,7 +24,7 @@ def ual_ldap_quota_query(ual_class, org_codes=None):
 
     :param org_codes: List of org codes to require in search. Default: None
 
-    :return ldap_query: list containing a single query string
+    :return: List containing query/queries
     """
 
     if ual_class not in ['faculty', 'grad', 'ugrad']:
@@ -55,9 +57,8 @@ def ual_ldap_quota_query(ual_class, org_codes=None):
                      f'(! ({ual_grads}) ) )'
 
     # Filter by org codes
-    if not isinstance(org_codes, type(None)):
-        ldap_queries = [f'(& (employeePrimaryDept={oc}) {ldap_query} )' for oc in org_codes]
-
-        return ldap_queries
+    if org_codes:
+        return [f'(& (employeePrimaryDept={oc}) {ldap_query} )'
+                for oc in org_codes]
     else:
         return [ldap_query]
