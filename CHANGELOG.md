@@ -423,6 +423,12 @@
    [#18](https://github.com/UAL-RE/ReQUIAM/issues/18)
 
 
+## [v0.6.1](https://github.com/UAL-RE/ReQUIAM/tree/v0.6.1) (2020-03-18)
+
+**Merged pull requests:**
+ - hotfix/v0.6.1 [#20](https://github.com/UAL-RE/ReQUIAM/pull/20)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
