@@ -304,7 +304,6 @@ v0.16.0 - v0.16.5:
  * Minor: Update bug report template #131
  * Update URLs for organization migration #132
  * Bug: Argument parsing does not properly handle integer input for comparison #143
- * Bug: int vs float parsing for Grouper settings #150
 
 v0.15.0 - v0.15.1:
  * GitHub actions for CI #105

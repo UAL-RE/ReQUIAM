@@ -34,6 +34,16 @@
  - release/v0.17.0 [#149](https://github.com/UAL-RE/ReQUIAM/pull/149)
 
 
+## [v0.16.5](https://github.com/UAL-RE/ReQUIAM/tree/v0.16.5) (2021-04-26)
+
+**Fixed bugs:**
+ - Bug: `int` vs `str` parsing for Grouper settings
+   [#150](https://github.com/UAL-RE/ReQUIAM/issues/150)
+
+**Merged pull requests:**
+ - hotfix/v0.16.5 [#151](https://github.com/UAL-RE/ReQUIAM/pull/151)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
