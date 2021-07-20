@@ -15,7 +15,7 @@ Identity and access management software for ReDATA
    :caption: Contents:
 
    overview
-
+   getting_started
 
 Indices and tables
 ==================
