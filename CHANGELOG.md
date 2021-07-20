@@ -316,6 +316,20 @@
    [#43](https://github.com/UAL-RE/ReQUIAM/issues/43)
 
 
+## [v0.11.1](https://github.com/UAL-RE/ReQUIAM/tree/v0.11.1) (2020-08-04)
+
+**Fixed bugs:**
+ - Bug in user_update script when neither --portal or --quota is specified
+   [#49](https://github.com/UAL-RE/ReQUIAM/issues/49)
+
+**Closed issues:**
+ - Package scripts into a separate path
+   [#44](https://github.com/UAL-RE/ReQUIAM/issues/44)
+
+**Merged pull requests:**
+ - hotfix/v0.11.1 [#48](https://github.com/UAL-RE/ReQUIAM/pull/48)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 

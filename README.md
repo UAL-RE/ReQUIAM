@@ -300,8 +300,6 @@ See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 v0.11.0 - 0.11.3:
  * Include manual override tool, `ManualOverride` #31, #47
  * Manual user update with user_update script #31
- * Minor: Packaging/re-organization of scripts into `scripts/` #44
- * Minor: Updates to scripts #44, #49
  
 v0.10.0 - 0.10.2:
  * Illustration of software architecture workflow diagram #29
