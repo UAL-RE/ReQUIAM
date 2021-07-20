@@ -391,6 +391,15 @@
 **Merged pull requests:**
  - hotfix/v0.8.3 [#28](https://github.com/UAL-RE/ReQUIAM/pull/28)
 
+**Closed issues:**
+ - Renaming software [#23](https://github.com/UAL-RE/ReQUIAM/issues/23)
+
+
+## [v0.8.2](https://github.com/UAL-RE/ReQUIAM/tree/v0.8.2) (2020-04-14)
+
+**Merged pull requests:**
+ - hotfix/v0.8.2 [#27](https://github.com/UAL-RE/ReQUIAM/pull/27)
+
 
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
