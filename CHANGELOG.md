@@ -376,6 +376,16 @@
  - hotifx/v0.9.1 [#35](https://github.com/UAL-RE/ReQUIAM/pull/35)
 
 
+## [v0.9.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.9.0) (2020-06-18)
+
+**Implemented enhancements:**
+ - release/v0.9.0 [#34](https://github.com/UAL-RE/ReQUIAM/pull/34)
+
+**Closed issues:**
+ - Script to get numbers for each organization code
+   [#32](https://github.com/UAL-RE/ReQUIAM/issues/32)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 

@@ -297,9 +297,6 @@ List is sorted from moderate to minor revisions for reach release.
 See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 
 
-v0.9.0 - 0.9.1:
- * Script to determine membership in an organization ("org code") #32
-
 v0.8.0 - 0.8.3:
  * Software renaming #23
  * Minor fixes
