@@ -303,7 +303,6 @@ v0.16.0 - v0.16.5:
  * Update files to reflect ReQUIAM_csv org change #137
  * Minor: Update bug report template #131
  * Update URLs for organization migration #132
- * Bug: Argument parsing does not properly handle integer input for comparison #143
 
 v0.15.0 - v0.15.1:
  * GitHub actions for CI #105

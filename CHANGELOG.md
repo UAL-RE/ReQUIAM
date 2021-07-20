@@ -44,6 +44,16 @@
  - hotfix/v0.16.5 [#151](https://github.com/UAL-RE/ReQUIAM/pull/151)
 
 
+## [v0.16.4](https://github.com/UAL-RE/ReQUIAM/tree/v0.16.4) (2021-04-02)
+
+**Fixed bugs:**
+ - Bug: Argument parsing does not handle inter input for comparison checks
+   [#143](https://github.com/UAL-RE/ReQUIAM/issues/143)
+
+**Merged pull requests:**
+ - hotfix/v0.16.4 [#144](https://github.com/UAL-RE/ReQUIAM/pull/144)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
