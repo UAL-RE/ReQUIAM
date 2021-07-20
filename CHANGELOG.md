@@ -65,6 +65,17 @@
    [#142](https://github.com/UAL-RE/ReQUIAM/pull/142)
 
 
+## [v0.16.2](https://github.com/UAL-RE/ReQUIAM/tree/v0.16.2) (2021-04-02)
+
+**Implemented enhancements:**
+ - PR/Hotfix: Update Bug Report Template
+   [#140](https://github.com/UAL-RE/ReQUIAM/pull/140)
+
+**Closed issues:**
+ - Hotfix: Update GH Bug Report template to current format
+   [#131](https://github.com/UAL-RE/ReQUIAM/issues/131)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 

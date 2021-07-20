@@ -301,7 +301,6 @@ v0.16.0 - v0.16.5:
  * New pull request templates #120
  * CI build testing for Python 3.9 #121
  * Update files to reflect ReQUIAM_csv org change #137
- * Minor: Update bug report template #131
 
 v0.15.0 - v0.15.1:
  * GitHub actions for CI #105
