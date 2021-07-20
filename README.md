@@ -297,17 +297,6 @@ List is sorted from moderate to minor revisions for reach release.
 See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 
 
-v0.13.0 - v0.13.6:
- * Enhancements to `script_run` script:
-   - Option to run with subset of org codes or portal names #65
-   - Option to switch between production and testing Grouper stems for #68
-   - Disable adding undergrads to 100MB quota #69
-   - Bug: Remove extraneous messages from `ManualOverride` #77
- * Enhancements to `user_update` script:
-   - Option to create indirect membership for active #72
-   - Option to not update manual CSV files #76
- * Bug: handling of multi-classification members for `quota` #78
-
 v0.12.0 - 0.12.2:
  * Grouper API tool, `GrouperAPI` #42, #60
  * Grouper group creation with `add_grouper_group` script #42, #58

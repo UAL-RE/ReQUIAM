@@ -227,6 +227,30 @@
    [#39](https://github.com/UAL-RE/ReQUIAM/issues/39)
 
 
+## [v0.13.0] (https://github.com/UAL-RE/ReQUIAM/tree/v0.13.0) (2020-10-07)
+
+**Implemented enhancements:**
+ - release/v0.13.0 [#79](https://github.com/UAL-RE/ReQUIAM/pull/79)
+
+**Fixed bugs:**
+ - Bug: ManualOverride provides full list rather than applicable one
+   [#77](https://github.com/UAL-RE/ReQUIAM/issues/77)
+ - Bug: Handling of members with different classifications
+   [#78](https://github.com/UAL-RE/ReQUIAM/issues/78)
+
+**Closed issues:**
+ - Ability to run script_run with a limited set
+   [#65](https://github.com/UAL-RE/ReQUIAM/issues/65)
+ - Add option for Grouper stage/production in script_run
+   [#68](https://github.com/UAL-RE/ReQUIAM/issues/68)
+ - Disable Grouper adds for undergrads
+   [#69](https://github.com/UAL-RE/ReQUIAM/issues/69)
+ - Option to create a group for active indirect membership
+   [#72](https://github.com/UAL-RE/ReQUIAM/issues/72)
+ - Option to update or not update manual_override files
+   [#76](https://github.com/UAL-RE/ReQUIAM/issues/76)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
