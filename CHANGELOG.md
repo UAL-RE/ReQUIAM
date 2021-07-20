@@ -370,6 +370,12 @@
    [#29](https://github.com/UAL-RE/ReQUIAM/issues/29)
 
 
+## [v0.9.1](https://github.com/UAL-RE/ReQUIAM/tree/v0.9.1) (2020-06-19)
+
+**Merged pull requests:**
+ - hotifx/v0.9.1 [#35](https://github.com/UAL-RE/ReQUIAM/pull/35)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
