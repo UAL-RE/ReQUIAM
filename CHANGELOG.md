@@ -163,6 +163,16 @@
  - Hotfix/v0.13.7 [#101](https://github.com/UAL-RE/ReQUIAM/pull/101)
 
 
+## [v0.13.6](https://github.com/UAL-RE/ReQUIAM/tree/v0.13.6) (2020-11-12)
+
+**Fixed bugs:**
+ - Incorrect shebang in scripts
+   [#95](https://github.com/UAL-RE/ReQUIAM/issues/95)
+
+**Merged pull requests:**
+ - hotfix/v0.13.6 [#96](https://github.com/UAL-RE/ReQUIAM/pull/96)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 

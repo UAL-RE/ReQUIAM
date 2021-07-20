@@ -298,7 +298,7 @@ See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 
 
 v0.13.0 - v0.13.6:
- * Make scripts executable #82, #95
+ * Make scripts executable #82
  * Enhancements to `script_run` script:
    - Option to run with subset of org codes or portal names #65
    - Option to switch between production and testing Grouper stems for #68
