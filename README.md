@@ -297,9 +297,6 @@ List is sorted from moderate to minor revisions for reach release.
 See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 
 
-v0.10.0 - 0.10.2:
- * Illustration of software architecture workflow diagram #29
-
 v0.9.0 - 0.9.1:
  * Script to determine membership in an organization ("org code") #32
  * Minor: package rename for PEP8

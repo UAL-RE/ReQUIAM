@@ -360,6 +360,16 @@
  - DOC: hotfix/v0.10.1 [#38](https://github.com/UAL-RE/ReQUIAM/pull/38)
 
 
+## [v0.10.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.10.0) (2020-06-30)
+
+**Implemented enhancements:**
+ - release/v0.10.0 [#36](https://github.com/UAL-RE/ReQUIAM/pull/36)
+
+**Closed issues:**
+ - Service architecture workflow in README file
+   [#29](https://github.com/UAL-RE/ReQUIAM/issues/29)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
