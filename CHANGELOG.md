@@ -251,6 +251,16 @@
    [#76](https://github.com/UAL-RE/ReQUIAM/issues/76)
 
 
+## [v0.12.2](https://github.com/UAL-RE/ReQUIAM/tree/v0.12.2) (2020-10-05)
+
+**Fixed bugs:**
+ - Bug: user_update will run with production=False for Grouper
+   [#73](https://github.com/UAL-RE/ReQUIAM/issues/73)
+
+**Merged pull requests:**
+ - hotfix/v0.12.2 [#74](https://github.com/UAL-RE/ReQUIAM/pull/74)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 

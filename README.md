@@ -305,7 +305,6 @@ v0.12.0 - 0.12.2:
  * Minor: buffering of `pandas` DataFrame for `script_run` #64
  * Minor: Code refactoring in `grouper_query`, `ManualOverride` #62, #63
  * Minor: Perform checks to ensure that Grouper groups exist before API calls #66
- * Minor: Option to switch between production and testing Grouper stems for `user_update` #73
 
 v0.11.0 - 0.11.3:
  * Include manual override tool, `ManualOverride` #31, #47
