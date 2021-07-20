@@ -193,6 +193,16 @@
  - hotfix/v0.13.4 [#90](https://github.com/UAL-RE/ReQUIAM/pull/90)
 
 
+## [v0.13.3](https://github.com/UAL-RE/ReQUIAM/tree/v0.13.3) (2021-10-21)
+
+**Fixed bugs:**
+ - Bug: user update throws a set scriptable error
+   [#85](https://github.com/UAL-RE/ReQUIAM/issues/85)
+
+**Merged pull requests:**
+ - hotfix/v0.13.3 [#86](https://github.com/UAL-RE/ReQUIAM/pull/86)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
