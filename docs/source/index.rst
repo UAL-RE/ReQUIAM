@@ -18,6 +18,7 @@ Identity and access management software for ReDATA
    getting_started
    execution
    versioning
+   authors
    license
 
 Indices and tables
