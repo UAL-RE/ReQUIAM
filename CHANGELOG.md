@@ -413,6 +413,16 @@
  - release/v0.8.0 [#25](https://github.com/UAL-RE/ReQUIAM/pull/25)
 
 
+## [v0.7.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.7.0) (2020-03-31)
+
+**Implemented enhancements:**
+ - release/v0.7.0 [#22](https://github.com/UAL-RE/ReQUIAM/pull/22)
+
+**Closed issues:**
+ - script_run: --test flag for quick Grouper synchronization
+   [#18](https://github.com/UAL-RE/ReQUIAM/issues/18)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
