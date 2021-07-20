@@ -297,14 +297,6 @@ List is sorted from moderate to minor revisions for reach release.
 See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 
 
-v0.12.0 - 0.12.2:
- * Grouper API tool, `GrouperAPI` #42, #60
- * Grouper group creation with `add_grouper_group` script #42, #58
- * Include `multi-user` feature for `user_update` script #52
- * Re-vamp of logging in all scripts and classes #57
- * Minor: buffering of `pandas` DataFrame for `script_run` #64
- * Minor: Code refactoring in `grouper_query`, `ManualOverride` #62, #63
-
 v0.11.0 - 0.11.3:
  * Include manual override tool, `ManualOverride` #31, #47
  * Manual user update with user_update script #31

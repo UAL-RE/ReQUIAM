@@ -271,6 +271,27 @@
    [#66](https://github.com/UAL-RE/ReQUIAM/issues/66)
 
 
+## [v0.12.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.12.0) (2020-10-01)
+
+**Implemented enhancements:**
+ - release/v0.12.0 [#61](https://github.com/UAL-RE/ReQUIAM/pull/61)
+
+**Closed issues:**
+ - Grouper API tool [#42](https://github.com/UAL-RE/ReQUIAM/issues/42)
+ - Settings for quotas [#58](https://github.com/UAL-RE/ReQUIAM/issues/58)
+ - grouper_base_path needs to be more generic
+   [#60](https://github.com/UAL-RE/ReQUIAM/issues/60)
+ - Ability to manually change a number of users portal or quota through manual
+   override [#52](https://github.com/UAL-RE/ReQUIAM/issues/52)
+ - More details log information [#57](https://github.com/UAL-RE/ReQUIAM/issues/57)
+ - Add pandas buffer for output to file logging
+   [#64](https://github.com/UAL-RE/ReQUIAM/issues/64)
+ - Refactor calls to grouper_delta_user
+   [#62](https://github.com/UAL-RE/ReQUIAM/issues/62)
+ - Refactor read_manual_file into ManualOverride
+   [#63](https://github.com/UAL-RE/ReQUIAM/issues/63)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
