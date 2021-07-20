@@ -344,6 +344,16 @@
    [#31](https://github.com/UAL-RE/ReQUIAM/issues/31)
 
 
+## [v0.10.2](https://github.com/UAL-RE/ReQUIAM/tree/v0.10.2) (2020-07-22)
+
+**Fixed bugs:**
+ - BUG: Incorrect URLs for ReQUIAM_csv
+   [#40](https://github.com/UAL-RE/ReQUIAM/issues/40)
+
+**Merged pull requests:**
+ - hotfix/v0.10.2 [#41](https://github.com/UAL-RE/ReQUIAM/pull/41)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
