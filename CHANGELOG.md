@@ -292,6 +292,16 @@
    [#63](https://github.com/UAL-RE/ReQUIAM/issues/63)
 
 
+## [v0.11.3](https://github.com/UAL-RE/ReQUIAM/tree/v0.11.3) (2020-10-01)
+
+**Implemented enhancements:**
+ - hotfix/v0.11.3 [#59](https://github.com/UAL-RE/ReQUIAM/pull/59)
+
+**Closed issues:**
+ - Persistent storage for logs
+   [#56](https://github.com/UAL-RE/ReQUIAM/issues/56)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 

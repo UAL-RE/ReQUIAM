@@ -303,7 +303,6 @@ v0.11.0 - 0.11.3:
  * Ability to add and remove users from the `figshare:active` group #43
  * Minor: Packaging/re-organization of scripts into `scripts/` #44
  * Minor: Updates to scripts #44, #49, #50
- * Minor: Add option for persistent storage of logs
  
 v0.10.0 - 0.10.2:
  * Illustration of software architecture workflow diagram #29
