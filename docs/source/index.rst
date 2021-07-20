@@ -17,6 +17,7 @@ Identity and access management software for ReDATA
    overview
    getting_started
    execution
+   versioning
 
 Indices and tables
 ==================
