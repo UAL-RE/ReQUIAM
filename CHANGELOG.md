@@ -86,6 +86,28 @@
  - hotfix/v0.16.1 [#138](https://github.com/UAL-RE/ReQUIAM/pull/138)
 
 
+## [v0.16.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.16.0) (2021-02-10)
+
+**Implemented enhancements:**
+ - release/v0.16.0 [#128](https://github.com/UAL-RE/ReQUIAM/pull/128)
+
+**Fixed bugs:**
+ - Bug: Update Python to 3.7.9 throughout the documentation.
+   [#129](https://github.com/UAL-RE/ReQUIAM/issues/129)
+ - Bug: Changelog checkmark missing in PR templates
+   [#130](https://github.com/UAL-RE/ReQUIAM/issues/130)
+
+**Closed issues:**
+ - GrouperAPI and GrouperQuery merge
+   [#87](https://github.com/UAL-RE/ReQUIAM/issues/87)
+ - Enhancement: f-strings adoption entirely
+   [#118](https://github.com/UAL-RE/ReQUIAM/issues/118)
+ - Enhancement: PR template
+   [#120](https://github.com/UAL-RE/ReQUIAM/issues/120)
+ - Enhancement: Add CI testing for Python 3.9
+   [#121](https://github.com/UAL-RE/ReQUIAM/issues/121)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
