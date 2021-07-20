@@ -1,7 +1,7 @@
 from typing import Union
 from datetime import datetime
 
-__version__ = "0.17.1"
+__version__ = "0.18.0"
 
 CODE_NAME = 'ReQUIAM'
 
