@@ -439,6 +439,16 @@
    [#16](https://github.com/UAL-RE/ReQUIAM/issues/16)
 
 
+## [v0.5.1](https://github.com/UAL-RE/ReQUIAM/tree/v0.5.1) (2020-03-03)
+
+**Fixed bugs:**
+ - Bug: issue in delta.py with grouper definition
+   [#15](https://github.com/UAL-RE/ReQUIAM/issues/15)
+
+**Merged pull requests:**
+ - hotfix/v0.5.1 [#14](https://github.com/UAL-RE/ReQUIAM/pull/14)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
