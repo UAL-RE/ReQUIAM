@@ -261,6 +261,16 @@
  - hotfix/v0.12.2 [#74](https://github.com/UAL-RE/ReQUIAM/pull/74)
 
 
+## [v0.12.1](https://github.com/UAL-RE/ReQUIAM/tree/v0.12.1) (2020-10-01)
+
+**Implemented enhancements:**
+ - hotfix/v0.12.1 [#67](https://github.com/UAL-RE/ReQUIAM/pull/67)
+
+**Closed issues:**
+ - Grouper checks in script_run for existence of group
+   [#66](https://github.com/UAL-RE/ReQUIAM/issues/66)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
