@@ -330,6 +330,20 @@
  - hotfix/v0.11.1 [#48](https://github.com/UAL-RE/ReQUIAM/pull/48)
 
 
+## [v0.11.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.11.0) (2020-07-30)
+
+**Implemented enhancements:**
+ - release/v0.11.0 [#45](https://github.com/UAL-RE/ReQUIAM/pull/45)
+
+**Fixed bugs:**
+ - Failed error with manual_override from script_run
+   [#47](https://github.com/UAL-RE/ReQUIAM/issues/47)
+
+**Closed issues:**
+ - manual_override script to handle individual fixes
+   [#31](https://github.com/UAL-RE/ReQUIAM/issues/31)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 

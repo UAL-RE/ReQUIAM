@@ -297,10 +297,6 @@ List is sorted from moderate to minor revisions for reach release.
 See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 
 
-v0.11.0 - 0.11.3:
- * Include manual override tool, `ManualOverride` #31, #47
- * Manual user update with user_update script #31
- 
 v0.10.0 - 0.10.2:
  * Illustration of software architecture workflow diagram #29
  * Documentation update for configuration settings
