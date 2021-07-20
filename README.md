@@ -299,7 +299,6 @@ See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 
 v0.10.0 - 0.10.2:
  * Illustration of software architecture workflow diagram #29
- * Documentation update for configuration settings
 
 v0.9.0 - 0.9.1:
  * Script to determine membership in an organization ("org code") #32

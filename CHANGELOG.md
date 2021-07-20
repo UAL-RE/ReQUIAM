@@ -354,6 +354,12 @@
  - hotfix/v0.10.2 [#41](https://github.com/UAL-RE/ReQUIAM/pull/41)
 
 
+## [v0.10.1](https://github.com/UAL-RE/ReQUIAM/tree/v0.10.1) (2020-07-22)
+
+**Merged pull requests:**
+ - DOC: hotfix/v0.10.1 [#38](https://github.com/UAL-RE/ReQUIAM/pull/38)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
