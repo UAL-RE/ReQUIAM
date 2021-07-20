@@ -307,7 +307,6 @@ v0.13.0 - v0.13.6:
    - Option to create indirect membership for active #72
    - Option to not update manual CSV files #76
  * Bug: handling of multi-classification members for `quota` #78
- * Minor: Additional messaging for verbosity in `script_run` #39 #80
 
 v0.12.0 - 0.12.2:
  * Grouper API tool, `GrouperAPI` #42, #60

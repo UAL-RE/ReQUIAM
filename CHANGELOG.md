@@ -213,6 +213,20 @@
    [#83](https://github.com/UAL-RE/ReQUIAM/issues/83)
 
 
+## [v0.13.1](https://github.com/UAL-RE/ReQUIAM/tree/v0.13.1) (2020-10-09)
+
+**Implemented enhancements:**
+ - hotfix/v0.13.1 [#XX](https://github.com/UAL-RE/ReQUIAM/pull/81)
+
+**Fixed bugs:**
+ - Bug: ManualOverride log information is incorrect
+   [#80](https://github.com/UAL-RE/ReQUIAM/issues/80)
+
+**Closed issues:**
+ - Verbose logging when performing changes
+   [#39](https://github.com/UAL-RE/ReQUIAM/issues/39)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
