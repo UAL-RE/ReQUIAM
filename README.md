@@ -297,7 +297,6 @@ List is sorted from moderate to minor revisions for reach release.
 v0.17.0 - v0.17.1:
  * Chore: Refactor commonly set of codes in scripts #133
  * Chore: Refactor using `redata-commons` package #145
- * Bug: Regression from v0.17.0 with pandas_write_buffer #152
 
 v0.16.0 - v0.16.5:
  * Merge `grouper_admin` and `grouper_query` modules #87
