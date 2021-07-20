@@ -297,9 +297,6 @@ List is sorted from moderate to minor revisions for reach release.
 See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 
 
-v0.6.0 - 0.6.1:
- * Primary script for automated patron management #16
-
 v0.5.0 - 0.5.1:
  * Grouper and EDS comparison tool, `Delta` #10, #15
 

@@ -429,6 +429,16 @@
  - hotfix/v0.6.1 [#20](https://github.com/UAL-RE/ReQUIAM/pull/20)
 
 
+## [v0.6.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.6.0) (2020-03-17)
+
+**Implemented enhancements:**
+ - release/v0.6.0 [#19](https://github.com/UAL-RE/ReQUIAM/pull/19)
+
+**Closed issues:**
+ - Packaging a working LDAP + Grouper + Delta script
+   [#16](https://github.com/UAL-RE/ReQUIAM/issues/16)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
