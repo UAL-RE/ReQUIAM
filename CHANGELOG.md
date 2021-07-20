@@ -22,6 +22,18 @@
    [#153](https://github.com/UAL-RE/ReQUIAM/pull/153)
 
 
+## [v0.17.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.17.0) (2021-04-26)
+
+**Closed issues:**
+ - Chore: Refactor commonly set of codes in scripts
+   [#133](https://github.com/UAL-RE/ReQUIAM/issues/133)
+ - Chore: Refactor using `redata-commons` package
+   [#145](https://github.com/UAL-RE/ReQUIAM/issues/145)
+
+**Merged pull requests:**
+ - release/v0.17.0 [#149](https://github.com/UAL-RE/ReQUIAM/pull/149)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
