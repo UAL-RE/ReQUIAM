@@ -302,6 +302,20 @@
    [#56](https://github.com/UAL-RE/ReQUIAM/issues/56)
 
 
+## [v0.11.2](https://github.com/UAL-RE/ReQUIAM/tree/v0.11.2) (2020-08-13)
+
+**Implemented enhancements:**
+ - hotfix/v0.11.2 [#51](https://github.com/UAL-RE/ReQUIAM/pull/51)
+
+**Fixed bugs:**
+ - Bug: SystemError from user_update for root portal
+   [#50](https://github.com/UAL-RE/ReQUIAM/issues/50)
+
+**Closed issues:**
+ - Add and remove user to figshare:active group
+   [#43](https://github.com/UAL-RE/ReQUIAM/issues/43)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
