@@ -299,7 +299,6 @@ See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 
 v0.8.0 - 0.8.3:
  * Software renaming #23
- * Minor fixes
 
 v0.7.0:
  * Testing option for `script_run` #18
