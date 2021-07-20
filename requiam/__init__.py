@@ -1,9 +1,9 @@
+from typing import Union
+from datetime import datetime
+
 __version__ = "0.17.1"
 
 CODE_NAME = 'ReQUIAM'
-
-from typing import Union
-from datetime import datetime
 
 
 class TimerClass:
