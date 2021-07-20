@@ -76,6 +76,16 @@
    [#131](https://github.com/UAL-RE/ReQUIAM/issues/131)
 
 
+## [v0.16.1](https://github.com/UAL-RE/ReQUIAM/tree/v0.16.1) (2021-03-02)
+
+**Fixed bugs:**
+ - Bug: ReQUIAM_csv migrated, need to update config
+   [#137](https://github.com/UAL-RE/ReQUIAM/issues/137)
+
+**Merged pull requests:**
+ - hotfix/v0.16.1 [#138](https://github.com/UAL-RE/ReQUIAM/pull/138)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
