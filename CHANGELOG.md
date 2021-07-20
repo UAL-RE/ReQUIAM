@@ -136,6 +136,23 @@
    [#110](https://github.com/UAL-RE/ReQUIAM/issues/110)
 
 
+## [v0.14.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.14.0) (2020-12-01)
+
+**Implemented enhancements:**
+ - release/v0.14.0 [#98](https://github.com/UAL-RE/ReQUIAM/pull/98)
+
+**Fixed bugs:**
+ - Bug: equality checks across scripts
+   [#93](https://github.com/UAL-RE/ReQUIAM/issues/93)
+
+**Closed issues:**
+ - CI with Travis [#91](https://github.com/UAL-RE/ReQUIAM/issues/91)
+ - Summary of Grouper changes for script_run
+   [#99](https://github.com/UAL-RE/ReQUIAM/issues/99)
+ - Enable setting root for portal in manual override
+   [#88](https://github.com/UAL-RE/ReQUIAM/issues/88)
+
+   
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
