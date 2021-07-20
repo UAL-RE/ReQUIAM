@@ -118,6 +118,24 @@
  - hotfix/v0.15.1 [#115](https://github.com/UAL-RE/ReQUIAM/pull/115)
 
 
+## [v0.15.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.15.0) (2020-12-16)
+
+**Implemented enhancements:**
+ - release/v0.15.0 [#113](https://github.com/UAL-RE/ReQUIAM/pull/113)
+
+**Closed issues:**
+ - Use GitHub Actions for CI
+   [#105](https://github.com/UAL-RE/ReQUIAM/issues/105)
+ - Simplify scripts to use dictionary for configuration settings
+   [#104](https://github.com/UAL-RE/ReQUIAM/issues/104)
+ - Fewer stdout and log messages with no adds and drops
+   [#103](https://github.com/UAL-RE/ReQUIAM/issues/103)
+ - Priority labels for project management
+   [#108](https://github.com/UAL-RE/ReQUIAM/issues/108)
+ - Updates for issue templates
+   [#110](https://github.com/UAL-RE/ReQUIAM/issues/110)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
