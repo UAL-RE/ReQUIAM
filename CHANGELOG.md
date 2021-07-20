@@ -152,7 +152,17 @@
  - Enable setting root for portal in manual override
    [#88](https://github.com/UAL-RE/ReQUIAM/issues/88)
 
-   
+
+## [v0.13.7](https://github.com/UAL-RE/ReQUIAM/tree/v0.13.7) (2020-11-24)
+
+**Closed issues:**
+ - Create new GitHub issue template for feature
+   [#100](https://github.com/UAL-RE/ReQUIAM/issues/100)
+
+**Merged pull requests:**
+ - Hotfix/v0.13.7 [#101](https://github.com/UAL-RE/ReQUIAM/pull/101)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
