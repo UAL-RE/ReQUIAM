@@ -2,8 +2,6 @@ from logging import Logger
 import pandas as pd
 from os.path import exists, join, islink, dirname
 
-from pandas import DataFrame
-
 from .ldap_query import LDAPConnection
 from .commons import figshare_stem
 from redata.commons.logger import log_stdout
@@ -95,7 +93,7 @@ class ManualOverride:
                 self.log.info(f"{input_file} is symbolic link")
         return file_pass
 
-    def read_manual_file(self, group_type: str) -> DataFrame:
+    def read_manual_file(self, group_type: str) -> pd.DataFrame:
         """Return a pandas DataFrame containing the manual override file"""
 
         if group_type not in ['portal', 'quota']:
