@@ -173,6 +173,16 @@
  - hotfix/v0.13.6 [#96](https://github.com/UAL-RE/ReQUIAM/pull/96)
 
 
+## [v0.13.5](https://github.com/UAL-RE/ReQUIAM/tree/v0.13.5) (2020-11-12)
+
+**Closed issues:**
+ - Change all python scripts to executable
+   [#82](https://github.com/UAL-RE/ReQUIAM/issues/82)
+
+**Merged pull requests:**
+ - hotfix/v0.13.5 [#94](https://github.com/UAL-RE/ReQUIAM/pull/94)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
