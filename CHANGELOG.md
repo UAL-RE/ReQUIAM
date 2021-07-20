@@ -401,6 +401,12 @@
  - hotfix/v0.8.2 [#27](https://github.com/UAL-RE/ReQUIAM/pull/27)
 
 
+## [v0.8.1](https://github.com/UAL-RE/ReQUIAM/tree/v0.8.1) (2020-04-13)
+
+**Implemented enhancements:**
+ - hotfix/v0.8.1 [#26](https://github.com/UAL-RE/ReQUIAM/pull/26)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
