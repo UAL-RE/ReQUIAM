@@ -302,7 +302,6 @@ v0.15.0 - v0.15.1:
  * Improve verbosity of log messages #103
  * Priority labels for project management #108
  * Add/update GitHub issue templates #110
- * Bug: Fix f-string typo with batch load information #114
 
 v0.14.0:
  * Travis CI integration #91

@@ -108,6 +108,16 @@
    [#121](https://github.com/UAL-RE/ReQUIAM/issues/121)
 
 
+## [v0.15.1](https://github.com/UAL-RE/ReQUIAM/tree/v0.15.1) (2020-12-17)
+
+**Fixed bugs:**
+ - Bug: batch time incorrectly parsed
+   [#114](https://github.com/UAL-RE/ReQUIAM/issues/114)
+
+**Merged pull requests:**
+ - hotfix/v0.15.1 [#115](https://github.com/UAL-RE/ReQUIAM/pull/115)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
