@@ -54,6 +54,17 @@
  - hotfix/v0.16.4 [#144](https://github.com/UAL-RE/ReQUIAM/pull/144)
 
 
+## [v0.16.3](https://github.com/UAL-RE/ReQUIAM/tree/v0.16.3) (2021-04-02)
+
+**Closed issues:**
+ - Chore: Migrate repository to UAL-ODIS
+   [#132](https://github.com/UAL-RE/ReQUIAM/issues/132)
+
+**Merged pull requests:**
+ - Chore: Migrate repository to UAL-ODIS
+   [#142](https://github.com/UAL-RE/ReQUIAM/pull/142)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 
