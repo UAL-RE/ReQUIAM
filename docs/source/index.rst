@@ -22,6 +22,7 @@ Identity and access management software for ReDATA
    authors
    changelog
    license
+   modules
 
 Indices and tables
 ==================
