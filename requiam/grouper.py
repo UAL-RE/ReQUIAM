@@ -211,7 +211,7 @@ class Grouper:
         :param group_type: Grouper stem from
                :func:`requiam.commons.figshare_stem`.
                Options are: 'portal', 'quota', 'test', 'group_active', ''
-        :param description: Description of Group to include as metadata.
+        :param description: Description of group to include as metadata.
                This shows up in the Grouper UI
 
         :raises ValueError: If incorrect ``group_type``
@@ -330,16 +330,19 @@ def create_groups(groups: Union[str, List[str]],
                   log0: Optional[Logger] = None,
                   add: bool = False) -> None:
     """
-    Purpose:
-      Process through a list of Grouper groups and add them if they don't exist
-      and set permissions
+    Process through a list of Grouper groups and add them if they don't exist
+    and set permissions
 
-    :param groups: str or list of str containing group names
-    :param group_type: str. Either 'portal', 'quota', or 'test'
-    :param group_descriptions: str or list of str containing description
-    :param grouper_api: Grouper object
-    :param log0: logging.getLogger() object
-    :param add: boolean.  Indicate whether to perform update or dry run
+    :param groups: List containing group names
+    :param group_type: Grouper stem name. Either 'portal', 'quota', or 'test'
+    :param group_descriptions: Descriptions of group to include as metadata.
+           This shows up in the Grouper UI
+    :param grouper_api: ``Grouper`` object
+    :param log0: Logging object
+    :param add: Indicate whether to perform update or dry run.
+           Default: ``False``
+
+    :raises HTTPError: Grouper POST fails
     """
 
     if isinstance(log0, type(None)):
@@ -406,14 +409,13 @@ def create_active_group(group: str,
                         log: Optional[Logger] = None,
                         add: bool = False) -> None:
     """
-    Purpose:
-      Create a temporary group for figshare:active indirect membership
+    Create a temporary group for figshare:active indirect membership
 
-    :param group: str. Name of group (e.g., ual)
-    :param grouper_dict: dict of Grouper configuration settings
-    :param group_description: str of description. Defaults will prompt for it
-    :param log: LogClass logging object
-    :param add: bool to indicate adding group.  Default: False (dry run)
+    :param group: Name of group (e.g., "ual")
+    :param grouper_dict: Grouper configuration settings
+    :param group_description: Grouper description. Defaults will prompt for it
+    :param log: Logging object
+    :param add: Indicate adding group. Default: ``False`` (dry run)
     """
 
     if isinstance(log, type(None)):
