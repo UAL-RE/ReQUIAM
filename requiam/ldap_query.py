@@ -139,10 +139,10 @@ def ual_ldap_query(org_code: str, classification: str = 'all') -> list:
 
     :param org_code: Organizational code (e.g., '0212')
     :param classification: Input for classification. Default: 'all'.
-           Others: 'faculty', 'staff', 'students', 'dcc', 'none'
-           The 'none' input will provide ``org_code``-only query
+           Others: 'faculty', 'staff', 'students', 'dcc', 'none'.
+           The 'none' input will provide an ``org_code``-only query
 
-    :return: List of LDAP queries
+    :return: LDAP query
     """
 
     if classification == 'none':
