@@ -16,5 +16,3 @@ Actions`_. Currently, there are two GitHub Action workflows:
 .. _pricing for open-source repositories:
    https://travis-ci.community/t/org-com-migration-unexpectedly-comes-with-a-plan-change-for-oss-what-exactly-is-the-new-deal/10567
 .. _GitHub Actions: https://docs.github.com/en/free-pro-team@latest/actions
-.. _``create-release.yml``: .github/workflows/create-release.yml
-.. _``python-package.yml``: .github/workflows/python-package.yml
