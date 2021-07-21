@@ -449,6 +449,16 @@
  - hotfix/v0.5.1 [#14](https://github.com/UAL-RE/ReQUIAM/pull/14)
 
 
+## [v0.5.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.5.0) (2020-02-17)
+
+**Implemented enhancements:**
+ - Release/v0.5.0 [#12](https://github.com/UAL-RE/ReQUIAM/pull/12)
+
+**Closed issues:**
+ - Delta module for comparison LDAP and Grouper
+   [#10](https://github.com/UAL-RE/ReQUIAM/issues/10)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 

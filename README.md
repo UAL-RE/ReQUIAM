@@ -297,9 +297,6 @@ List is sorted from moderate to minor revisions for reach release.
 See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 
 
-v0.5.0 - 0.5.1:
- * Grouper and EDS comparison tool, `Delta` #10
-
 v0.4.0:
  * LDAP quota-based query #4
  * Primary `GrouperQuery` tool #7
