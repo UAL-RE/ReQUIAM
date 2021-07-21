@@ -20,6 +20,7 @@ Identity and access management software for ReDATA
    versioning
    continuous_integration
    authors
+   changelog
    license
 
 Indices and tables
