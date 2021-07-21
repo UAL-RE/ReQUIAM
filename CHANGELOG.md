@@ -470,6 +470,13 @@
  - Grouper query module [#7](https://github.com/UAL-RE/ReQUIAM/issues/7)
 
 
+## [v0.3.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.3.0) (2020-01-29)
+
+**Closed issues:**
+ - Handle multiple LDAP queries that are for a common Grouper portal group
+   [#2](https://github.com/UAL-RE/ReQUIAM/issues/2)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 

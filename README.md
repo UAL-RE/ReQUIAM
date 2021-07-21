@@ -297,9 +297,6 @@ List is sorted from moderate to minor revisions for reach release.
 See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 
 
-v0.3.0:
- * Multi-organization query and LDAP results merge #2
-
 v0.2.0:
  * UA-specific EDS queries
 
