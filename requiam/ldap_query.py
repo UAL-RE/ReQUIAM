@@ -1,3 +1,4 @@
+from typing import List
 from logging import Logger
 import ldap3
 
@@ -167,13 +168,11 @@ def ual_ldap_query(org_code: str, classification: str = 'all') -> list:
     return [ldap_query]
 
 
-def ual_ldap_queries(org_codes: list) -> list:
+def ual_ldap_queries(org_codes: List[str]) -> list:
     """
-    Purpose:
-      Construct *multiple* RFC 4512-compatible LDAP queries to search for
-      those with UA Library privileges within multiple organizations
-      specified by the org_codes input
-
+    Construct *multiple* RFC 4512-compatible LDAP queries to search for
+    those with UArizona Library privileges within multiple organizations
+    specified by the org_codes input
 
     Usage:
 
@@ -182,9 +181,7 @@ def ual_ldap_queries(org_codes: list) -> list:
 
        ldap_queries = ldap_query.ual_ldap_queries(['0212','0213','0214'])
 
-
-    :param org_codes: A list of strings containining org codes
-                      (e.g., ['0212','0213','0214'])
+    :param org_codes: Organizational codes
 
     :return ldap_queries: list of str
     """
