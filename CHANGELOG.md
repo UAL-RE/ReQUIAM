@@ -481,11 +481,17 @@
    [#2](https://github.com/UAL-RE/ReQUIAM/issues/2)
 
 
-## [0.2.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.2.0) (2020-01-09)
+## [0.2.0](https://github.com/UAL-RE/ReQUIAM/tree/0.2.0) (2020-01-09)
 
 Merged involve `features/ualquery` branch
 No GitHub issue created for this. This was the first implementation
 of the primary LDAP module with UAL specific EDS queries
+
+
+## [0.1.0](https://github.com/UAL-RE/ReQUIAM/tree/0.1.0) (2020-12-16)
+
+**Merged pull requests:**
+ - Create LICENSE [#1](https://github.com/UAL-RE/ReQUIAM/pull/1)
 
 
 <!-- TEMPLATE
