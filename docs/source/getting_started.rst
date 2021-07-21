@@ -10,13 +10,15 @@ Requirements
 The :repo-main-file:`requirements.txt <requirements.txt>` indicates the required python
 libraries. In short, you will need the following to have a working copy of
 this software.
- 1. Python (>=3.7.9)
- 2. `ldap3`_ (2.6.1)
- 3. `numpy`_ (1.20.0)
- 4. :ual-re:`redata <redata-commons>` (>=0.3.2)
-   a. `pandas`_ (1.2.3)
-   b. `tabulate`_ (0.8.3)
-   c. `requests`_ (2.25.1)
+
+1. Python (>=3.7.9)
+2. `ldap3`_ (2.6.1)
+3. `numpy`_ (1.20.0)
+4. :ual-re:`redata <redata-commons>` (>=0.3.2)
+
+   * `pandas`_ (1.2.3)
+   * `tabulate`_ (0.8.3)
+   * `requests`_ (2.25.1)
 
 
 Installation Instructions
