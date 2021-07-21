@@ -459,6 +459,17 @@
    [#10](https://github.com/UAL-RE/ReQUIAM/issues/10)
 
 
+## [v0.4.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.4.0) (2020-02-05)
+
+**Implemented enhancements:**
+ - release/v0.4.0 [#9](https://github.com/UAL-RE/ReQUIAM/pull/9)
+
+**Closed issues:**
+ - Define LDAP queries for each quota tier
+   [#4](https://github.com/UAL-RE/ReQUIAM/issues/4)
+ - Grouper query module [#7](https://github.com/UAL-RE/ReQUIAM/issues/7)
+
+
 <!-- TEMPLATE
 ## [vXX.YY.ZZ](https://github.com/UAL-RE/ReQUIAM/tree/vXX.YY.ZZ) (YYYY-MM-DD)
 

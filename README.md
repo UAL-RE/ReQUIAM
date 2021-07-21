@@ -297,10 +297,6 @@ List is sorted from moderate to minor revisions for reach release.
 See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 
 
-v0.4.0:
- * LDAP quota-based query #4
- * Primary `GrouperQuery` tool #7
-
 v0.3.0:
  * Multi-organization query and LDAP results merge #2
 
