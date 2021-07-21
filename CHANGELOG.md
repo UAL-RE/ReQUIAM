@@ -1,5 +1,15 @@
 # Changelog
 
+## [UNRELEASED](https://github.com/UAL-RE/ReQUIAM/tree/HEAD) (2021-07-21)
+
+**Closed issues:**
+ - Docs: Add CHANGELOG.md
+   [#157](https://github.com/UAL-RE/ReQUIAM/issues/157)
+
+**Merged pull requests:**
+ - Docs: Add CHANGELOG.md [#158](https://github.com/UAL-RE/ReQUIAM/pull/158)
+
+
 ## [v0.18.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.18.0) (2021-07-20)
 
 **Implemented enhancements:**
