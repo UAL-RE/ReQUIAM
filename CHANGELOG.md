@@ -472,9 +472,20 @@
 
 ## [v0.3.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.3.0) (2020-01-29)
 
+**Fixed bugs:**
+ - String formatting bug in ldap_connection.ual_ldap_query
+   [#3](https://github.com/UAL-RE/ReQUIAM/issues/3)
+
 **Closed issues:**
  - Handle multiple LDAP queries that are for a common Grouper portal group
    [#2](https://github.com/UAL-RE/ReQUIAM/issues/2)
+
+
+## [0.2.0](https://github.com/UAL-RE/ReQUIAM/tree/v0.2.0) (2020-01-09)
+
+Merged involve `features/ualquery` branch
+No GitHub issue created for this. This was the first implementation
+of the primary LDAP module with UAL specific EDS queries
 
 
 <!-- TEMPLATE
