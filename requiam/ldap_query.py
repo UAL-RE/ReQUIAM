@@ -74,15 +74,18 @@ class LDAPConnection:
 
 def uid_query(uid: str) -> list:
     """
-    Purpose:
-      Construct RFC 4512-compatible LDAP query for a single NetID account
+    Construct RFC 4512-compatible LDAP query for a single NetID account
 
     Usage:
-      ldap_query = ldap_query.ual_test_query('<netid>)
+
+    .. highlight:: python
+    .. code-block:: python
+
+        ldap_query = ldap_query.ual_test_query('<netid>')
         > ['(uid=<netid>)']
 
-    :param uid: str of NetID handle
-    :return ldap_query: list containing the str
+    :param uid: NetID handle/username
+    :return: LDAP query
     """
 
     ldap_query = f"(uid={uid})"
@@ -92,25 +95,26 @@ def uid_query(uid: str) -> list:
 
 def ual_grouper_base(basename: str) -> str:
     """
-    Purpose:
-      Returns a string to use in LDAP queries that provide the Grouper
-      ismemberof stem organization that UA Libraries use for patron
-      management
+    Returns a string to use in LDAP queries that provide the Grouper
+    ismemberof stem organization that UA Libraries use for patron
+    management
 
-      Note that this only returns a string, it is not RFC 4512
-      compatible. See ual_ldap_query()
-
+    Note that this only returns a string, it is not RFC 4512
+    compatible. See :func:`requiam.ldap_query.ual_ldap_query`
 
     Usage:
-      grouper_base = ldap_query.ual_grouper_base('ual-faculty')
-        > ismemberof=arizona.edu:dept:LBRY:pgrps:ual-faculty
 
-    :param basename: string containing Grouper group name basename.
-        Options are:
-            ual-dcc, ual-faculty, ual-hsl, ual-staff, ual-students,
-            ual-grads, ual-ugrads
+    .. highlight:: python
+    .. code-block:: python
 
-    :return: str with ismemberof attribute
+        grouper_base = ldap_query.ual_grouper_base('ual-faculty')
+        > "ismemberof=arizona.edu:dept:LBRY:pgrps:ual-faculty"
+
+    :param basename: Grouper group name basename.
+           Options are: ual-dcc, ual-faculty, ual-hsl, ual-staff,
+           ual-students, ual-grads, ual-ugrads
+
+    :return: ``ismemberof`` attribute
     """
 
     return f"ismemberof=arizona.edu:dept:LBRY:pgrps:{basename}"
@@ -118,28 +122,27 @@ def ual_grouper_base(basename: str) -> str:
 
 def ual_ldap_query(org_code: str, classification: str = 'all') -> list:
     """
-    Purpose:
-      Construct RFC 4512-compatible LDAP query to search for those with UA
-      Library privileges within an organization specified by the org_code
-      input
-
+    Construct RFC 4512-compatible LDAP query to search for those with UArizona
+    Library privileges within an organization (specified by ``org_code``)
 
     Usage:
-      ldap_query = ldap_query.ual_ldap_query('0212')
+
+    .. highlight:: python
+    .. code-block:: python
+
+        ldap_query = ldap_query.ual_ldap_query('0212')
         > ['(& (employeePrimaryDept=0212) (|
             (ismemberof=arizona.edu:dept:LBRY:pgrps:ual-faculty)
             (ismemberof=arizona.edu:dept:LBRY:pgrps:ual-staff)
             (ismemberof=arizona.edu:dept:LBRY:pgrps:ual-students)
             (ismemberof=arizona.edu:dept:LBRY:pgrps:ual-dcc) ) )']
 
+    :param org_code: Organizational code (e.g., '0212')
+    :param classification: Input for classification. Default: 'all'.
+           Others: 'faculty', 'staff', 'students', 'dcc', 'none'
+           The 'none' input will provide ``org_code``-only query
 
-    :param org_code: A string of the org code (e.g., '0212')
-    :param classification: Optional str input for classification.
-                           Default: 'all'.
-                           Others: 'faculty', 'staff', 'students', 'dcc', 'none'
-                           The 'none' input will provide org_code-only query
-
-    :return ldap_query: list containing the str
+    :return: List of LDAP queries
     """
 
     if classification == 'none':
@@ -173,7 +176,11 @@ def ual_ldap_queries(org_codes: list) -> list:
 
 
     Usage:
-      ldap_queries = ldap_query.ual_ldap_queries(['0212','0213','0214'])
+
+    .. highlight:: python
+    .. code-block:: python
+
+       ldap_queries = ldap_query.ual_ldap_queries(['0212','0213','0214'])
 
 
     :param org_codes: A list of strings containining org codes
@@ -189,20 +196,20 @@ def ual_ldap_queries(org_codes: list) -> list:
 
 def ldap_search(ldapconnection: LDAPConnection, ldap_query: list) -> set:
     """
-    Purpose:
-      Function that queries a define LDAP connection and retrieve members
+    Queries a define LDAP connection and retrieve members
 
+    Usage (see description in :class:`requiam.ldap_query.LDAPConnection`):
 
-    Usage (see description in LDAPConnection:
-      members = ldap_query.ldap_search(ldc, ldap_query)
+    .. highlight:: python
+    .. code-block:: python
 
-    :param ldapconnection: An ldap3 Connection from LDAPConnection(),
-        ldapconnection = LDAPConnection(**)
+       members = ldap_query.ldap_search(ldc, ldap_query)
 
-    :param ldap_query: list of strings
-        String (list of strings) containing the query(ies)
+    :param ldapconnection: An ``ldap3`` ``Connection`` from
+           :class:`requiam.ldap_query.LDAPConnection`
+    :param ldap_query: List of strings from :func:`requiam.ldap_query.ual_ldap_queries`
 
-    :return member: set containing list of members
+    :return: List of members
     """
 
     ldap_search_dn = ldapconnection.ldap_search_dn
