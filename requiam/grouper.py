@@ -21,75 +21,28 @@ managers = figshare_group('GrouperManagers', '', production=True)
 
 class Grouper:
     """
-    Purpose:
-      This class uses the Grouper API to retrieve and post a variety of
-      Grouper content
+    This class uses the Grouper API to retrieve and send metadata
 
-      Main Grouper API doc:
-        https://spaces.at.internet2.edu/display/Grouper/Grouper+Web+Services
+    See `Main Grouper API documentation
+    <https://spaces.at.internet2.edu/display/Grouper/Grouper+Web+Services>`_.
 
-    :param grouper_host: The grouper hostname (e.g., grouper.iam.arizona.edu)
-    :param grouper_base_path: The grouper base path that includes the API version
-                              (e.g., grouper-ws/servicesRest/json/v2_2_001)
-    :param grouper_user: grouper username
-    :param grouper_password: password credential
-    :param grouper_production: bool to indicate whether to use production (figshare)
-                               or stage (figtest) stem
+    :param grouper_host: Grouper hostname (e.g., grouper.iam.arizona.edu)
+    :param grouper_base_path: Grouper base path that includes the API version
+           (e.g., grouper-ws/servicesRest/json/v2_2_001)
+    :param grouper_user: Grouper username
+    :param grouper_password: Grouper password credential
+    :param grouper_production: Bool to use production stem, ``figshare``.
+           Otherwise stage stem is used, ``figtest``. Default: production
 
-    Attributes
-    ----------
-    grouper_host: str
-    grouper_base_path: str
-    grouper_user: str
-    grouper_password: str
-    grouper_production: bool
-    grouper_auth: tuple
-
-    endpoint: str
-      Grouper endpoint
-    headers: dict
-      HTTP header information
-
-    Methods
-    -------
-    url(endpoint)
-      Return full Grouper URL endpoint
-
-    query(group)
-      Query Grouper for list of members in a group.
-
-    get_group_list(group_type)
-      Retrieve list of groups in a Grouper stem
-      group_type must be 'portal', 'quota', 'test', 'group_active' or ''
-        Note: Some of these groups (e.g., group_active does not exists for production=True)
-
-      See: https://spaces.at.internet2.edu/display/Grouper/Get+Groups
-        but with a different implementation using the stem find
-
-    get_group_details(group)
-      Retrieve group details
-      group must be the full Grouper path
-
-      See: https://spaces.at.internet2.edu/display/Grouper/Get+Groups
-        but using WsRestFindGroupsRequest
-
-    check_group_exists(group, group_type)
-      Check whether a Grouper group exists within a Grouper stem
-      group_type must be 'portal', 'quota', 'test', 'group_active' or ''
-      group is simply the group name
-
-      See: https://spaces.at.internet2.edu/display/Grouper/Find+Groups
-
-    add_group(group, group_type, description)
-      Create Grouper group within a Grouper stem
-      group_type must be 'portal', 'quota', 'group_active' or 'test'
-
-      See: https://spaces.at.internet2.edu/display/Grouper/Group+Save
-
-    add_privilege(access_group, target_group, target_group_type, privileges)
-      Add privilege(s) for a Grouper group to access target
-
-      See: https://spaces.at.internet2.edu/display/Grouper/Add+or+remove+grouper+privileges
+    :ivar grouper_host: Grouper hostname
+    :ivar grouper_base_path: Grouper base path that includes the API version
+    :ivar grouper_user: Grouper username
+    :ivar grouper_password: Grouper password credential
+    :ivar grouper_production: Bool to use production stem, ``figshare``.
+           Otherwise stage stem is used, ``figtest``
+    :ivar tuple grouper_auth: Grouper credential
+    :ivar str endpoint: Grouper endpoint
+    :ivar dict headers: HTTPS header information
     """
 
     def __init__(self, grouper_host: str, grouper_base_path: str,
@@ -113,14 +66,24 @@ class Grouper:
         self.headers: dict = {'Content-Type': 'text/x-json'}
 
     def url(self, endpoint: str) -> str:
-        """Return full Grouper URL endpoint"""
+        """
+        Return full Grouper URL endpoint
+
+        :param endpoint: The URL endpoint to append to ``self.endpoint``
+
+        :return: Complete HTTPS URL
+        """
 
         return join(self.endpoint, endpoint)
 
     def query(self, group: str) -> Dict[str, Any]:
         """
         Query Grouper for list of members in a group.
-        Returns a dict with Grouper metadata
+
+        :param group: Grouper full group path from
+               :func:`requiam.commons.figshare_group`
+
+        :return: Grouper metadata
         """
 
         endpoint = self.url(f"groups/{group}/members")
@@ -142,14 +105,28 @@ class Grouper:
         return grouper_query_dict
 
     def get_group_list(self, group_type: str) -> Any:
-        """Retrieve list of groups in a Grouper stem"""
+        """
+        Retrieve list of groups in a Grouper stem
+
+        See `Grouper API "Get Groups"
+        <https://spaces.at.internet2.edu/display/Grouper/Get+Groups>`_
+        but with a different implementation using FIND_BY_STEM_NAME method
+
+        :param group_type: Grouper stem.
+               Options are: 'portal', 'quota', 'test', 'group_active', ''.
+               Note: Some groups (e.g., 'group_active') do not exist for production
+        :raises ValueError: If incorrect ``group_type``
+
+        :return: JSON response
+        """
 
         if group_type not in ['portal', 'quota', 'test', 'group_active', '']:
             raise ValueError("Incorrect [group_type] input")
 
         endpoint = self.url('groups')
 
-        grouper_stem = figshare_stem(group_type, production=self.grouper_production)
+        grouper_stem = figshare_stem(group_type,
+                                     production=self.grouper_production)
 
         params = dict()
         params['WsRestFindGroupsRequest'] = {
@@ -164,7 +141,17 @@ class Grouper:
         return rsp.json()
 
     def get_group_details(self, group: str) -> Any:
-        """Retrieve group details. The full path is needed"""
+        """
+        Retrieve group details
+
+        See `Grouper API "Get Groups"
+        <https://spaces.at.internet2.edu/display/Grouper/Get+Groups>`_
+        but using WsRestFindGroupsRequest
+
+        :param group: Grouper path from :func:`requiam.commons.figshare_group`
+
+        :return: JSON response
+        """
 
         endpoint = self.url('groups')
 
@@ -181,7 +168,20 @@ class Grouper:
         return rsp.json()['WsFindGroupsResults']['groupResults']
 
     def check_group_exists(self, group: str, group_type: str) -> bool:
-        """Check whether a Grouper group exists within a Grouper stem"""
+        """
+        Check whether a Grouper group exists within a Grouper stem
+
+        See `Grouper API "Find Groups"
+        <https://spaces.at.internet2.edu/display/Grouper/Find+Groups>`_
+
+        :param group: Grouper full group path from
+               :func:`requiam.commons.figshare_group`
+        :param group_type: Grouper stem.
+               Options are: 'portal', 'quota', 'test', 'group_active', ''
+
+        :raises ValueError: If incorrect ``group_type``
+        :raises KeyError: Stem does not exists
+        """
 
         if group_type not in ['portal', 'quota', 'test', 'group_active', '']:
             raise ValueError("Incorrect [group_type] input")
@@ -200,7 +200,23 @@ class Grouper:
 
     def add_group(self, group: str, group_type: str, description: str) \
             -> bool:
-        """Create Grouper group within a Grouper stem"""
+        """
+        Create Grouper group within a Grouper stem
+
+        See `Grouper API "Group Save"
+        <https://spaces.at.internet2.edu/display/Grouper/Group+Save>`_
+
+        :param group: Grouper full group path from
+               :func:`requiam.commons.figshare_group`
+        :param group_type: Grouper stem from
+               :func:`requiam.commons.figshare_stem`.
+               Options are: 'portal', 'quota', 'test', 'group_active', ''
+        :param description: Description of Group to include as metadata.
+               This shows up in the Grouper UI
+
+        :raises ValueError: If incorrect ``group_type``
+        :raises HTTPError: If the Grouper POST fails with a non-200 status
+        """
 
         endpoint = self.url("groups")
 
@@ -240,16 +256,23 @@ class Grouper:
                       target_group_type: str,
                       privileges: Union[str, List[str]]) -> bool:
         """
-        Purpose:
-          Add privilege(s) for a Grouper group to access target
+        Add privilege(s) for a Grouper group to access target
 
-        :param access_group: name of group to give access to,
-                             ex: arizona.edu:Dept:LBRY:figshare:GrouperSuperAdmins
-        :param target_group: name of group to add privilege on, ex: "apitest"
-        :param target_group_type: name of stem associated with the group to add privilege on,
-                            ex: use 'test' for arizona.edu:Dept:LBRY:figtest:test
-        :param privileges: single string, or list of strings of allowed values:
-                           'read', 'view', 'update', 'admin', 'optin', 'optout'
+        See `Grouper API "Add or remove Grouper privileges"
+        <https://spaces.at.internet2.edu/display/Grouper/Add+or+remove+grouper+privileges>`_
+
+        :param access_group: Grouper group to give access to,
+               ex: arizona.edu:Dept:LBRY:figshare:GrouperSuperAdmins
+        :param target_group: Grouper group to add privilege on, ex: "apitest"
+        :param target_group_type: Grouper stem associated with the group to
+               add privilege on, ex: use 'figtest' for
+               'arizona.edu:Dept:LBRY:figtest:test'
+        :param privileges: Grouper privileges. Allowed values:
+               'read', 'view', 'update', 'admin', 'optin', 'optout'
+
+        :raises ValueError: Incorrect ``privileges`` or Grouper POST failed
+        :raises KeyError: Incorrect ``target_group_type``
+        :raises Exception: Incorrect ``access_group`` (check for existence)
 
         :return: True on success, otherwise raises an Exception
         """
