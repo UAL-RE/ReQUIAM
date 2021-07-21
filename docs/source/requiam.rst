@@ -61,7 +61,7 @@ Modules
    :show-inheritance:
 
 Additional Classes
-------------------
+~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: requiam.TimerClass
    :members:

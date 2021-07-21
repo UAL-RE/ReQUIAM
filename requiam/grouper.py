@@ -445,33 +445,24 @@ def grouper_delta_user(group: str,
                        log: Optional[Logger] = None,
                        production: bool = True) -> Delta:
     """
-    Purpose:
-      Construct a Delta object for addition/deletion based for a specified
-      user. This is designed primarily for the user_update script
+    Construct a Delta object for addition/deletion based for a specified
+    user. This is designed primarily for the user_update script
 
-    :param group: str
-      The Grouper group to update
-    :param stem: str
-      The Grouper stem (e.g., 'portal', 'quota')
-    :param netid: str
-      The User NetID
-    :param uaid: str
-      The User UA ID
-    :param action: str
-      The action to perform. 'add' or 'remove'
-    :param grouper_dict: dict
-      Dictionary containing grouper settings
-    :param delta_dict:
-      Dictionary containing delta settings
-    :param mo: ManualOverride object
-      For implementing change to CSV files. Default: None
-    :param sync: bool
-      Indicate whether to sync. Default: False
-    :param log: LogClass object
-      For logging
-    :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
+    :param group: The Grouper group to update
+    :param stem: The Grouper stem (e.g., 'portal', 'quota')
+    :param netid: User NetID(s)
+    :param uaid: User UA ID(s)
+    :param action: Action to perform. 'add' or 'remove'
+    :param grouper_dict: :class:`requiam.grouper.Grouper` settings
+    :param delta_dict: :class:`requiam.delta.Delta` settings
+    :param mo: :class:`requiam.manual_override.ManualOverride` object
+           Default: ``None``
+    :param sync: Indicate whether to sync. Default: ``False``
+    :param log: LogClass object. Default: ``None``
+    :param production: Use production stem. Otherwise a stage/test is used.
+           Default: ``True``
 
-    :return d: Delta object class
+    :return: ``Delta`` object
     """
 
     if isinstance(log, type(None)):
