@@ -6,17 +6,18 @@ from redata.commons.logger import log_stdout
 
 class LDAPConnection:
     """
-    Purpose:
-      This class initializes a connection to a specified LDAP server.
-      It allows for repeated LDAP queries. Originally patron group
-      developed the connection to use with individual queries.  The
-      queries have been broken off since our use with the data
-      repository could involve up to 1000 queries given the number of
-      different organizations that we have.
-
+    This class initializes a connection to a specified LDAP/EDS server.
+    It allows for repeated LDAP queries. Originally patron group
+    developed the connection to use with individual queries.  The
+    queries have been broken off since our use with the data
+    repository could involve up to 1000 queries given the number of
+    different organizations that we have.
 
     Usage:
-      Quick how to:
+
+    .. highlight:: python
+    .. code-block:: python
+
         from requiam import ldap_query
         eds_hostname = 'eds.arizona.edu'
         ldap_base_dn = 'dc=eds,dc=arizona,dc=edu'
@@ -25,6 +26,22 @@ class LDAPConnection:
 
         portal_query = ldap_query.ual_ldap_queries(['0404', '0413', '0411'])
         members = ldap_query.ldap_search(ldc, portal_query)
+
+    :param ldap_host: LDAP host URL
+    :param ldap_base_dn: LDAP base distinguished name
+    :param ldap_user: LDAP username
+    :param ldap_password: LDAP password credentials
+    :param log: File and/or stdout logging. Default: ``log_stdout``
+
+    :ivar ldap_host: LDAP host URL
+    :ivar ldap_base_dn: LDAP base distinguished name
+    :ivar ldap_user: LDAP username
+    :ivar ldap_password: LDAP password credentials
+    :ivar log: File and/or stdout logging
+    :ivar str ldap_bind_host: LDAP binding host URL
+    :ivar str ldap_bind_dn: LDAP binding distinguished name
+    :ivar str ldap_search_dn: LDAP search distinguished name
+    :ivar list ldap_attribs: LDAP attributes. Set to "uaid"
     """
 
     def __init__(self, ldap_host: str, ldap_base_dn: str,
