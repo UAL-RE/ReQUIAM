@@ -8,27 +8,27 @@ CODE_NAME = 'ReQUIAM'
 
 class TimerClass:
     """
-    Purpose:
-      Define timer object that records elapsed time
+    Define timer object that records elapsed time
 
-    Initiate:
-      timer = TimerClass()
-      timer._start()
+    Usage:
 
-    Stop
-      timer._stop()
+    .. highlight:: python
+    .. code-block:: python
 
-    Get information:
-      timer.format
+       # Initiate
+       timer = TimerClass()
+       timer._start()
 
-    Attributes
-    ----------
-    start : datetime object
-            Starting value for timer
-    stop  : datetime object
-            Stopping value for timer
-    delta : datetime object
-            Time difference
+       # Stop
+       timer._stop()
+
+       # Get information
+       timer.format
+
+    :ivar start: Starting time
+    :ivar stop: Stopping time
+    :ivar delta: Difference between ``start`` and ``stop``
+    :ivar str format: Duration in human readable form
     """
 
     def __init__(self):
