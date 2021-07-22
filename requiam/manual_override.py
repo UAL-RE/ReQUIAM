@@ -210,12 +210,11 @@ class ManualOverride:
 
 def csv_commented_header(input_file: str) -> list:
     """
-    Purpose:
-      Read in the comment header in CSV files to re-populate later
+    Read in the comment header in CSV file to re-populate later
 
-    :param input_file: full filename
+    :param input_file: Full path to CSV file
 
-    :return: header: List of strings
+    :return: CSV header
     """
 
     f = open(input_file, 'r')
@@ -229,16 +228,17 @@ def csv_commented_header(input_file: str) -> list:
 def update_entries(ldap_set: set, netid: list, uaid: list, action: str,
                    log: Logger = log_stdout()) -> set:
     """
-    Purpose:
-      Add/remove entries from a set
+    Add/remove entries from a set
 
-    :param ldap_set: set of uaid values
-    :param netid: list. User netid
-    :param uaid: list. User uaid
-    :param action: str
-      Action to perform. Either 'remove' or 'add'
-    :param log: LogClass object
-    :return new_ldap_set: Updated set of uaid values
+    :param ldap_set: UA IDs from EDS
+    :param netid: UA NetIDs to add/remove
+    :param uaid: UA IDs for corresponding ``netid``
+    :param action: Action to perform. Either 'remove' or 'add'
+    :param log: File and/or stdout ``Logger`` object
+
+    :raises ValueError: Incorrect ``action`` setting
+
+    :return: Updated set of ``uaid`` values
     """
 
     if action not in ['remove', 'add']:
@@ -272,14 +272,17 @@ def update_entries(ldap_set: set, netid: list, uaid: list, action: str,
 def get_current_groups(uid: str, ldap_dict: dict, production: bool = False,
                        log: Logger = log_stdout(), verbose: bool = True) -> dict:
     """
-    Purpose:
-      Retrieve current Figshare ismemberof association
+    Retrieve current Figshare ``ismemberof`` association
 
-    :param uid: str containing User NetID
-    :param ldap_dict: dict containing ldap settings
-    :param production: bool flag to indicate using figshare over figtest
-    :param log: LogClass object for logging
-    :param verbose: bool flag to provide information about each user
+    :param uid: User NetID
+    :param ldap_dict: LDAP settings
+    :param production: Flag to indicate using Grouper production stem
+           (``figshare``) over test (``figtest``). Default: ``False``
+    :param log: File and/or stdout logging
+    :param verbose: Provide information about each user. Default: ``True``
+
+    :raises ValueError: User is associated with multiple portal/quota groups
+
     :return figshare_dict: dict containing current Figshare portal and quota
     """
 
