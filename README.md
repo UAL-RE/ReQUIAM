@@ -1,9 +1,11 @@
 # ![ReDATA EDS Query and Update for Identity and Access Management](ReQUIAM_full.png)
 
-[![GitHub build](https://github.com/UAL-RE/ReQUIAM/workflows/Python%20package/badge.svg?)](https://github.com/UAL-RE/ReQUIAM/actions?query=workflow%3A%22Python+package%22)
-![GitHub top language](https://img.shields.io/github/languages/top/UAL-RE/ReQUIAM)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/UAL-RE/ReQUIAM)
-![GitHub](https://img.shields.io/github/license/UAL-RE/ReQUIAM?color=blue)
+| Categories | Status |
+| ---        | ---    |
+| General    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/UAL-RE/ReQUIAM)](https://github.com/UAL-RE/ReQUIAM/releases) [![GitHub](https://img.shields.io/github/license/UAL-RE/ReQUIAM?color=blue)](LICENSE) |
+| CI/CD      | [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/UAL-RE/ReQUIAM/Python%20package)](https://github.com/UAL-RE/ReQUIAM/actions?query=workflow%3A%22Python+package%22) | 
+| Docs       | [![docs](https://img.shields.io/github/workflow/status/UAL-RE/ReQUIAM/Sphinx%20Docs%20Check?label=sphinx%20docs)](https://github.com/UAL-RE/ReQUIAM/actions?query=workflow%3A%22Sphinx+Docs+Check%22) [![Read the Docs](https://img.shields.io/readthedocs/ReQUIAM?label=docs)](https://readthedocs.org/projects/ReQUIAM/builds) |
+
 
 - [Overview](#overview)
 - [Getting Started](#getting-started)
@@ -105,7 +107,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.18.0`.
+You should see that the version is `1.0.0`.
 
 ### Configuration Settings
 

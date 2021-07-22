@@ -1,10 +1,16 @@
 # Changelog
 
-## [UNRELEASED](https://github.com/UAL-RE/ReQUIAM/tree/HEAD) (2021-07-21)
+## [v1.0.0](https://github.com/UAL-RE/ReQUIAM/tree/v1.0.0) (2021-07-22)
+
+**Implemented enhancements:**
+ - Enhancement: Sphinx documentation with RTDs
+   [#159](https://github.com/UAL-RE/ReQUIAM/pull/159)
 
 **Closed issues:**
  - Docs: Add CHANGELOG.md
    [#157](https://github.com/UAL-RE/ReQUIAM/issues/157)
+ - Enhancement: Sphinx documentation with RTDs
+   [#134](https://github.com/UAL-RE/ReQUIAM/issues/134)
 
 **Merged pull requests:**
  - Docs: Add CHANGELOG.md [#158](https://github.com/UAL-RE/ReQUIAM/pull/158)

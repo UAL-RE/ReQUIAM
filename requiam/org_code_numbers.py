@@ -15,13 +15,14 @@ today = date.today()
 
 def get_numbers(lc: LDAPConnection, org_url: str, log: Logger) -> None:
     """
-    Purpose:
-      Determine number of individuals in each organization code with
-      Library privileges
+    Determine number of individuals in each organization code with
+    Library privileges and write to a file called "org_code_numbers.csv"
 
-    :param lc: LDAPConnection() object
-    :param org_url: URL that provides CSV
-    :param log: LogClass object for logging
+    :param lc: LDAPConnection object for EDS record retrieval
+    :param org_url: Google Docs URL that provides CSV
+    :param log: File and/or stdout logging class
+
+    :raises URLError: Incorrect ``org_url``
     """
 
     try:

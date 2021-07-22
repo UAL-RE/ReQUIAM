@@ -1,27 +1,30 @@
+from typing import Dict, Optional, Union
+
 import configparser
 from requiam.delta import Delta
-from typing import Dict, Optional
 
 
 def figshare_stem(stem: str = '', production: bool = True) -> str:
     """
-    Purpose:
-      Construct Grouper figshare stems
+    Construct Grouper figshare stems
 
-    :param stem: string corresponding to the sub-stem
-       Some options are: 'quota', 'portal'. Default: root stem
-    :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
-    :return stem_query: str
+    :param stem: string corresponding to the sub-stem.
+           Options are: 'quota', 'portal'. Default: root stem
+    :param production: Bool to use production stem.
+           Otherwise a stage/test is used. Default: ``True``
+
+    :return: Grouper stem/folder string
 
     Usage:
-      For quota stem, call as: figshare_stem('quota')
-        > 'arizona.edu:dept:LBRY:figshare:quota'
 
-      For portal stem, call as: figshare_stem('portal')
-        > 'arizona.edu:dept:LBRY:figshare:portal'
+    For quota stem, call as: ``figshare_stem('quota')``
+       > "arizona.edu:dept:LBRY:figshare:quota"
 
-      For main stem, call as: figshare_stem()
-        > 'arizona.edu:dept:LBRY:figshare'
+    For portal stem, call as: ``figshare_stem('portal')``
+       > "arizona.edu:dept:LBRY:figshare:portal"
+
+    For main stem, call as: ``figshare_stem()``
+       > "arizona.edu:dept:LBRY:figshare"
     """
 
     if production:
@@ -29,34 +32,35 @@ def figshare_stem(stem: str = '', production: bool = True) -> str:
     else:
         stem_query = 'arizona.edu:dept:LBRY:figtest'
 
-    # If [stem] is not an empty string
+    # If stem is not an empty string
     if stem:
         stem_query += f':{stem}'
 
     return stem_query
 
 
-def figshare_group(group: str, root_stem: str, production: bool = True) -> str:
+def figshare_group(group: Union[str, int], root_stem: str,
+                   production: bool = True) -> str:
     """
-    Purpose:
-      Construct Grouper figshare groups
+    Construct Grouper figshare groups
 
-    :param group: str or int of group name. Cannot be empty
-    :param root_stem: str of associated stem folder for [group]
-    :param production: Bool to use production stem. Otherwise a stage/test is used. Default: True
+    :param group: Group name
+    :param root_stem: Grouper stem/folder for ``group``
+    :param production: Bool to use production stem.
+           Otherwise a stage/test is used. Default: ``True``
 
-    :return grouper_group: str containing full Grouper path
+    :return: Grouper group string
 
     Usage:
-      For active group, call as: figshare_group('active', '')
-        > 'arizona.edu:dept:LBRY:figshare:active'
 
-      For a quota group, call as: figshare_group('2147483648', 'quota')
-        > 'arizona.edu:dept:LBRY:figshare:quota:2147483648'
-      Note: group can be specified as an integer for quota cases
+    For active group, call as: figshare_group('active', '')
+       > "arizona.edu:dept:LBRY:figshare:active"
 
-      For a portal group, call as: figshare_group('sci_math', 'portal')
-        > 'arizona.edu:dept:LBRY:figshare:portal:sci_math'
+    For a quota group, call as: figshare_group('2147483648', 'quota')
+       > "arizona.edu:dept:LBRY:figshare:quota:2147483648"
+
+    For a portal group, call as: figshare_group('sci_math', 'portal')
+       > "arizona.edu:dept:LBRY:figshare:portal:sci_math"
     """
 
     if not group:
@@ -69,7 +73,14 @@ def figshare_group(group: str, root_stem: str, production: bool = True) -> str:
     return grouper_group
 
 
-def int_conversion(string):
+def int_conversion(string: str) -> Union[int, str]:
+    """
+    Check and convert string that can be represented as an integer
+
+    :param string: Input string
+
+    :return: Result of conversion
+    """
     try:
         value = int(string)
     except ValueError:
@@ -80,13 +91,13 @@ def int_conversion(string):
 def dict_load(config_file: str, vargs: Optional[Dict[str, str]] = None) \
         -> dict:
     """
-    Purpose:
-      Read in a config INI file using configparser and return a dictionary
-      with sections and options
+    Read in a config INI file using ``configparser`` and return a ``dict``
+    with sections and options
 
-    :param config_file: str. Full/relative path of configuration file
-    :param vargs: dict containing command-line arguments
-    :return config_dict: dict of dict with hierarchy for config sections
+    :param config_file: Full/relative path of configuration file
+    :param vargs: Command-line arguments from script
+
+    :return: Python ``dict`` of configuration settings
     """
 
     if vargs is None:
@@ -134,13 +145,13 @@ def dict_load(config_file: str, vargs: Optional[Dict[str, str]] = None) \
 def get_summary_dict(ldap_members: set, grouper_members: set, delta: Delta) \
         -> Dict[str, int]:
     """
-    Purpose:
-      Return a dict containing summary data for EDS and Grouper queries
+    Return a dict containing summary data for EDS and Grouper queries
 
     :param ldap_members: set containing EDS entries
     :param grouper_members: set containing Grouper entries
     :param delta: Delta object containing computation of adds and drops
-    :return: summary_dict: dict containing summary data
+
+    :return: Python ``dict`` of containing summary data
     """
 
     summary_dict = {
