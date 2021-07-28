@@ -3,26 +3,32 @@ from .ldap_query import ual_grouper_base
 
 
 def ual_ldap_quota_query(ual_class: str,
-                         org_codes: Optional[list] = None) -> list:
+                         org_codes: Optional[list] = None) -> Optional[list]:
     """
-    Purpose:
-      Construct RFC 4512-compatible LDAP query to search for those within
-      a UAL-based classification patron group
+    Construct RFC 4512-compatible LDAP query to search for those within
+    a UAL-based classification patron group
 
-      This function provides LDAP information for IAM accounts associated
-      with default quota tiers (faculty, grad, undergrad)
+    This function provides LDAP information for IAM accounts associated
+    with default quota tiers (faculty, grad, undergrad)
 
-      It is intended to be used with the LDAPConnection() object through
-      ldap_connection.ldap_search:
+    It is intended to be used with the :class:`requiam.ldap_query.LDAPConnection`
+    object through :func:`requiam.ldap_query.ldap_search`:
+
+    .. highlight:: python
+    .. code-block:: python
+
         quota_query = ual_ldap_quota_query('faculty')
-        members     = ldap_connection.ldap_search(ldc, quota_query)
+        members     = ldap_query.ldap_search(ldc, quota_query)
 
-    :param ual_class: A string to indicate types. Options are:
-      'faculty' (for faculty, staff, and dcc)
-      'grad'    (for graduate students)
-      'ugrad'   (for undergraduate students)
+    :param ual_class: UA classification. Options are:
 
-    :param org_codes: List of org codes to require in search. Default: None
+           * "faculty" (for faculty, staff, and DCCs)
+           * "grad"    (for graduate students)
+           * "ugrad"   (for undergraduate students)
+
+    :param org_codes: Org codes to require in search.
+
+    :raises SystemExit: Incorrect ``ual_class`` input
 
     :return: List containing query/queries
     """

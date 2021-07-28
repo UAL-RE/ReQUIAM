@@ -1,9 +1,11 @@
 # ![ReDATA EDS Query and Update for Identity and Access Management](ReQUIAM_full.png)
 
-[![GitHub build](https://github.com/UAL-ODIS/ReQUIAM/workflows/Python%20package/badge.svg?)](https://github.com/UAL-ODIS/ReQUIAM/actions?query=workflow%3A%22Python+package%22)
-![GitHub top language](https://img.shields.io/github/languages/top/UAL-ODIS/ReQUIAM)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/UAL-ODIS/ReQUIAM)
-![GitHub](https://img.shields.io/github/license/UAL-ODIS/ReQUIAM?color=blue)
+| Categories | Status |
+| ---        | ---    |
+| General    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/UAL-RE/ReQUIAM)](https://github.com/UAL-RE/ReQUIAM/releases) [![GitHub](https://img.shields.io/github/license/UAL-RE/ReQUIAM?color=blue)](LICENSE) |
+| CI/CD      | [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/UAL-RE/ReQUIAM/Python%20package)](https://github.com/UAL-RE/ReQUIAM/actions?query=workflow%3A%22Python+package%22) | 
+| Docs       | [![docs](https://img.shields.io/github/workflow/status/UAL-RE/ReQUIAM/Sphinx%20Docs%20Check?label=sphinx%20docs)](https://github.com/UAL-RE/ReQUIAM/actions?query=workflow%3A%22Sphinx+Docs+Check%22) [![Read the Docs](https://img.shields.io/readthedocs/ReQUIAM?label=docs)](https://readthedocs.org/projects/ReQUIAM/builds) |
+
 
 - [Overview](#overview)
 - [Getting Started](#getting-started)
@@ -40,7 +42,7 @@ The Grouper memberships are as follow:
 
 For the latter, these portals and their association with University
 organization code(s) are defined within this
-[CSV file](https://raw.githubusercontent.com/UAL-ODIS/ReQUIAM_csv/master/requiam_csv/data/research_themes.csv).
+[CSV file](https://raw.githubusercontent.com/UAL-RE/ReQUIAM_csv/master/requiam_csv/data/research_themes.csv).
 
 Note that access is granted to the service through membership in a Grouper
 `figshare:active` group.  These memberships are done indirectly based on
@@ -87,7 +89,7 @@ Next, clone this repository into a parent folder:
 
 ```
 (figshare_patrons) $ cd /path/to/parent/folder
-(figshare_patrons) $ git clone https://github.com/UAL-ODIS/ReQUIAM.git
+(figshare_patrons) $ git clone https://github.com/UAL-RE/ReQUIAM.git
 ```
 
 With the activated `conda` environment, you can install with the `setup.py` script:
@@ -105,7 +107,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `0.17.1`.
+You should see that the version is `1.0.0`.
 
 ### Configuration Settings
 
@@ -274,7 +276,7 @@ flag to implement on the production stem, `figshare`.
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available,
-see the [tags on this repository](https://github.com/UAL-ODIS/ReQUIAM/tags).
+see the [tags on this repository](https://github.com/UAL-RE/ReQUIAM/tags).
 
 ## Continuous Integration
 
@@ -294,113 +296,17 @@ Currently, there are two GitHub Action workflows:
 A list of released features and their issue number(s).
 List is sorted from moderate to minor revisions for reach release.
 
-v0.17.0 - v0.17.1:
- * Chore: Refactor commonly set of codes in scripts #133
- * Chore: Refactor using `redata-commons` package #145
- * Bug: Regression from v0.17.0 with pandas_write_buffer #152
-
-v0.16.0 - v0.16.5:
- * Merge `grouper_admin` and `grouper_query` modules #87
- * Complete adoption of f-strings #118
- * New pull request templates #120
- * CI build testing for Python 3.9 #121
- * Update files to reflect ReQUIAM_csv org change #137
- * Minor: Update bug report template #131
- * Update URLs for organization migration #132
- * Bug: Argument parsing does not properly handle integer input for comparison #143
- * Bug: int vs float parsing for Grouper settings #150
-
-v0.15.0 - v0.15.1:
- * GitHub actions for CI #105
- * Simplify scripts to use dictionary for configuration settings #104
- * Improve verbosity of log messages #103
- * Priority labels for project management #108
- * Add/update GitHub issue templates #110
- * Bug: Fix f-string typo with batch load information #114
-
-v0.14.0:
- * Travis CI integration #91
- * Add summary data for `script_run` #99
- * Enable setting 'root' for portal in `ManualOverride` #88
- * Bug: equality checks #93
-
-v0.13.0 - v0.13.6:
- * Make scripts executable #82, #95
- * Enhancements to `script_run` script:
-   - Option to run with subset of org codes or portal names #65
-   - Option to switch between production and testing Grouper stems for #68
-   - Disable adding undergrads to 100MB quota #69
-   - Bug: Remove extraneous messages from `ManualOverride` #77
- * Enhancements to `user_update` script:
-   - Option to create indirect membership for active #72
-   - Option to not update manual CSV files #76
- * Bug: handling of multi-classification members for `quota` #78
- * Minor: Additional messaging for verbosity in `script_run` #39 #80
- * GitHub Action to create releases with tagged version #83, #89
- * Bug: Issue with `ManualOverride` #85
-
-v0.12.0 - 0.12.2:
- * Grouper API tool, `GrouperAPI` #42, #60
- * Grouper group creation with `add_grouper_group` script #42, #58
- * Include `multi-user` feature for `user_update` script #52
- * Re-vamp of logging in all scripts and classes #57
- * Minor: buffering of `pandas` DataFrame for `script_run` #64
- * Minor: Code refactoring in `grouper_query`, `ManualOverride` #62, #63
- * Minor: Perform checks to ensure that Grouper groups exist before API calls #66
- * Minor: Option to switch between production and testing Grouper stems for `user_update` #73
-
-v0.11.0 - 0.11.3:
- * Include manual override tool, `ManualOverride` #31, #47
- * Manual user update with user_update script #31
- * Ability to add and remove users from the `figshare:active` group #43
- * Minor: Packaging/re-organization of scripts into `scripts/` #44
- * Minor: Updates to scripts #44, #49, #50
- * Minor: Add option for persistent storage of logs
- 
-v0.10.0 - 0.10.2:
- * Illustration of software architecture workflow diagram #29
- * Documentation update for configuration settings
- * Bug fix: incorrect URL for `ReQUIAM_csv` #40
-
-v0.9.0 - 0.9.1:
- * Script to determine membership in an organization ("org code") #32
- * Minor: package rename for PEP8
-
-v0.8.0 - 0.8.3:
- * Software renaming #23
- * Minor fixes
-
-v0.7.0:
- * Testing option for `script_run` #18
-
-v0.6.0 - 0.6.1:
- * Primary script for automated patron management #16
-
-v0.5.0 - 0.5.1:
- * Grouper and EDS comparison tool, `Delta` #10, #15
-
-v0.4.0:
- * LDAP quota-based query #4
- * Primary `GrouperQuery` tool #7
-
-v0.3.0:
- * Multi-organization query and LDAP results merge #2
-
-v0.2.0:
- * UA-specific EDS queries
-
-v0.1.0:
- * Initial LDAP query tool and testing
+See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 
 
 ## Authors
 
-* Chun Ly, Ph.D. ([@astrochun](http://www.github.com/astrochun)) - [University of Arizona Libraries](https://github.com/ualibraries), [Office of Digital Innovation and Stewardship](https://github.com/UAL-ODIS)
+* Chun Ly, Ph.D. ([@astrochun](http://www.github.com/astrochun)) - [University of Arizona Libraries](https://github.com/ualibraries), [Research Engagement](https://github.com/UAL-RE)
 
-* Damian Romero ([@damian-romero](https://www.github.com/damian-romero)) - [University of Arizona Libraries](https://github.com/ualibraries), [Office of Digital Innovation and Stewardship](https://github.com/UAL-ODIS)
+* Damian Romero ([@damian-romero](https://www.github.com/damian-romero)) - [University of Arizona Libraries](https://github.com/ualibraries), [Research Engagement](https://github.com/UAL-RE)
 
 See also the list of
-[contributors](https://github.com/UAL-ODIS/ReQUIAM/contributors) who participated in this project.
+[contributors](https://github.com/UAL-RE/ReQUIAM/contributors) who participated in this project.
 
 
 ## License

@@ -2,8 +2,6 @@ from logging import Logger
 import pandas as pd
 from os.path import exists, join, islink, dirname
 
-from pandas import DataFrame
-
 from .ldap_query import LDAPConnection
 from .commons import figshare_stem
 from redata.commons.logger import log_stdout
@@ -15,44 +13,30 @@ quota_template_file = join(root_dir, 'config/quota_manual_template.csv')
 
 class ManualOverride:
     """
-    Purpose:
-      This class handles manual override changes.  It reads in CSV
-      configuration files and queries pandas DataFrame to identify additions
-      and deletions. Employ set operations for simplicity. It also update
-      the pandas DataFrame after a change is implemented
+    This class handles manual override changes. It reads in CSV configuration
+    files and queries ``pandas.DataFrame`` to identify additions/deletions.
+    It employ set operations for simplicity. It also update the CSV files
+    after a change is implemented
 
-    Attributes
-    ----------
-    portal_file : str
-      Full file path for CSV file containing manual portal specs (e.g., config/portal_manual.csv)
-    quota_file : str
-      Full file path for CSV file containing manual quota specs (e.g., config/quota_manual.csv)
-    log : LogClass object
-      For logging
-    root_add: bool
-      Flag to set root as portal in manual CSV file
+    :param portal_file: Full file path for CSV file containing manual portal
+           specifications (e.g., config/portal_manual.csv)
+    :param quota_file: Full file path for CSV file containing manual quota
+           specifications (e.g., config/quota_manual.csv)
+    :param log: File and/or stdout logging
+    :param root_add: Flag to set root as portal in manual CSV file.
+           Default: ``False``. In the default case, a force to "root" will
+           delete existing records in the manual quota CSV. If user ID is not
+           present, nothing happens
 
-    portal_df : pandas.core.frame.DataFrame
-      pandas DataFrame of [portal_csv]
-    quota_df : pandas.core.frame.DataFrame
-      pandas DataFrame of [quota_csv]
-
-    portal_header : list containing portal header (commented out text) of [portal_csv]
-    quota_header : list containing quota header (commented out text) of [quota_csv]
-
-    Methods
-    -------
-    file_checks(input_file):
-      Checks to see if manual CSV file exists. If not return a False boolean
-
-    read_manual_file(group_type):
-      Return a pandas DataFrame containing the manual override file
-
-    identify_changes(ldap_set, group, group_type):
-      Identify changes to call update_entries accordingly
-
-    update_dataframe(netid, uaid, group, group_type):
-      Update pandas DataFrame with necessary changes
+    :ivar str portal_file: Full file path for CSV file containing manual portal
+          specification
+    :ivar str quota_file: Full file path for CSV file containing manual quota
+          specification
+    :ivar Logger log: File and/or stdout logging
+    :ivar pd.DataFrame portal_df: Portal DataFrame
+    :ivar pd.DataFrame quota_df: Quota DataFrame
+    :ivar list portal_header: CSV header for ``portal_df``
+    :ivar list quota_header: CSV header for ``quota_df``
     """
     def __init__(self, portal_file: str, quota_file: str,
                  log: Logger = log_stdout(), root_add: bool = False) -> None:
@@ -85,7 +69,14 @@ class ManualOverride:
         self.root_add = root_add
 
     def file_checks(self, input_file: str) -> bool:
-        """Checks to see if manual CSV file exists. If not return a False boolean"""
+        """
+        Checks to see if manual CSV file exists.
+
+        :param input_file: Path of file to check
+
+        :return: Result of file check
+        """
+
         file_pass = True
         if not exists(input_file):
             self.log.info(f"File not found! {input_file}")
@@ -95,8 +86,17 @@ class ManualOverride:
                 self.log.info(f"{input_file} is symbolic link")
         return file_pass
 
-    def read_manual_file(self, group_type: str) -> DataFrame:
-        """Return a pandas DataFrame containing the manual override file"""
+    def read_manual_file(self, group_type: str) -> pd.DataFrame:
+        """
+        Return a ``pandas.DataFrame`` containing the manual override file
+
+        :param group_type: Grouper group type. Either 'portal' or 'quota'
+
+        :raises ValueError: Incorrect input on ``group_type``
+        :raises FileNotFound: Unable to find manual CSV to load
+
+        :return: DataFrame corresponding to ``group_type``
+        """
 
         if group_type not in ['portal', 'quota']:
             raise ValueError("Incorrect [group_type] input")
@@ -122,7 +122,18 @@ class ManualOverride:
 
     def identify_changes(self, ldap_set: set,
                          group: str, group_type: str) -> set:
-        """Identify changes to call update_entries accordingly"""
+        """
+        Identify changes to call :func:`requiam.manual_override.update_entries`
+        accordingly
+
+        :param ldap_set: Input EDS user IDs
+        :param group: Group to identify membership
+        :param group_type: Manual CSV type. Either 'portal' or 'quota'
+
+        :raises ValueError: Incorrect input on ``group_type``
+
+        :return: EDS user IDs with changes (after addition and deletion)
+        """
 
         if group_type not in ['portal', 'quota']:
             raise ValueError("Incorrect [group_type] input")
@@ -159,7 +170,16 @@ class ManualOverride:
 
     def update_dataframe(self, netid: list, uaid: list,
                          group: str, group_type: str) -> None:
-        """Update pandas DataFrame with necessary changes"""
+        """
+        Update ``pandas.DataFrame`` with necessary changes
+
+        :param netid: UA NetIDs
+        :param uaid: UA IDs
+        :param group: Group to identify membership
+        :param group_type: Manual CSV type. Either 'portal' or 'quota'
+
+        :raises ValueError: Incorrect input on ``group_type``
+        """
 
         if group_type not in ['portal', 'quota']:
             raise ValueError("Incorrect [group_type] input")
@@ -212,12 +232,11 @@ class ManualOverride:
 
 def csv_commented_header(input_file: str) -> list:
     """
-    Purpose:
-      Read in the comment header in CSV files to re-populate later
+    Read in the comment header in CSV file to re-populate later
 
-    :param input_file: full filename
+    :param input_file: Full path to CSV file
 
-    :return: header: List of strings
+    :return: CSV header
     """
 
     f = open(input_file, 'r')
@@ -231,16 +250,17 @@ def csv_commented_header(input_file: str) -> list:
 def update_entries(ldap_set: set, netid: list, uaid: list, action: str,
                    log: Logger = log_stdout()) -> set:
     """
-    Purpose:
-      Add/remove entries from a set
+    Add/remove entries from a set
 
-    :param ldap_set: set of uaid values
-    :param netid: list. User netid
-    :param uaid: list. User uaid
-    :param action: str
-      Action to perform. Either 'remove' or 'add'
-    :param log: LogClass object
-    :return new_ldap_set: Updated set of uaid values
+    :param ldap_set: UA IDs from EDS
+    :param netid: UA NetIDs to add/remove
+    :param uaid: UA IDs for corresponding ``netid``
+    :param action: Action to perform. Either 'remove' or 'add'
+    :param log: File and/or stdout ``Logger`` object
+
+    :raises ValueError: Incorrect ``action`` setting
+
+    :return: Updated set of ``uaid`` values
     """
 
     if action not in ['remove', 'add']:
@@ -274,14 +294,17 @@ def update_entries(ldap_set: set, netid: list, uaid: list, action: str,
 def get_current_groups(uid: str, ldap_dict: dict, production: bool = False,
                        log: Logger = log_stdout(), verbose: bool = True) -> dict:
     """
-    Purpose:
-      Retrieve current Figshare ismemberof association
+    Retrieve current Figshare ``ismemberof`` association
 
-    :param uid: str containing User NetID
-    :param ldap_dict: dict containing ldap settings
-    :param production: bool flag to indicate using figshare over figtest
-    :param log: LogClass object for logging
-    :param verbose: bool flag to provide information about each user
+    :param uid: User NetID
+    :param ldap_dict: LDAP settings
+    :param production: Flag to indicate using Grouper production stem
+           (``figshare``) over test (``figtest``). Default: ``False``
+    :param log: File and/or stdout logging
+    :param verbose: Provide information about each user. Default: ``True``
+
+    :raises ValueError: User is associated with multiple portal/quota groups
+
     :return figshare_dict: dict containing current Figshare portal and quota
     """
 

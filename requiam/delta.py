@@ -10,18 +10,35 @@ from redata.commons.logger import log_stdout
 
 class Delta:
     """
-    Purpose:
-      This class compares results from an LDAP query and a Grouper query
-      to identify common, additions, and deletions so that the two
-      will be in sync.
+    This class compares results from an LDAP query and a Grouper query
+    to identify common, additions, and deletions so that the two
+    will be in sync.
 
-      This code was adapted from the following repository:
-         https://github.com/ualibraries/patron-groups
+    This code was adapted from the following repository:
+       https://github.com/ualibraries/patron-groups
 
     Usage:
-      Quick how to:
-        from requiam import delta
+       ``from requiam import delta``
 
+    :param ldap_members: Set of LDAP member ID
+    :param grouper_query_dict: Result from ``Grouper``
+    :param batch_size: Number of records to synchronization for each "batch"
+    :param batch_timeout: Timeout in seconds for each batch
+    :param batch_delay: Delay between batches in seconds
+    :param sync_max: Maximum total adds and drops for synchronization
+    :param log: Logger object
+
+    :ivar ldap_members: Set of LDAP member IDs
+    :ivar grouper_query_dict: Result from ``Grouper``
+    :ivar grouper_members: Set of Grouper member IDs
+    :ivar batch_size: Number of records to synchronization for each "batch"
+    :ivar batch_timeout: Timeout in seconds for each batch
+    :ivar batch_delay: Delay between batches in seconds
+    :ivar sync_max: Maximum total adds and drops for synchronization
+    :ivar log: Logger object
+    :ivar adds: Set of members to add to Grouper group
+    :ivar drops: Set of members to drop from Grouper group
+    :ivar common: Set of members in common with EDS/LDAP and Grouper
     """
 
     def __init__(self, ldap_members: set, grouper_query_dict: Dict[str, Any],
