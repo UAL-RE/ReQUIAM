@@ -64,17 +64,17 @@ These instructions will have the code running on your local or virtual machine.
 
 You will need the following to have a working copy of this software. See
 [installation](#installation-instructions) steps:
-1. Python (>=3.7.9)
+1. Python (>=3.7) ((originally stated "3.7.9", it ran at "3.7.5". My local machine runs 3.8.8)
 2. [`pandas`](https://pandas.pydata.org/) ([0.25.3](https://pandas.pydata.org/pandas-docs/version/0.25.3/))
 3. [`ldap3`](https://ldap3.readthedocs.io/en/latest/) (2.6.1)
 4. [`requests`](https://requests.readthedocs.io/en/master/) (2.22.0)
-5. [`numpy`](https://numpy.org/doc/) ([1.18.0](https://numpy.org/doc/1.18/))
+5. [`numpy`](https://numpy.org/doc/) (>=[1.18.0](https://numpy.org/doc/1.18/))
 
 ### Installation Instructions
 
 #### Python and setting up a `conda` environment
 
-First, install a working version of Python (>=3.7.9).  We recommend using the
+First, install a working version of Python (>=3.7).  We recommend using the
 [Anaconda](https://www.anaconda.com/distribution/) package installer.
 
 After you have Anaconda installed, you will want to create a separate `conda` environment
@@ -107,7 +107,7 @@ You can confirm installation via `conda list`
 (figshare_patrons) $ conda list requiam
 ```
 
-You should see that the version is `1.0.0`.
+You should see that the version is `1.0.1`.
 
 ### Configuration Settings
 
@@ -227,7 +227,7 @@ To remove a user from its current assignment and place it on the main portal,
 use: `--portal root`. For quota, the `root` option will remove any quota
 association (this is equivalent to a zero quota)
 
-The manual CSV files are specified in the config file:
+The manual CSV files are specified in the config file (figshare.ini):
 ```
 # Manual override files
 portal_file = config/portal_manual.csv
@@ -300,6 +300,7 @@ See the [CHANGELOG](CHANGELOG.md) for all changes since project inception.
 
 
 ## Authors
+* Yan Han ([@yhan818](http://www.github.com/yhan818)) - [University of Arizona Libraries](https://github.com/ualibraries), [Research Engagement](https://github.com/UAL-RE)
 
 * Chun Ly, Ph.D. ([@astrochun](http://www.github.com/astrochun)) - [University of Arizona Libraries](https://github.com/ualibraries), [Research Engagement](https://github.com/UAL-RE)
 
