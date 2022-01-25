@@ -64,7 +64,7 @@ These instructions will have the code running on your local or virtual machine.
 
 You will need the following to have a working copy of this software. See
 [installation](#installation-instructions) steps:
-1. Python (>=3.7) ((originally stated "3.7.9", it ran at "3.7.5". My local machine runs 3.8.8)
+1. Python (>=3.7) 
 2. [`pandas`](https://pandas.pydata.org/) ([0.25.3](https://pandas.pydata.org/pandas-docs/version/0.25.3/))
 3. [`ldap3`](https://ldap3.readthedocs.io/en/latest/) (2.6.1)
 4. [`requests`](https://requests.readthedocs.io/en/master/) (2.22.0)
