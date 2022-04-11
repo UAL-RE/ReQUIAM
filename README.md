@@ -81,7 +81,7 @@ After you have Anaconda installed, you will want to create a separate `conda` en
 and activate it:
 
 ```
-$ (sudo) conda create -n figshare_patrons python=3.7
+$ (sudo) conda create -n figshare_patrons python=3.9
 $ conda activate figshare_patrons
 ```
 
@@ -96,7 +96,7 @@ With the activated `conda` environment, you can install with the `setup.py` scri
 
 ```
 (figshare_patrons) $ cd /path/to/parent/folder/ReQUIAM
-(figshare_patrons) $ (sudo) python setup.py develop
+(figshare_patrons) $ python setup.py develop
 ```
 
 This will automatically installed the required `pandas`, `ldap3`, `requests`, and `numpy` packages.
