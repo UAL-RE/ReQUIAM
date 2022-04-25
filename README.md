@@ -89,32 +89,34 @@ Next, clone this repository into a parent folder:
 
 ```
 (figshare_patrons) $ cd /path/to/parent/folder
-(figshare_patrons) $ git clone https://github.com/UAL-RE/ReQUIAM.git
+(figshare_patrons) $ git clone https://github.com/UAL-RE/ReQUIAM.git   (this is to clone a copy of the project to local directory) 
 ```
 
 With the activated `conda` environment, you can install with the `setup.py` script:
 
 ```
 (figshare_patrons) $ cd /path/to/parent/folder/ReQUIAM
-(figshare_patrons) $ (sudo) python setup.py develop
+(figshare_patrons) $ python setup.py develop (this is to setup all the necessary packages for this package. Without them, you cannot run. if you see errors, check python PATH. You may consider to add "psudo() { sudo env PATH="$PATH" "$@"; }"  to .bashrc)
 ```
 
-This will automatically installed the required `pandas`, `ldap3`, `requests`, and `numpy` packages.
+This will automatically installed the required `pandas`, `ldap3`, `requests`, and `numpy` packages. (Note: these packages may have newer versions.)
 
 You can confirm installation via `conda list`
 
-```
+``` (Note: such as conda list pandas)
 (figshare_patrons) $ conda list requiam
 ```
 
 You should see that the version is `1.0.1`.
+Note: These packages must be installed correctly so that the script can run. 
 
 ### Configuration Settings
 
 Configuration settings are specified through the [config/figshare.ini](config/figshare.ini) file.
-The most important settings to set are those populated with `***override***`.
+The most important settings to set are those populated with `***override***`. 
 However, for our scripts, these settings can be specified using multi-character 
-flag options, such as `--ldap_password`.
+flag options, such as `--ldap_password`.  To getting access to `***override***`, ask the system administrator
+
 Note that most `figshare.ini` settings can be overwritten through the command line.
 
 For manual override (v0.11.0) where IAM portal and quota settings differ from
@@ -123,17 +125,20 @@ those changes.
 
 
 ### Testing Installation
+Setuping env variables for the script to run 
 
 To test the installation without performing any `portal` or `quota` query,
 execute the following command:
 
 ```
-(figshare_patrons) $ export password="insert_password"
-(figshare_patrons) $ export persist_path="/path/to/persistent/storage"
+(figshare_patrons) $ export password="insert_password" 
+(figshare_patrons) $ export persistent_path="/path/to/persistent/storage"   (note: persistent_path is where the logs are stored)
 (figshare_patrons) $ ./scripts/script_run --config config/figshare.ini \
                        --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password
-```
+``` (ldap and grouper password are the same here) 
+You might see error messages "File not found! config/portal_manual.csv...". Copy two csv files "portal_manual.csv", and "quota_manual.csv" to config/".
+
 
 Test command-line flags (`test` and `test_reverse`) are available to test EDS
 query and Grouper synchronization (with the `sync` flag) by executing the following :
@@ -160,15 +165,22 @@ To undo this change, use the `test_reverse` flag:
 
 ## Execution
 
-To execute the script and update Grouper and EDS, include the `portal`, `quota`,
-and `sync` command-line flags:
+To execute the script and update Grouper and EDS, include the `portal`, `quota`command-line flags:
 
 ```
 (figshare_patrons) $ ./scripts/script_run --config config/figshare.ini \
                        --persistent_path $persist_path \
                        --ldap_password $password --grouper_password $password \
-                       --quota --portal --sync
+                       --quota --portal 
+                       
+                     
 ```
+
+"--quota" will run quota for groups
+"--portal" will run portal for all grouper users. 
+
+The above is "dry run". 
+using "--sync" will execute the script!!! 
 
 Note: Without the `sync` flag, the above command line will perform a
 "dry run" where both `quota` and `portal` queries are conducted. It will
