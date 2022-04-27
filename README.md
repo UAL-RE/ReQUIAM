@@ -115,7 +115,7 @@ You should see that the version is `1.0.1`.
 Configuration settings are specified through the [config/figshare.ini](config/figshare.ini) file.
 The most important settings to set are those populated with `***override***`. 
 However, for our scripts, these settings can be specified using multi-character 
-flag options, such as `--ldap_password`.  To getting access to `***override***`, ask the system administrator
+flag options, such as `--ldap_password`.  To get access to `***override***`, ask the system administrator
 
 Note that most `figshare.ini` settings can be overwritten through the command line.
 
@@ -125,7 +125,7 @@ those changes.
 
 
 ### Testing Installation
-Setuping env variables for the script to run 
+Setup env variables for the script to run 
 
 To test the installation without performing any `portal` or `quota` query,
 execute the following command:
@@ -165,7 +165,7 @@ To undo this change, use the `test_reverse` flag:
 
 ## Execution
 
-To execute the script and update Grouper and EDS, include the `portal`, `quota`command-line flags:
+To execute the script and update Grouper and EDS, include the `portal`, `quota` command-line flags:
 
 ```
 (figshare_patrons) $ ./scripts/script_run --config config/figshare.ini \
@@ -180,7 +180,7 @@ To execute the script and update Grouper and EDS, include the `portal`, `quota`c
 "--portal" will run portal for all grouper users. 
 
 The above is "dry run". 
-using "--sync" will execute the script!!! 
+adding "--sync" will execute the script!!! 
 
 By default, changes occur on the `figshare` stem. Execution can occur on the
 `figtest` stem with the `--grouper_figtest` boolean flag.
