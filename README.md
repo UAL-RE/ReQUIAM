@@ -89,14 +89,15 @@ Next, clone this repository into a parent folder:
 
 ```
 (figshare_patrons) $ cd /path/to/parent/folder
-(figshare_patrons) $ git clone https://github.com/UAL-RE/ReQUIAM.git   (this is to clone a copy of the project to local directory) 
+(figshare_patrons) $ git clone https://github.com/UAL-RE/ReQUIAM.git 
 ```
 
 With the activated `conda` environment, you can install with the `setup.py` script:
 
 ```
 (figshare_patrons) $ cd /path/to/parent/folder/ReQUIAM
-(figshare_patrons) $ python setup.py develop (this is to setup all the necessary packages for this package. Without them, you cannot run. if you see errors, check python PATH. You may consider to add "psudo() { sudo env PATH="$PATH" "$@"; }"  to .bashrc)
+(figshare_patrons) $ python setup.py develop 
+Note: if you see errors, check python PATH. 
 ```
 
 This will automatically installed the required `pandas`, `ldap3`, `requests`, and `numpy` packages. (Note: these packages may have newer versions.)
@@ -108,7 +109,6 @@ You can confirm installation via `conda list`
 ```
 
 You should see that the version is `1.0.1`.
-Note: These packages must be installed correctly so that the script can run. 
 
 ### Configuration Settings
 
@@ -181,10 +181,6 @@ To execute the script and update Grouper and EDS, include the `portal`, `quota`c
 
 The above is "dry run". 
 using "--sync" will execute the script!!! 
-
-Note: Without the `sync` flag, the above command line will perform a
-"dry run" where both `quota` and `portal` queries are conducted. It will
-indicate what Grouper updates will occur.
 
 By default, changes occur on the `figshare` stem. Execution can occur on the
 `figtest` stem with the `--grouper_figtest` boolean flag.
