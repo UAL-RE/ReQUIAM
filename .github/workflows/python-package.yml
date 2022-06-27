@@ -39,9 +39,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install pytest pytest-cov
-        python -m pip install tabulate --upgrade
+        python setuo.py install
         python -m pip install pandas --upgrade
-        python setup.py install
+        python -m pip install tabulate --upgrade
     - name: Test with pytest
       run: |
         pytest --cov-report term-missing --cov-config=.coveragerc --cov=requiam tests
