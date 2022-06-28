@@ -19,11 +19,11 @@ sys.path.insert(0, os.path.abspath('../../'))
 # -- Project information -----------------------------------------------------
 
 project = 'ReQUIAM'
-copyright = '2021, Arizona Board of Regents'
-author = 'Chun Ly, UA Research Data Repository (ReDATA) Team'
+copyright = '2022, Arizona Board of Regents'
+author = 'Yan Han, UA Research Data Repository (ReDATA) Team'
 
 # The full version, including alpha/beta/rc tags
-release = 'v1.0.0'
+release = 'v1.0.1'
 
 
 # -- General configuration ---------------------------------------------------

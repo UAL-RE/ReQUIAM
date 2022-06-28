@@ -1,6 +1,7 @@
 Authors
 =======
 
+- Yan Han, (`@yhan818 <https://github.com/yhan818>`__)
 - Chun Ly, Ph.D. (`@astrochun <http://www.github.com/astrochun>`__)
 - Damian Romero (`@damian-romero <http://www.github.com/damian-romero>`__)
 

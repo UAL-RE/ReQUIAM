@@ -1,6 +1,16 @@
 # Changelog
 
+
+## [v1.0.1](https://github.com/UAL-RE/ReQUIAM/tree/v1.0.1) (2021-09-15)
+**Implemented enhancements:**
+ - Enhancement: Grouper v2.5 implemented. 
+   [#161](https://github.com/UAL-RE/ReQUIAM/pull/161)
+
+**Closed issues:**
+   [#116](https://github.com/UAL-RE/ReQUIAM/pull/116)
+
 ## [v1.0.0](https://github.com/UAL-RE/ReQUIAM/tree/v1.0.0) (2021-07-22)
+
 
 **Implemented enhancements:**
  - Enhancement: Sphinx documentation with RTDs

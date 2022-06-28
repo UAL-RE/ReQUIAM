@@ -11,14 +11,13 @@ The :repo-main-file:`requirements.txt <requirements.txt>` indicates the required
 libraries. In short, you will need the following to have a working copy of
 this software.
 
-1. Python (>=3.7.9)
+1. Python (>=3.7)
 2. `ldap3`_ (2.6.1)
 3. `numpy`_ (1.20.0)
 4. :ual-re:`redata <redata-commons>` (>=0.3.2)
-
-   * `pandas`_ (1.2.3)
-   * `tabulate`_ (0.8.3)
-   * `requests`_ (2.25.1)
+5. `pandas`_ (1.2.3)
+6. `tabulate`_ (0.8.3)
+7. `requests`_ (2.25.1)
 
 
 Installation Instructions
@@ -27,7 +26,7 @@ Installation Instructions
 Python and setting up a ``conda`` environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-First, install a working version of Python (>=3.7.9). We recommend using
+First, install a working version of Python (>=3.7). We recommend using
 the `Anaconda`_ package installer.
 
 After you have Anaconda installed, you will want to create a separate
@@ -62,7 +61,7 @@ You can confirm installation via ``conda list``
 
    (figshare_patrons) $ conda list requiam
 
-You should see that the version is ``1.0.0``.
+You should see that the version is ``1.0.1``.
 
 Configuration Settings
 ~~~~~~~~~~~~~~~~~~~~~~
