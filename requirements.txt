@@ -1,5 +1,4 @@
 ldap3==2.6.1
 numpy==1.23.0
 redata>=0.4.2
-pandas==1.4.3
 
