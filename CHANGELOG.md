@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [v1.1.0](https://github.com/UAL-RE/ReQUIAM/tree/v1.1.0) (2022-07-05)
+**Implemented enhancements:**
+ - Enhancement: Upgrade to Python 3.9
+   [#170](https://github.com/UAL-RE/ReQUIAM/pull/170)
+
+
 ## [v1.0.1](https://github.com/UAL-RE/ReQUIAM/tree/v1.0.1) (2021-09-15)
 **Implemented enhancements:**
  - Enhancement: Grouper v2.5 implemented. 
