@@ -57,8 +57,8 @@ This will automatically installed the required ``pandas``, ``ldap3``,
 ``requests``, and ``numpy`` packages.
 
 You can confirm installation via ``conda list``
-:: 
-   (figshare_patrons) $ conda list 
+::
+   (figshare_patrons) $ conda list
 
 You shall see the above packages versions matching the requirements.
 
