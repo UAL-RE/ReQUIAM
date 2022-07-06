@@ -8,11 +8,11 @@ with open("requirements.txt", "r") as fr:
 
 setup(
     name='requiam',
-    version='v1.0.1',
+    version='v1.1.0',
     packages=['requiam'],
     url='https://github.com/UAL-RE/ReQUIAM',
     license='MIT License',
-    author='Chun Ly',
+    author='Yan Han',
     author_email='astro.chun@gmail.com',
     description='Query EDS information to set EDS attributes specific for Figshare account management',
     long_description=long_description,

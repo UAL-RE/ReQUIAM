@@ -11,14 +11,15 @@ The :repo-main-file:`requirements.txt <requirements.txt>` indicates the required
 libraries. In short, you will need the following to have a working copy of
 this software.
 
-1. Python (>=3.7)
+1. Python (>=3.8)
 2. `ldap3`_ (2.6.1)
-3. `numpy`_ (1.20.0)
-4. :ual-re:`redata <redata-commons>` (>=0.3.2)
-5. `pandas`_ (1.2.3)
-6. `tabulate`_ (0.8.3)
+3. `numpy`_ (>=1.22.0)
+4. :ual-re:`redata <redata-commons>` (>=0.5.0)
+5. `pandas`_ (>=1.4.3)
+6. `tabulate`_ (>=0.8.7)
 7. `requests`_ (2.25.1)
 
+Note: Python 3.7 will not be supported by Numpy 1.22.0 (June 2022). see https://github.com/UAL-RE/ReQUIAM/issues/170
 
 Installation Instructions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -34,7 +35,7 @@ After you have Anaconda installed, you will want to create a separate
 
 ::
 
-   $ (sudo) conda create -n figshare_patrons python=3.7
+   $ (sudo) conda create -n figshare_patrons python=3.9
    $ conda activate figshare_patrons
 
 Next, clone this repository into a parent folder:
@@ -50,7 +51,7 @@ With the activated ``conda`` environment, you can install with the
 ::
 
    (figshare_patrons) $ cd /path/to/parent/folder/ReQUIAM
-   (figshare_patrons) $ (sudo) python setup.py develop
+   (figshare_patrons) $ python setup.py develop
 
 This will automatically installed the required ``pandas``, ``ldap3``,
 ``requests``, and ``numpy`` packages.
@@ -59,9 +60,18 @@ You can confirm installation via ``conda list``
 
 ::
 
+   (figshare_patrons) $ conda list
+
+You shall see the above packages versions matching the requirements.
+
+For old version of redata (<0.5.0) and ReQUIAM, it might be easier to create a new conda user and follow the above steps.
+Note: You can upgrade to Python 3.9 and related packages (numpy, pandas, and redata) from 3.7, but it takes more effort. 
+
+::
+
    (figshare_patrons) $ conda list requiam
 
-You should see that the version is ``1.0.1``.
+You should see that the version is ``1.1.0``.
 
 Configuration Settings
 ~~~~~~~~~~~~~~~~~~~~~~
