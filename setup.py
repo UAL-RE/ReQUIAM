@@ -13,7 +13,7 @@ setup(
     url='https://github.com/UAL-RE/ReQUIAM',
     license='MIT License',
     author='Yan Han',
-    author_email='astro.chun@gmail.com',
+    author_email='yhan818@gmail.com',
     description='Query EDS information to set EDS attributes specific for Figshare account management',
     long_description=long_description,
     long_description_content_type='text/markdown',

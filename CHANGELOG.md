@@ -5,7 +5,8 @@
 **Implemented enhancements:**
  - Enhancement: Upgrade to Python 3.9
    [#170](https://github.com/UAL-RE/ReQUIAM/pull/170)
-
+   [#177](https://github.com/UAL-RE/ReQUIAM/pull/177)
+   update config/figshare.ini for more timeout and the max number of sync 
 
 ## [v1.0.1](https://github.com/UAL-RE/ReQUIAM/tree/v1.0.1) (2021-09-15)
 **Implemented enhancements:**
