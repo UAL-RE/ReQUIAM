@@ -96,9 +96,9 @@ query, execute the following command:
 
 ::
 
-   (user1) $ export password="insert_password"
-   (user1) $ export persist_path="/path/to/persistent/storage"
-   (user1) $ ./scripts/script_run --config config/figshare.ini \
+   (admin1) $ export password="insert_password"
+   (admin1) $ export persist_path="/path/to/persistent/storage"
+   (admin1) $ ./scripts/script_run --config config/figshare.ini \
                           --persistent_path $persist_path \
                           --ldap_password $password --grouper_password $password
 
@@ -108,7 +108,7 @@ executing the following :
 
 ::
 
-   (user1) $ ./scripts/script_run --test \
+   (admin1) $ ./scripts/script_run --test \
                           --config config/figshare.ini --persistent_path $persist_path \
                           --ldap_password $password --grouper_password $password --sync
 
@@ -122,7 +122,7 @@ To undo this change, use the ``test_reverse`` flag:
 
 ::
 
-   (user1) $ ./scripts/script_run --test_reverse \
+   (admin1) $ ./scripts/script_run --test_reverse \
                           --config config/figshare.ini --persistent_path $persist_path \
                           --ldap_password $password --grouper_password $password --sync
 
