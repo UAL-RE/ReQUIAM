@@ -27,7 +27,7 @@ Installation Instructions
 Python and setting up a ``conda`` environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-First, install a working version of Python (>=3.7). We recommend using
+First, install a working version of Python (>=3.8) using ``conda``. We recommend using
 the `Anaconda`_ package installer.
 
 After you have Anaconda installed, you will want to create a separate
@@ -35,23 +35,23 @@ After you have Anaconda installed, you will want to create a separate
 
 ::
 
-   $ (sudo) conda create -n figshare_patrons python=3.9
-   $ conda activate figshare_patrons
+   $ conda create -n admin1 python=3.9
+   $ conda activate admin1
 
 Next, clone this repository into a parent folder:
 
 ::
 
-   (figshare_patrons) $ cd /path/to/parent/folder
-   (figshare_patrons) $ git clone https://github.com/UAL-RE/ReQUIAM.git
+   (admin1) $ cd /path/to/parent/folder
+   (admin1) $ git clone https://github.com/UAL-RE/ReQUIAM.git
 
 With the activated ``conda`` environment, you can install with the
 ``setup.py`` script:
 
 ::
 
-   (figshare_patrons) $ cd /path/to/parent/folder/ReQUIAM
-   (figshare_patrons) $ python setup.py develop
+   (admin1) $ cd /path/to/parent/folder/ReQUIAM
+   (admin1) $ python setup.py develop
 
 This will automatically installed the required ``pandas``, ``ldap3``,
 ``requests``, and ``numpy`` packages.
@@ -60,7 +60,7 @@ You can confirm installation via ``conda list``
 
 ::
 
-   (figshare_patrons) $ conda list
+   (admin1) $ conda list
 
 You shall see the above packages versions matching the requirements.
 
@@ -69,7 +69,7 @@ Note: You can upgrade to Python 3.9 and related packages (numpy, pandas, and red
 
 ::
 
-   (figshare_patrons) $ conda list requiam
+   (admin1) $ conda list requiam
 
 You should see that the version is ``1.1.0``.
 
@@ -96,9 +96,9 @@ query, execute the following command:
 
 ::
 
-   (figshare_patrons) $ export password="insert_password"
-   (figshare_patrons) $ export persist_path="/path/to/persistent/storage"
-   (figshare_patrons) $ ./scripts/script_run --config config/figshare.ini \
+   (user1) $ export password="insert_password"
+   (user1) $ export persist_path="/path/to/persistent/storage"
+   (user1) $ ./scripts/script_run --config config/figshare.ini \
                           --persistent_path $persist_path \
                           --ldap_password $password --grouper_password $password
 
@@ -108,7 +108,7 @@ executing the following :
 
 ::
 
-   (figshare_patrons) $ ./scripts/script_run --test \
+   (user1) $ ./scripts/script_run --test \
                           --config config/figshare.ini --persistent_path $persist_path \
                           --ldap_password $password --grouper_password $password --sync
 
@@ -122,7 +122,7 @@ To undo this change, use the ``test_reverse`` flag:
 
 ::
 
-   (figshare_patrons) $ ./scripts/script_run --test_reverse \
+   (user1) $ ./scripts/script_run --test_reverse \
                           --config config/figshare.ini --persistent_path $persist_path \
                           --ldap_password $password --grouper_password $password --sync
 
