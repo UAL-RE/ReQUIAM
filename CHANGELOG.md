@@ -3,7 +3,7 @@
 
 ## [v1.1.0](https://github.com/UAL-RE/ReQUIAM/tree/v1.1.0) (2022-07-05)
 **Implemented enhancements:**
- - Enhancement: Upgrade to Python 3.9
+ - Enhancement: Upgrade to latest versions for Python 3.9, numpy 1.23.0, pandas 1.4.3, tabulate 0.8.10, sphinx 5.0.0, sphinx-rtd-theme 1.0.0 and sphinx-autodoc-typehints 1.18.3
    [#170](https://github.com/UAL-RE/ReQUIAM/pull/170)
    [#177](https://github.com/UAL-RE/ReQUIAM/pull/177)
    [#180](https://github.com/UAL-RE/ReQUIAM/pull/180)
