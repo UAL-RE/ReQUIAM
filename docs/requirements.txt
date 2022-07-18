@@ -1,5 +1,5 @@
-sphinx==4.0
-sphinx-rtd-theme==0.5.1
-sphinx-autodoc-typehints==1.11.1
-redata>=0.3.2
+sphinx==5.0.0
+sphinx-rtd-theme==1.0.0
+sphinx-autodoc-typehints==1.18.3
+redata>=0.5.0
 ldap3==2.6.1
