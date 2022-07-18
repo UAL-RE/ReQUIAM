@@ -75,7 +75,7 @@ if __name__ == '__main__':
     {CODE_NAME} active branch: {gi.branch}
     {CODE_NAME} version: {__version__}
     {CODE_NAME} commit hash: {gi.short_commit}
-    Created by Chun Ly
+    Updated by Yan Han on 2022-07-18, Created by Chun Ly
     Issues? Submit a GitHub ticket: https://github.com/UAL-RE/ReQUIAM/issues/new
     """
     print(banner_message)
