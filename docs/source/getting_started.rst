@@ -11,12 +11,12 @@ The :repo-main-file:`requirements.txt <requirements.txt>` indicates the required
 libraries. In short, you will need the following to have a working copy of
 this software.
 
-1. Python (>=3.7)
+1. Python (>=3.8) (we use 3.9)
 2. `ldap3`_ (2.6.1)
-3. `numpy`_ (1.20.0)
-4. :ual-re:`redata <redata-commons>` (>=0.3.2)
-5. `pandas`_ (1.2.3)
-6. `tabulate`_ (0.8.3)
+3. `numpy`_ (>=1.22.0) (we use 1.23.0)
+4. :ual-re:`redata <redata-commons>` (>=0.5.0)
+5. `pandas`_ (>=1.4.3)
+6. `tabulate`_ (>=0.8.7) (we use 0.8.10)
 7. `requests`_ (2.25.1)
 
 
@@ -26,31 +26,30 @@ Installation Instructions
 Python and setting up a ``conda`` environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-First, install a working version of Python (>=3.7). We recommend using
-the `Anaconda`_ package installer.
+First, we recommend using the `Anaconda`_ package installer the latest version under your account, which uses Python 3.9. We do not recommend to 
+install it using `root`.
 
-After you have Anaconda installed, you will want to create a separate
-``conda`` environment and activate it:
+After that, you shall create a separate ``conda`` environment and activate it for ReQUIAM:
 
 ::
 
-   $ (sudo) conda create -n figshare_patrons python=3.7
-   $ conda activate figshare_patrons
+   $ conda create -n admin1 python=3.9
+   $ conda activate admin1
 
 Next, clone this repository into a parent folder:
 
 ::
 
-   (figshare_patrons) $ cd /path/to/parent/folder
-   (figshare_patrons) $ git clone https://github.com/UAL-RE/ReQUIAM.git
+   (admin1) $ cd /path/to/parent/folder
+   (admin1) $ git clone https://github.com/UAL-RE/ReQUIAM.git
 
 With the activated ``conda`` environment, you can install with the
 ``setup.py`` script:
 
 ::
 
-   (figshare_patrons) $ cd /path/to/parent/folder/ReQUIAM
-   (figshare_patrons) $ (sudo) python setup.py develop
+   (admin1) $ cd /path/to/parent/folder/ReQUIAM
+   (admin1) $ python setup.py develop
 
 This will automatically installed the required ``pandas``, ``ldap3``,
 ``requests``, and ``numpy`` packages.
@@ -59,9 +58,9 @@ You can confirm installation via ``conda list``
 
 ::
 
-   (figshare_patrons) $ conda list requiam
+   (admin1) $ conda list requiam
 
-You should see that the version is ``1.0.1``.
+You should see that the version is ``1.1.0``.
 
 Configuration Settings
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -86,11 +85,9 @@ query, execute the following command:
 
 ::
 
-   (figshare_patrons) $ export password="insert_password"
-   (figshare_patrons) $ export persist_path="/path/to/persistent/storage"
-   (figshare_patrons) $ ./scripts/script_run --config config/figshare.ini \
-                          --persistent_path $persist_path \
-                          --ldap_password $password --grouper_password $password
+   (admin1) $ export password="insert_password"
+   (admin1) $ export persist_path="/path/to/persistent/storage"
+   (admin1) $ ./scripts/script_run --config config/figshare.ini --persistent_path $persist_path --ldap_password $password --grouper_password $password
 
 Test command-line flags (``test`` and ``test_reverse``) are available to
 test EDS query and Grouper synchronization (with the ``sync`` flag) by
@@ -98,7 +95,7 @@ executing the following :
 
 ::
 
-   (figshare_patrons) $ ./scripts/script_run --test \
+   (admin1) $ ./scripts/script_run --test \
                           --config config/figshare.ini --persistent_path $persist_path \
                           --ldap_password $password --grouper_password $password --sync
 
@@ -112,7 +109,7 @@ To undo this change, use the ``test_reverse`` flag:
 
 ::
 
-   (figshare_patrons) $ ./scripts/script_run --test_reverse \
+   (admin1) $ ./scripts/script_run --test_reverse \
                           --config config/figshare.ini --persistent_path $persist_path \
                           --ldap_password $password --grouper_password $password --sync
 
