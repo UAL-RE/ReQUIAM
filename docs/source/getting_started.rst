@@ -11,12 +11,14 @@ The :repo-main-file:`requirements.txt <requirements.txt>` indicates the required
 libraries. In short, you will need the following to have a working copy of
 this software.
 
-1. Python (>=3.8)
+
+1. Python (>=3.8) (we use 3.9)
 2. `ldap3`_ (2.6.1)
-3. `numpy`_ (>=1.22.0)
+3. `numpy`_ (>=1.22.0) (we use 1.23.0)
 4. :ual-re:`redata <redata-commons>` (>=0.5.0)
 5. `pandas`_ (>=1.4.3)
-6. `tabulate`_ (>=0.8.7)
+6. `tabulate`_ (>=0.8.7) (we use 0.8.10)
+
 7. `requests`_ (2.25.1)
 
 Note: Python 3.7 will not be supported by Numpy 1.22.0 (June 2022). see https://github.com/UAL-RE/ReQUIAM/issues/170
@@ -27,11 +29,11 @@ Installation Instructions
 Python and setting up a ``conda`` environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-First, install a working version of Python (>=3.8) using ``conda``. We recommend using
-the `Anaconda`_ package installer.
+First, we recommend using the `Anaconda`_ package installer the latest version under your account, which uses Python 3.9. We do not recommend to 
+install it using `root`.
 
-After you have Anaconda installed, you will want to create a separate
-``conda`` environment and activate it:
+
+After that, you shall create a separate ``conda`` environment and activate it for ReQUIAM:
 
 ::
 
@@ -59,6 +61,7 @@ This will automatically installed the required ``pandas``, ``ldap3``,
 You can confirm installation via ``conda list``
 
 ::
+
 
    (admin1) $ conda list
 
@@ -101,6 +104,7 @@ query, execute the following command:
    (admin1) $ ./scripts/script_run --config config/figshare.ini \
                           --persistent_path $persist_path \
                           --ldap_password $password --grouper_password $password
+
 
 Test command-line flags (``test`` and ``test_reverse``) are available to
 test EDS query and Grouper synchronization (with the ``sync`` flag) by

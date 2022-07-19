@@ -6,10 +6,7 @@ To execute the script and update Grouper and EDS, include the
 
 ::
 
-   (admin1) $ ./scripts/script_run --config config/figshare.ini \
-                          --persistent_path $persist_path \
-                          --ldap_password $password --grouper_password $password \
-                          --quota --portal --sync
+   (admin1) $ ./scripts/script_run --config config/figshare.ini --persistent_path $persist_path --ldap_password $password --grouper_password $password --quota --portal --sync
 
 Note: Without the ``sync`` flag, the above command line will perform a
 “dry run” where both ``quota`` and ``portal`` queries are conducted. It
@@ -54,10 +51,12 @@ Execution can be done as follows:
 
 ::
 
+
    (admin1) $ ./scripts/user_update --config config/figshare.ini \
                           --persistent_path $persist_path \
                           --ldap_password $password --grouper_password $password \
                           --quota 123456 --portal testportal --netid <username> --sync
+
 
 Here, the script will update the specified ``<username>`` to be
 associated with the ``123456`` quota and the ``testportal`` portal. Much
@@ -118,8 +117,8 @@ exists, it will skip to the privilege assignments. To execute the script:
 ::
 
    (admin1) $ ./scripts/add_grouper_groups --config config/figshare.ini \
-                          --persistent_path $persist_path --grouper_password $password \
-                          --main_themes --sub_portals --quota --add
+                          --persistent_path $persist_path --grouper_password $password --main_themes --sub_portals --quota --add
+
 
 The ``main_themes``, ``sub_portals`` and ``quota`` flags will conduct
 checks and create those sets of groups. Without the ``add`` flag, it is
