@@ -110,7 +110,6 @@ class Delta:
 
             data = dict()
             data['WsRestDeleteMemberRequest'] = {
-                'replaceAllExisting': 'F',
                 'subjectLookups': [{'subjectId': entry} for entry in batch]
             }
 
@@ -146,7 +145,6 @@ class Delta:
 
             data = dict()
             data['WsRestAddMemberRequest'] = {
-                'replaceAllExisting': 'F',
                 'subjectLookups': [{'subjectId': entry} for entry in batch]
             }
 
