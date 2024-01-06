@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [v1.1.1](https://github.com/UAL-RE/ReQUIAM/tree/v1.1.1) (2024-01-05)
+**Fixed bugs:**
+ - Bug:crash after Grouper update
+   [#185](https://github.com/UAL-RE/ReQUIAM/issues/186)
+
 ## [v1.1.0](https://github.com/UAL-RE/ReQUIAM/tree/v1.1.0) (2022-07-05)
 **Implemented enhancements:**
  - Enhancement: Upgrade to latest versions for Python 3.9, numpy 1.23.0, pandas 1.4.3, tabulate 0.8.10, sphinx 5.0.0, sphinx-rtd-theme 1.0.0 and sphinx-autodoc-typehints 1.18.3
