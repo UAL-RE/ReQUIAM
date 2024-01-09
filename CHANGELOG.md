@@ -4,7 +4,7 @@
 ## [v1.1.1](https://github.com/UAL-RE/ReQUIAM/tree/v1.1.1) (2024-01-05)
 **Fixed bugs:**
  - Bug:crash after Grouper update
-   [#185](https://github.com/UAL-RE/ReQUIAM/issues/186)
+   [#186](https://github.com/UAL-RE/ReQUIAM/issues/186)
 
 ## [v1.1.0](https://github.com/UAL-RE/ReQUIAM/tree/v1.1.0) (2022-07-05)
 **Implemented enhancements:**
